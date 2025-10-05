@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Recipe } from '../types/pantry';
 import recipeService from '../services/recipeService';
+import { Recipe } from '../types/pantry';
 
 type ContextShape = {
   recipes: Recipe[];
   loading: boolean;
   error?: string;
   refresh: () => Promise<void>;
+  addRecipe: (recipe: Recipe) => void; // Added addRecipe to the context shape
 };
 
 const RecipeContext = createContext<ContextShape | undefined>(undefined);
@@ -34,8 +35,13 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     load();
   }, []);
 
+  const addRecipe = (recipe: Recipe) => {
+    setRecipes((prevRecipes) => [...prevRecipes, recipe]);
+    recipeService.addRecipe(recipe);
+  };
+
   return (
-    <RecipeContext.Provider value={{ recipes, loading, error, refresh: load }}>
+    <RecipeContext.Provider value={{ recipes, loading, error, refresh: load, addRecipe }}>
       {children}
     </RecipeContext.Provider>
   );

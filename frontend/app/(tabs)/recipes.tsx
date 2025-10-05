@@ -5,6 +5,7 @@ import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import AddRecipeButton from '@/components/ui/AddRecipeButton';
 
 export default function TabTwoScreen() {
   return (
@@ -21,7 +22,8 @@ export default function TabTwoScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">My Favorite Recipes</ThemedText>
         <ThemedText type="default" style={styles.subtitle}>Hmm... What to cook..?</ThemedText>
-        <RecipeList/>
+        <AddRecipeButton />
+        <RecipeList />
       </ThemedView>
     </ParallaxScrollView>
   );

@@ -8,7 +8,7 @@ Aaron Espinoza, Heston Montagne, Dylan Priebe, Jeremiah Stone, and Russell Sulli
 * [Technologies Used](#technologies-used)
 * [Features](#features)
 * [Project Status](#project-status)
-<!-- * [Room for Improvement](#room-for-improvement) -->
+* [Room for Improvement](#room-for-improvement)
 <!-- * [Acknowledgements](#acknowledgements) -->
 <!-- * [License](#license) -->
 
@@ -70,22 +70,45 @@ This feature gives the user the ability to list the required ingredients necessa
 
 - As a general user, I want to add personal notes or tweaks to a saved recipe so that I can remember improvements.
 
+## Sprint 1 (September 22 - October 3)
+### Contributions
+**Heston:** "Provided UI for the pantry list and recipe tab to display recipes to the user"
+* Create pantry view tab
+    * [EWOK-3](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-3)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-3_CreatePantryTab)
+* Display list of ingredients
+    * [EWOK-38](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-38)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-38_DisplayIngredientList)
+* Show empty pantry message
+    * [EWOK-2](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-2)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-2_EmptyPantryMessage)
+* Add a "Favorites" section to the main menu or profile
+    * [EWOK-28](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-28)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-28_AddFavoritesSection)
+* Add "Empty State" message for an empty list
+    * [EWOK-29](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-29)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/feature%2FEWOK-29-EmptyStateMessage)
+* Add "Favorites page" UI
+    * [EWOK-24](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-24)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-24_FavoritesPageUI)
+
 
 ## Project Status
 Project is: _in progress_
 
 
-<!-- ## Room for Improvement
-Include areas you believe need improvement / could be improved. Also add TODOs for future development.
+## Room for Improvement
 
-Room for improvement:
-- Improvement to be done 1
-- Improvement to be done 2
+### Testing:
+- Unit test for add ingredient to pantry react native input
+- Unit test for remove ingredient from pantry react native input
+- Unit test for tab navigation
 
-To do:
+### Features:
 - Feature to be added 1
-- Feature to be added 2 -->
+- Feature to be added 2
 
+### Recipe Recommendation:
 - Recommend recipes based on different cultures. For example, when the user asks for Indian or Greek recipes.
 - Recommend recipes based on food nutrients. For example, when the user asks for high-protein, high carbohydrate, zero-carbohydrate(keto), low-fat, low sugar, high sugar, etc.
 - When the user has nothing in their pantry, ask them what kind of food they might want and give recommendations based off this initial user input

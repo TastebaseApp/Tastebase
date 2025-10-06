@@ -19,9 +19,9 @@ export async function parseAndAddItems(raw: string, addItem: (amt: number, unit:
   for(const entry of entries){
     const parts = entry.split(/\s+/).filter(Boolean);
 
-    if (parts.length < 2) { skipped.push(entry); continue; }
+    if (parts.length < 1) { skipped.push(entry); continue; }
 
-    const amt = Number(parts[0]);
+    let amt = 0;
     if (!Number.isFinite(amt)) { skipped.push(entry); continue; }
 
     let unit: string;
@@ -30,7 +30,13 @@ export async function parseAndAddItems(raw: string, addItem: (amt: number, unit:
     if (parts.length === 2) {
       unit = parts[1];
       name = parts[1];
+      amt = Number(parts[0]);
+    }else if(parts.length === 1){
+      amt = 1;
+      unit = parts[0];
+      name = parts[0];
     } else {
+      amt = Number(parts[0]);
       unit = parts[1];
       name = parts.slice(2).join(' ');
     }

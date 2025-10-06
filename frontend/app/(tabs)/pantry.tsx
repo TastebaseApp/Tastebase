@@ -22,13 +22,13 @@ export default function TabPantryScreen() {
 
   return (
     <ThemedView style={styles.container}>
+        <ThemedText type="title" style={styles.header}>Pantry</ThemedText>
         <AddIngredientButton onPress={() => setShowAdd(true)} />
         <AddIngredientModal
         visible={showAdd}
         onClose={() => setShowAdd(false)}
         onAdd={ handleAdd }
         />
-        <ThemedText type="title" style={styles.header}>Pantry</ThemedText>
         <ThemedText style={styles.subtitle}>All your ingredients, at a glance.</ThemedText>
         <IngredientList/>
     </ThemedView>

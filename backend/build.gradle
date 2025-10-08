@@ -23,10 +23,24 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11) // or your version
+    }
+}
+
 application {
     mainClassName = "tastebase.App"
 }
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': "tastebase.App"
+        )
+    }
 }

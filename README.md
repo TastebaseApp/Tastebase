@@ -124,6 +124,17 @@ This feature gives the user the ability to list the required ingredients necessa
     * [EWOK-58](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-58)
     * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-58-create-pantry-api-for-frontend-to-work-with-backend)
 
+**Jeremiah:** "Implemented Functionality of Pantry Management UI"
+* Create button and input field for ingredient addition. Connect it to the ingredient list UI.
+    * [EWOK-1](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-1)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-1_IngredientInputUI)
+* Parse ingredient input to handle multiple ingredients at once in different formats
+    * [EWOK-41](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-41)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-41-add-multi-ingredient-input)
+* Create button to remove ingredients from pantry
+    * [EWOK-6](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-6)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-6-create-remove-ingredient-input)
+
 ## Project Status
 Project is: _in progress_
 

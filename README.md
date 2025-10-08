@@ -72,68 +72,93 @@ This feature gives the user the ability to list the required ingredients necessa
 
 ## Sprint 1 (September 22 - October 3)
 ### Contributions
+
 **Heston:** "Provided UI for the pantry list and recipe tab to display recipes to the user"
-* Create pantry view tab
-    * [EWOK-3](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-3)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-3_CreatePantryTab)
-* Display list of ingredients
-    * [EWOK-38](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-38)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-38_DisplayIngredientList)
-* Show empty pantry message
-    * [EWOK-2](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-2)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-2_EmptyPantryMessage)
-* Add a "Favorites" section to the main menu or profile
-    * [EWOK-28](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-28)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-28_AddFavoritesSection)
-* Add "Empty State" message for an empty list
-    * [EWOK-29](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-29)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/feature%2FEWOK-29-EmptyStateMessage)
-* Add "Favorites page" UI
-    * [EWOK-24](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-24)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-24_FavoritesPageUI)
+
+- Create pantry view tab
+    - [EWOK-3](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-3)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-3_CreatePantryTab)
+- Display list of ingredients
+    - [EWOK-38](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-38)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-38_DisplayIngredientList)
+- Show empty pantry message
+    - [EWOK-2](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-2)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-2_EmptyPantryMessage)
+- Add a "Favorites" section to the main menu or profile
+    - [EWOK-28](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-28)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-28_AddFavoritesSection)
+- Add "Empty State" message for an empty list
+    - [EWOK-29](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-29)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/feature%2FEWOK-29-EmptyStateMessage)
+- Add "Favorites page" UI
+    - [EWOK-24](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-24)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-24_FavoritesPageUI)
 
 **Russell:** "Created and Tested Frontend and Backend Functionalities"
-* Created Backend Flowchart Diagram
-    * [EWOK-49] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-49
-    * [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/a5822bc87a4158dbf853c9452ad930b2ee395c04
-* Created Frontend Flowchart Diagram
-    * [EWOK-50] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-50
-    * [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-50-frontend-flowchart
-* Added Dynamic Recipe List Manipulation + Random Recipe Button 
-    * [EWOK-10] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-10
-    * [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/commits/56614e3bb2de9fb1fa84119a88e24c05051ef7f0
-* Scraped 301 Recipes from online API to JSON 
-* Created REST API for commands to curl/post recipes
-    * [EWOK-51] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-51
-    * [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/f7a3d63d8a50ec959c334ff549bd832acaf14031
+
+- Created Backend Flowchart Diagram
+    - [EWOK-49] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-49
+    - [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/a5822bc87a4158dbf853c9452ad930b2ee395c04
+- Created Frontend Flowchart Diagram
+    - [EWOK-50] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-50
+    - [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-50-frontend-flowchart
+- Added Dynamic Recipe List Manipulation + Random Recipe Button 
+    - [EWOK-10] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-10
+    - [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/commits/56614e3bb2de9fb1fa84119a88e24c05051ef7f0
+- Scraped 301 Recipes from online API to JSON 
+- Created REST API for commands to curl/post recipes
+    - [EWOK-51] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-51
+    - [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/f7a3d63d8a50ec959c334ff549bd832acaf14031
 
 **Aaron:** "Provided backend objects and Spring Boot API to interact with them."
-* Update pantry data from ingredient input
-    * [EWOK-42](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-42)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-42-update-pantry-data-from-ingredient-input)
-* Create data structure for storing favorited recipes
-    * [EWOK-46](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-46)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-46-create-data-structure-for-storin)
-* Create user object in backend
-    * [EWOK-47](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-47)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-47-create-user-object-in-backend)
-* Setup Spoonacular API calls
-    * [EWOK-54](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-54)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-54-setup-spoonacular-api-calls)
-* Create pantry API for frontend to work with backend
-    * [EWOK-58](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-58)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-58-create-pantry-api-for-frontend-to-work-with-backend)
+
+- Update pantry data from ingredient input
+    - [EWOK-42](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-42)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-42-update-pantry-data-from-ingredient-input)
+- Create data structure for storing favorited recipes
+    - [EWOK-46](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-46)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-46-create-data-structure-for-storin)
+- Create user object in backend
+    - [EWOK-47](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-47)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-47-create-user-object-in-backend)
+- Setup Spoonacular API calls
+    - [EWOK-54](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-54)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-54-setup-spoonacular-api-calls)
+- Create pantry API for frontend to work with backend
+    - [EWOK-58](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-58)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-58-create-pantry-api-for-frontend-to-work-with-backend)
 
 **Jeremiah:** "Implemented Functionality of Pantry Management UI"
-* Create button and input field for ingredient addition. Connect it to the ingredient list UI.
-    * [EWOK-1](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-1)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-1_IngredientInputUI)
-* Parse ingredient input to handle multiple ingredients at once in different formats
-    * [EWOK-41](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-41)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-41-add-multi-ingredient-input)
-* Create button to remove ingredients from pantry
-    * [EWOK-6](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-6)
-    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-6-create-remove-ingredient-input)
+
+- Create button and input field for ingredient addition. Connect it to the ingredient list UI.
+    - [EWOK-1](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-1)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-1_IngredientInputUI)
+- Parse ingredient input to handle multiple ingredients at once in different formats
+    - [EWOK-41](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-41)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-41-add-multi-ingredient-input)
+- Create button to remove ingredients from pantry
+    - [EWOK-6](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-6)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-6-create-remove-ingredient-input)
+    
+**Dylan:** "Worked on API connections through Spring Boot & Spoonacular"
+
+- Set up database connection
+    - [EWOK-48](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-48)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-48-set-up-database-connection)
+- Set up Spring Application on backend
+    - [EWOK-4](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-4)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-4-set-up-spring-application-on-back)
+- Cache Recipes in db
+    - [EWOK-56](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-56)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-56-cache-recipes-in-db)
+- Create Objects to store returned API information
+    - [EWOK-53](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-53)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-53-create-objects-to-store-returned)
+- Research OAuth 2 Spring integration
+    - [EWOK-52](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-52)
+- Add API connections for frontend to search recipes
+    - [EWOK-57](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-57)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-57-add-api-connections-for-frontend)
 
 ## Project Status
 Project is: _in progress_

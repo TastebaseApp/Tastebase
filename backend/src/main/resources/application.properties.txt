@@ -1,0 +1,4 @@
+DB_URL=db.dylanpriebe.cc:3306/tastebase
+DB_USER=tastebase
+DB_PASSWORD=
+SPN_KEY=

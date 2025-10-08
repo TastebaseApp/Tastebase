@@ -92,9 +92,7 @@ This feature gives the user the ability to list the required ingredients necessa
     * [EWOK-24](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-24)
     * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/branch/EWOK-24_FavoritesPageUI)
 
-
-## **Russell:** "Created and Tested Frontend and Backend Functionalities"
-## Contributions
+**Russell:** "Created and Tested Frontend and Backend Functionalities"
 * Created Backend Flowchart Diagram
     * [EWOK-49] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-49
     * [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/a5822bc87a4158dbf853c9452ad930b2ee395c04
@@ -109,6 +107,22 @@ This feature gives the user the ability to list the required ingredients necessa
     * [EWOK-51] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-51
     * [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/f7a3d63d8a50ec959c334ff549bd832acaf14031
 
+**Aaron:** "Provided backend objects and Spring Boot API to interact with them."
+* Update pantry data from ingredient input
+    * [EWOK-42](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-42)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-42-update-pantry-data-from-ingredient-input)
+* Create data structure for storing favorited recipes
+    * [EWOK-46](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-46)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-46-create-data-structure-for-storin)
+* Create user object in backend
+    * [EWOK-47](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-47)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-47-create-user-object-in-backend)
+* Setup Spoonacular API calls
+    * [EWOK-54](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-54)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-54-setup-spoonacular-api-calls)
+* Create pantry API for frontend to work with backend
+    * [EWOK-58](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-58)
+    * [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-58-create-pantry-api-for-frontend-to-work-with-backend)
 
 ## Project Status
 Project is: _in progress_

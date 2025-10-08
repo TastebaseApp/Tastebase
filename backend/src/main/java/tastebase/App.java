@@ -26,6 +26,7 @@ public class App {
             SQLConnector.executeQuery("SELECT * FROM test");
         } catch (SQLException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+            throw new Exception("Failed to connect to database. Check your configuration.");
         }
         System.out.println("Database connection established.");
 

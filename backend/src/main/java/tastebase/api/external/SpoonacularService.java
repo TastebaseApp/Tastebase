@@ -22,7 +22,6 @@ public class SpoonacularService {
         baseUrl = "https://api.spoonacular.com/";
     }
 
-    //TODO: fix
     public Recipe getRecipe(int id) {
         String url = baseUrl + "recipes/" + id + "/information?includeNutrition=false?apiKey=" + apiKey;
 

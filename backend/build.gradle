@@ -14,8 +14,12 @@ repositories {
 
 dependencies {
     implementation 'org.apache.groovy:groovy:5.0.0'
+
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.5.0'
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+
     implementation 'com.google.code.gson:gson:2.13.2'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

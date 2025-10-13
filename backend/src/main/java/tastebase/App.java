@@ -2,11 +2,8 @@ package tastebase;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.RestController;
-import tastebase.api.PantryHandler;
-import tastebase.api.SpoonacularService;
+import tastebase.api.external.SpoonacularService;
 import tastebase.database.SQLConnector;
-import tastebase.obj.Recipe;
 
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -16,7 +13,6 @@ import java.util.logging.Logger;
 public class App {
 
     private static SpoonacularService spoonacularService;
-    private static PantryHandler pantryHandler;
 
     public static void main(String[] args) throws Exception {
         System.out.println("Starting app.");
@@ -33,14 +29,9 @@ public class App {
         System.out.println("Starting Spring API");
         SpringApplication.run(App.class, args);
 
-        spoonacularService = new SpoonacularService();
-        pantryHandler = new PantryHandler();
-    }
+        spoonacularService = new SpoonacularService();}
 
     public static SpoonacularService getSpoonacularService() {
         return spoonacularService;
-    }
-    public static PantryHandler getPantryHandler() {
-        return pantryHandler;
     }
 }

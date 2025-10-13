@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import tastebase.App;
 import tastebase.api.service.PantryService;
+import tastebase.obj.Item;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/pantry/")
@@ -20,8 +23,8 @@ public class PantryController {
     // Pantry API
     @GetMapping("/items")
     @Operation(summary = "Get pantry items", description = "Returns a json list of all the pantry items.")
-    public String getPantryItems() {
-        return pantryService.getJsonItems().toString();
+    public List<Item> getPantryItems() {
+        return pantryService.getItems();
     }
 
     @PutMapping("/add")

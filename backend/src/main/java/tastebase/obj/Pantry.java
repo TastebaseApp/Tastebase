@@ -53,6 +53,10 @@ public class Pantry {
         return gson.toJsonTree(this.pantryItems).getAsJsonArray();
     }
 
+    public List<Item> getItems() {
+        return pantryItems;
+    }
+
     public void setPantryID(int newID) {
         this.pantryID = newID;
     }

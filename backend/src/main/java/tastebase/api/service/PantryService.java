@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import tastebase.obj.Item;
 import tastebase.obj.Pantry;
 
+import java.util.List;
+
 @Service
 public class PantryService {
     // Temporarily hold everything in shared pantry.
@@ -18,7 +20,7 @@ public class PantryService {
         return pantry.removeItem(id);
     }
 
-    public JsonArray getJsonItems() {
-        return pantry.getJsonItems();
+    public List<Item> getItems() {
+        return pantry.getItems();
     }
 }

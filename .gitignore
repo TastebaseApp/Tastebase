@@ -3,6 +3,8 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
+backend/.env
+
 # Node artifact files
 node_modules/
 dist/
@@ -48,3 +50,15 @@ Thumbs.db
 *.mov
 *.wmv
 
+# Env
+backend/src/main/.env
+*.properties
+
+# Gradle
+/backend/gradlew
+/backend/gradlew.bat
+/backend/build/
+/backend/.gradle/
+
+# Java Version
+/backend/.jdk/

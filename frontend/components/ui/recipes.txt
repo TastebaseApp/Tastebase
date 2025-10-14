@@ -1,0 +1,44 @@
+```json
+[
+  {
+    "id": 1,
+    "title": "Pancakes",
+    "summary": "A delicious breakfast recipe.",
+    "ingredients": [
+      { "itemName": "Flour", "amount": { "amount": 2, "unit": "cups" } },
+      { "itemName": "Milk", "amount": { "amount": 1.5, "unit": "cups" } },
+      { "itemName": "Egg", "amount": { "amount": 1, "unit": "large" } }
+    ],
+    "instructions": "Mix and cook.",
+    "servings": 4,
+    "readyInMinutes": 10
+  },
+  {
+    "id": 2,
+    "title": "Spaghetti",
+    "summary": "A classic pasta dish.",
+    "ingredients": [
+      { "itemName": "Spaghetti", "amount": { "amount": 1, "unit": "lbs" } },
+      { "itemName": "Tomato Sauce", "amount": { "amount": 1, "unit": "cups" } }
+    ],
+    "instructions": "Boil and mix.",
+    "servings": 4,
+    "readyInMinutes": 15
+  },
+  {
+    "id": 3,
+    "title": "Salad",
+    "summary": "A healthy green salad.",
+    "ingredients": [
+      { "itemName": "Lettuce", "amount": { "amount": 1, "unit": "head" } },
+      { "itemName": "Tomato", "amount": { "amount": 2, "unit": "medium" } }
+    ],
+    "instructions": "Chop and mix.",
+    "servings": 2,
+    "readyInMinutes": 5
+  }
+]
+
+// This file contains a list of example recipes in JSON format.
+// Each recipe includes details such as title, summary, ingredients, instructions, servings, and preparation time.
+```

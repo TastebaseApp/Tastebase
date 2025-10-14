@@ -1,19 +1,16 @@
-package tastebase.api;
+package tastebase.api.external;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import tastebase.Config;
 import tastebase.obj.Recipe;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SpoonacularService {
 
@@ -25,7 +22,6 @@ public class SpoonacularService {
         baseUrl = "https://api.spoonacular.com/";
     }
 
-    //TODO: fix
     public Recipe getRecipe(int id) {
         String url = baseUrl + "recipes/" + id + "/information?includeNutrition=false?apiKey=" + apiKey;
 

@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 
 import java.net.http.HttpResponse;
 
+// TODO: Turn Recipe into a class that holds the fullRecipe json so the API can show the Schema.
+// Just grab everything of use from full recipe json and add private variables with it.
 public final class Recipe {
 
     private int id;

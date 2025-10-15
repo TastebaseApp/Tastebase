@@ -1,3 +1,5 @@
+## Debug Mode
+debug=true
 ## Database Properties
 DB_URL=db.dylanpriebe.cc:3306/tastebase
 DB_USER=tastebase

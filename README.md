@@ -163,11 +163,14 @@ This feature gives the user the ability to list the required ingredients necessa
 ## Sprint 1 (October 13 - October 24)
 ### Contributions
 
-**Heston:** "Added JSON parsing file to support frontend/backend connection."
+**Heston:** "Added JSON parsing files to support frontend/backend connections."
 
 - Create JSON Ingredient Parser
     - [EWOK-68](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-68)
     - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-68-create-json-ingredient-parser)
+- Create JSON Recipe Parser
+    - [EWOK-70](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-70)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-70-create-json-recipe-parser)
 
 ## Project Status
 Project is: _in progress_

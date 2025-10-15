@@ -29,12 +29,13 @@ public class PantryController {
 
     @PutMapping("/add")
     @Operation(summary = "Add an item", description = "Add an individual item to the pantry.")
-    public Boolean addPantryItem(@RequestParam int id,
-                                 @RequestParam String name,
-                                 @RequestParam double amount,
-                                 @RequestParam String unit
-    ) {
-        return pantryService.addItem(id, name, amount, unit);
+    public Boolean addPantryItem(@RequestBody Item item) {
+        return pantryService.addItem(
+                item.getItemID(),
+                item.getItemName(),
+                item.getAmount().getAmount(),
+                item.getAmount().getUnit()
+        );
         // update db logic next
     }
 

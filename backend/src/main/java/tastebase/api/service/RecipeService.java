@@ -6,18 +6,22 @@ import tastebase.App;
 import tastebase.database.SQLConnector;
 import tastebase.obj.Recipe;
 
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 @Service
 public class RecipeService {
     public Recipe getRandomRecipe() {
         Recipe recipe = App.getSpoonacularService().getRandomRecipe();
-        SQLConnector.saveRecipe(recipe);
+        saveRecipe(recipe);
         return recipe;
     }
 
     public Recipe getRecipeByID(int id) {
-        if (SQLConnector.hasRecipe(id)) return SQLConnector.getRecipe(id);
+        if (hasRecipe(id)) return getRecipe(id);
         Recipe recipe = App.getSpoonacularService().getRecipe(id);
-        SQLConnector.saveRecipe(recipe);
+        saveRecipe(recipe);
         return recipe;
     }
 
@@ -27,5 +31,45 @@ public class RecipeService {
             results.add(recipe);
         }
         return results;
+    }
+
+    public static Recipe getRecipe(int id) {
+        String statement = "SELECT * FROM recipes WHERE ID = " + id;
+        try {
+            ResultSet rs = SQLConnector.executeQuery(statement);
+            if (rs.next()) {
+                String fullRecipe = rs.getString("FullRecipe");
+                return new Recipe(com.google.gson.JsonParser.parseString(fullRecipe).getAsJsonObject());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void saveRecipe(Recipe recipe) {
+        String statement = "INSERT INTO recipes (ID, Title, FullRecipe) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = SQLConnector.getConnection().prepareStatement(statement)) {
+            ps.setInt(1, recipe.getId());
+            ps.setString(2, recipe.getTitle());
+            ps.setString(3, recipe.getFullRecipe().toString());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean hasRecipe(int id) {
+        String statement = "SELECT * FROM recipes WHERE ID = " + id;
+
+        try {
+            ResultSet rs = SQLConnector.executeQuery(statement);
+            if (rs.next()) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

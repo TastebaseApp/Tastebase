@@ -15,7 +15,8 @@ import java.io.IOException;
 @RestController
 public class HomeController {
     @GetMapping("/")
-    public String redirectToSwagger() {
+    public String redirectToSwagger(HttpServletResponse response) throws IOException {
+        response.sendRedirect("/swagger-ui.html");
         return "redirect:/swagger-ui.html";
     }
 

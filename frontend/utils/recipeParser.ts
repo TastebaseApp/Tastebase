@@ -31,13 +31,13 @@ export interface RecipeParserConfig {
 }
 
 /**
- * Parses backend recipes JSON and converts to frontend Recipe format
- * @param jsonData - The backend recipes JSON response
+ * Parses backend recipes JSON array and converts to frontend Recipe format
+ * @param jsonData - The backend recipes JSON array response
  * @param config - Optional configuration for parsing behavior
  * @returns Array of Recipe objects compatible with frontend types
  */
 export function parseRecipes(
-  jsonData: BackendRecipesResponse | string,
+  jsonData: BackendRecipe[] | string,
   config: RecipeParserConfig = {}
 ): Recipe[] {
   const {
@@ -45,15 +45,15 @@ export function parseRecipes(
   } = config;
 
   // Parse JSON string if needed
-  const data: BackendRecipesResponse = typeof jsonData === 'string' 
+  const data: BackendRecipe[] = typeof jsonData === 'string' 
     ? JSON.parse(jsonData) 
     : jsonData;
 
-  if (!data.results || !Array.isArray(data.results)) {
-    throw new Error('Invalid recipes data: expected array of results');
+  if (!Array.isArray(data)) {
+    throw new Error('Invalid recipes data: expected array of recipes');
   }
 
-  return data.results.map((recipe, index) => {
+  return data.map((recipe, index) => {
     // Validate recipe structure
     if (!recipe.id || !recipe.title) {
       throw new Error(`Invalid recipe at index ${index}: missing id or title`);
@@ -141,7 +141,7 @@ export function parseSingleRecipe(
 }
 
 /**
- * Validates that a JSON string or object matches the expected backend format
+ * Validates that a JSON string or object matches the expected backend JsonArray format
  * @param data - JSON string or object to validate
  * @returns true if valid, throws error if invalid
  */
@@ -149,29 +149,12 @@ export function validateRecipesFormat(data: any): boolean {
   try {
     const parsed = typeof data === 'string' ? JSON.parse(data) : data;
     
-    if (!parsed || typeof parsed !== 'object') {
-      throw new Error('Data must be an object');
-    }
-
-    if (!parsed.results || !Array.isArray(parsed.results)) {
-      throw new Error('Data must contain a "results" array');
-    }
-
-    // Validate pagination fields
-    if (typeof parsed.offset !== 'number') {
-      throw new Error('Data must have a numeric "offset" field');
-    }
-
-    if (typeof parsed.number !== 'number') {
-      throw new Error('Data must have a numeric "number" field');
-    }
-
-    if (typeof parsed.totalResults !== 'number') {
-      throw new Error('Data must have a numeric "totalResults" field');
+    if (!Array.isArray(parsed)) {
+      throw new Error('Data must be an array of recipes');
     }
 
     // Validate each recipe
-    parsed.results.forEach((recipe: any, index: number) => {
+    parsed.forEach((recipe: any, index: number) => {
       if (!recipe.id || typeof recipe.id !== 'number') {
         throw new Error(`Recipe at index ${index} must have a valid numeric "id"`);
       }

@@ -22,7 +22,7 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setError(undefined);
 
     try {
-      const list = await recipeService.listRecipes();
+      const list = await recipeService.searchRecipes();
       setRecipes(list);
     } catch (e: any) {
       setError(e?.message ?? 'Failed to load');

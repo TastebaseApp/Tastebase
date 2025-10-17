@@ -26,7 +26,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .antMatchers("/home", "/api/pantry/**").authenticated()
+                                .antMatchers("/home").authenticated()
                                 .anyRequest().permitAll()
                 )
                 .cors().and()

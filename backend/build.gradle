@@ -52,3 +52,54 @@ jar {
         )
     }
 }
+
+// Bitbucket Pipelines
+def templateFile = file('src/main/resources/application.properties.txt')
+def outputDir = file("$buildDir/generated-resources")
+def outputFile = file("$outputDir/application.properties")
+
+tasks.register("generateProperties") {
+    description = 'Generates application.properties from template using environment variables'
+    group = 'build setup'
+
+    inputs.file(templateFile)
+    outputs.file(outputFile)
+
+    doLast {
+        if (templateFile == null) {
+            throw new GradleException("Template file not found: ${templateFile}")
+        }
+
+        def content = templateFile.text
+
+        def replaced = content.replaceAll(/\$\{(\w+)\}/) { fullMatch, varName ->
+            def val = System.getenv(varName)
+            return (val != null) ? val : ""
+        }
+
+         def unresolved = (replaced =~ /\$\{\w+}/)
+         if (unresolved) {
+             throw new GradleException("Missing env vars for placeholders: ${ (replaced =~ /\$\{(\w+)\}/).collect{ it[1] }.unique() }")
+         }
+
+        outputDir.mkdirs()
+        outputFile.text = replaced.toString()
+    }
+}
+
+bootJar {
+    println "USE_ENV = ${System.getenv('USE_ENV')}"
+
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    if (System.getenv('USE_ENV') == 'true') {
+        dependsOn tasks.named("generateProperties")
+        from (outputDir) {
+            include "application.properties"
+            into "BOOT-INF/classes"
+        }
+        archiveFileName = "tastebase.jar"
+    } else {
+        archiveFileName = "app-local.jar"
+    }
+}

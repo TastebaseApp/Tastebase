@@ -11,8 +11,8 @@ import tastebase.obj.Item;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/api/pantry/")
+@RestController
+@RequestMapping("/api/pantry")
 public class PantryController {
     private final PantryService pantryService;
 

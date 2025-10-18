@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useLocalSearchParams, router } from 'expo-router';
-import { StyleSheet, ScrollView } from 'react-native';
+import { useLocalSearchParams, Stack } from 'expo-router';
+import { StyleSheet, ScrollView, Image, Dimensions } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
@@ -12,10 +12,13 @@ export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colorScheme = useColorScheme() || 'light';
   const { getRecipeById } = useRecipes();
+  const screenWidth = Dimensions.get('window').width;
   
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [imageHeight, setImageHeight] = useState<number | null>(null);
 
   useEffect(() => {
     const loadRecipe = async () => {
@@ -40,6 +43,15 @@ export default function RecipeDetailScreen() {
 
     loadRecipe();
   }, [id, getRecipeById]);
+
+  useEffect(() => {
+    if (recipe?.image && screenWidth) {
+      Image.getSize(recipe.image, (width, height) => {
+        const aspectRatio = width / height;
+        setImageHeight(screenWidth / aspectRatio);
+      });
+    }
+  }, [recipe?.image, screenWidth]);
 
   if (loading) {
     return (
@@ -66,13 +78,45 @@ export default function RecipeDetailScreen() {
   }
 
   return (
-    <ScrollView style={styles.scrollView}>
-      <ThemedView style={[styles.container, { borderColor: Colors[colorScheme].tint }]}>
-        <ThemedText type="title" style={styles.title}>
-          {recipe.title}
-        </ThemedText>
-      </ThemedView>
-    </ScrollView>
+    <>
+      <Stack.Screen 
+        options={{ 
+          title: '',
+          headerBackTitle: '',
+        }} 
+      />
+      <ScrollView style={styles.scrollView}>
+        <ThemedView style={styles.container}>
+          {/* Recipe Image */}
+          {recipe.image && (
+            <Image
+              source={{ uri: recipe.image }}
+              style={[styles.recipeImage, { width: screenWidth, height: imageHeight }]}
+              resizeMode="cover"
+            />
+          )}
+          
+          {/* Recipe Title */}
+          <ThemedText type="title" style={styles.title}>
+            {recipe.title}
+          </ThemedText>
+          
+          {/* Cooking Time */}
+          {recipe.readyInMinutes && (
+            <ThemedText type="subtitle" style={styles.cookingTime}>
+              Ready in {recipe.readyInMinutes} minutes
+            </ThemedText>
+          )}
+          
+          {/* Recipe Description/Summary */}
+          {recipe.summary && (
+            <ThemedText type="default" style={styles.description}>
+              {recipe.summary}
+            </ThemedText>
+          )}
+        </ThemedView>
+      </ScrollView>
+    </>
   );
 }
 
@@ -82,13 +126,29 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    margin: 20,
-    padding: 20,
-    borderRadius: 8,
-    borderWidth: 1,
+  },
+  recipeImage: {
+    backgroundColor: '#f0f0f0', // Fallback color if image fails to load
   },
   title: {
-    textAlign: 'center',
+    textAlign: 'left',
+    marginHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+  },
+  cookingTime: {
+    textAlign: 'left',
+    marginHorizontal: 20,
     marginBottom: 20,
+    paddingHorizontal: 10,
+    fontStyle: 'italic',
+    color: '#666',
+  },
+  description: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    lineHeight: 22,
   },
 });

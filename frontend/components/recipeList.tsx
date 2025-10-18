@@ -36,7 +36,6 @@ export default function RecipeList() {
           <Recipe 
             key={index} 
             recipe={recipe} 
-            onPress={() => {console.log('Recipe', recipe.id, ' pressed: ', recipe.title)}} 
           />
         ))
       : 

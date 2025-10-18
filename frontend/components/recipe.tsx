@@ -3,19 +3,29 @@ import { ThemedText } from "./themed-text";
 import { Colors } from "../constants/theme";
 import { Recipe as RecipeType } from "../types/pantry";
 import { Pressable, StyleSheet, useColorScheme } from "react-native";
+import { router } from "expo-router";
 
 type RecipeProps = {
   recipe: RecipeType;
-  onPress: () => void;
+  onPress?: () => void;
 };
 
 export default function Recipe({ recipe, onPress }: RecipeProps) {
   const colorScheme = useColorScheme() || 'light';
 
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+    } else {
+      // Default behavior: navigate to recipe detail
+      router.push(`/recipe/${recipe.id}` as any);
+    }
+  };
+
   return (
     <Pressable 
       style={[styles.container, { borderColor: Colors[colorScheme].tint }]} 
-      onPress={() => {onPress()}}>
+      onPress={handlePress}>
       <ThemedText type="subtitle" style={[styles.title, { borderColor: Colors[colorScheme].tint }]}>
         {recipe.title}
       </ThemedText>

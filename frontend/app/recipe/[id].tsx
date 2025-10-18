@@ -55,16 +55,25 @@ export default function RecipeDetailScreen() {
 
   if (loading) {
     return (
-      <ThemedView style={[styles.container, { borderColor: Colors[colorScheme].tint }]}>
-        <ThemedText type="subtitle">Loading recipe...</ThemedText>
-      </ThemedView>
+      <>
+        <Stack.Screen 
+          options={{ 
+            title: '',
+            headerBackTitle: '',
+          }} 
+        />
+        <ThemedView style={[styles.container, { borderColor: Colors[colorScheme].tint }]}>
+          <ThemedText type="subtitle" style={styles.errorText}>Loading recipe details...</ThemedText>
+        </ThemedView>
+      </>
     );
   }
 
   if (error) {
     return (
       <ThemedView style={[styles.container, { borderColor: Colors[colorScheme].tint }]}>
-        <ThemedText type="subtitle">Error: {error}</ThemedText>
+        <ThemedText type="subtitle" style={styles.errorText}>Sorry, something went wrong.</ThemedText>
+        <ThemedText type="subtitle" style={styles.errorText}>Please go back and try again.</ThemedText>
       </ThemedView>
     );
   }
@@ -72,7 +81,8 @@ export default function RecipeDetailScreen() {
   if (!recipe) {
     return (
       <ThemedView style={[styles.container, { borderColor: Colors[colorScheme].tint }]}>
-        <ThemedText type="subtitle">Recipe not found</ThemedText>
+        <ThemedText type="subtitle" style={styles.errorText}>Sorry, we couldn't find that recipe.</ThemedText>
+        <ThemedText type="subtitle" style={styles.errorText}>Please go back and try a different recipe.</ThemedText>
       </ThemedView>
     );
   }
@@ -150,5 +160,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 10,
     lineHeight: 22,
+  },
+  errorText: {
+    textAlign: 'center',
+    marginHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 0,
+    paddingHorizontal: 10,
   },
 });

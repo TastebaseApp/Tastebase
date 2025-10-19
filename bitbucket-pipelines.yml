@@ -29,12 +29,6 @@ pipelines:
          script:
           - echo "Deploying JAR to staging server..."
 
-          # Setup SSH
-          - mkdir -p ~/.ssh
-          - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          - chmod 600 ~/.ssh/id_rsa
-          - ssh-keyscan -H $STAGING_SERVER >> ~/.ssh/known_hosts
-
           # Copy JAR to server
           - scp build/libs/*.jar $STAGING_USER@$STAGING_SERVER:/home/tastebase/tastebase.jar
 

@@ -39,7 +39,7 @@ pipelines:
           - scp build/libs/*.jar $STAGING_USER@$STAGING_SERVER:/home/tastebase/tastebase.jar
 
           # Stop → replace → start service
-          - ssh $STAGING_USER@$STAGING_SERVER << 'EOF'
+          - ssh $STAGING_USER@$STAGING_SERVER << EOF
             echo "Stopping tastebase service..."
             sudo systemctl stop tastebase
             

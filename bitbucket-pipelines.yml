@@ -30,7 +30,7 @@ pipelines:
           - echo "Deploying JAR to staging server..."
 
           # Copy JAR to server
-          - scp build/libs/*.jar $STAGING_USER@$STAGING_SERVER:/home/tastebase/tastebase.jar
+          - scp backend/build/libs/*.jar $STAGING_USER@$STAGING_SERVER:/home/tastebase/tastebase.jar
 
           # Stop → replace → start service
           - ssh $STAGING_USER@$STAGING_SERVER << EOF

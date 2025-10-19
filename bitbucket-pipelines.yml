@@ -32,16 +32,8 @@ pipelines:
           # Copy the JAR to a temporary location the user can write to
           - scp backend/build/libs/*.jar $STAGING_USER@$STAGING_SERVER:/tmp/tastebase.jar
 
-          # Move JAR to target folder and restart service
-          - ssh $STAGING_USER@$STAGING_SERVER << EOF
-            echo "Moving JAR to /home/tastebase..."
-            sudo mv /tmp/tastebase.jar /home/tastebase/tastebase.jar
-            
-            echo "Stopping tastebase service..."
-            sudo systemctl stop tastebase
-            
-            echo "Starting tastebase service..."
-            sudo systemctl start tastebase
-            
-            echo "Deployment complete."
-            EOF
+          # Copy deploy script to server
+          - scp deploy.sh $STAGING_USER@$STAGING_SERVER:/tmp/deploy.sh
+
+          # Run deploy script
+          - ssh $STAGING_USER@$STAGING_SERVER "bash /tmp/deploy.sh"

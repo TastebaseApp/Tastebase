@@ -3,7 +3,7 @@ image: gradle:8.10.2-jdk11
 
 pipelines:
   branches:
-    EWOK-86-automate-gradle-jar-deployment:
+    dev:
       - step:
           name: Build Spring Boot App
           caches:

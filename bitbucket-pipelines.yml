@@ -17,7 +17,7 @@ pipelines:
             - export GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
 
             # Build the JAR
-            - ./gradlew clean bootJar
+            - gradle clean bootJar
 
           artifacts:
             - build/libs/*.jar

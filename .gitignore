@@ -55,8 +55,6 @@ backend/src/main/.env
 *.properties
 
 # Gradle
-/backend/gradlew
-/backend/gradlew.bat
 /backend/build/
 /backend/.gradle/
 

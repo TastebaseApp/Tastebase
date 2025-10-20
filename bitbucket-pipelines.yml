@@ -1,0 +1,39 @@
+# bitbucket-pipelines.yml
+image: gradle:8.10.2-jdk11
+
+pipelines:
+  branches:
+    dev:
+      - step:
+          name: Build Spring Boot App
+          caches:
+            - gradle
+          script:
+            - cd backend
+            # Export secrets from repository variables
+            - export USE_ENV=true
+            - export DB_PASSWORD=${DB_PASSWORD}
+            - export DB_URL=${DB_URL}
+            - export SPN_KEY=${SPN_KEY}
+            - export GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+
+            # Build the JAR
+            - gradle clean bootJar
+
+          artifacts:
+            - backend/build/libs/*.jar
+
+      - step:
+         name: Deploy to Staging
+         deployment: staging
+         script:
+          - echo "Deploying JAR to staging server..."
+
+          # Copy the JAR to a temporary location the user can write to
+          - scp backend/build/libs/*.jar $STAGING_USER@$STAGING_SERVER:/tmp/tastebase.jar
+
+          # Copy deploy script to server
+          - scp deploy.sh $STAGING_USER@$STAGING_SERVER:/tmp/deploy.sh
+
+          # Run deploy script
+          - ssh $STAGING_USER@$STAGING_SERVER "bash /tmp/deploy.sh"

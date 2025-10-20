@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import pantryService from '../services/pantryService';
 import { Item } from '../types/pantry';
+import pantryService from '../services/pantryService';
 
 type ContextShape = {
   items: Item[];

@@ -1,27 +1,25 @@
+import { StyleSheet, Modal } from 'react-native';
 import { useState } from 'react';
-import { StyleSheet } from 'react-native';
 
+import { ThemedView as ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { AddIngredientButton } from '@/components/ui/AddIngredientButton';
-import { AddIngredientModal, parseAndAddItems } from '@/components/ui/AddIngredientModal';
+import { AddIngredientModal } from '@/components/ui/AddIngredientModal';
+import { parseAndAddItems } from '@/components/ui/AddIngredientModal';
 import IngredientList from '@/components/ui/IngredientList';
 import { usePantry } from '@/context/PantryContext';
 
 
-// Main screen component for the Pantry tab
 export default function TabPantryScreen() {
-  const [showAdd, setShowAdd] = useState(false); // useState() Controls visibility
+  const [showAdd, setShowAdd] = useState(false);
   const { addItem } = usePantry();
 
-  // Wraps input parsing + pantry update
   const handleAdd = async (raw: string) => {
     const result = await parseAndAddItems(raw, addItem);
     setShowAdd(false);
     return result;
   };
 
-  // Render the pantry screen UI
   return (
     <ThemedView style={styles.container}>
         <ThemedText type="title" style={styles.header}>Pantry</ThemedText>
@@ -37,7 +35,6 @@ export default function TabPantryScreen() {
   );
 }
 
-// Styling definitions
 const styles = StyleSheet.create({
   container: {
     flex: 1,

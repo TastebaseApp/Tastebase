@@ -36,4 +36,11 @@ public class HomeController {
             return null;
         }
     }
+
+    @GetMapping("/templogin")
+    public String login(@AuthenticationPrincipal OAuth2User principal, Model model, HttpServletResponse response) throws IOException {
+        model.addAttribute("name", principal.getAttribute("name"));
+        response.sendRedirect("/");
+        return "login";
+    }
 }

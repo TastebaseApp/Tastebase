@@ -29,7 +29,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .antMatchers("/home").authenticated()
+                                .antMatchers("/home", "/templogin").authenticated()
                                 .anyRequest().permitAll()
                 )
                 .cors().and()

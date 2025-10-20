@@ -15,17 +15,19 @@ import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import tastebase.Config;
+import tastebase.api.service.UserService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService) throws Exception {
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
@@ -33,7 +35,18 @@ public class SecurityConfig {
                                 .anyRequest().permitAll()
                 )
                 .cors().and()
-                .oauth2Login(Customizer.withDefaults());
+                .oauth2Login(oauth -> {
+                    oauth.userInfoEndpoint(userInfo -> {
+                        userInfo.userService(userService);
+                    });
+                })
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessUrl("/")
+                );
         return http.build();
     }
 

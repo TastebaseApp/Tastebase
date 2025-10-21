@@ -32,11 +32,6 @@ public class HomeController {
     }
 
     @GetMapping("/whoami")
-    public ResponseEntity<?> whoAmI(Authentication authentication) {
-        return ResponseEntity.ok(authentication);
-    }
-
-    @GetMapping("/templogin")
     public User login(@AuthenticationPrincipal UserPrincipal principal, Model model, HttpServletResponse response) throws IOException {
         User user = principal.getUser();
         //response.sendRedirect("/");

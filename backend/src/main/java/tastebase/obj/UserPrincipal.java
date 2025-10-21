@@ -32,4 +32,8 @@ public class UserPrincipal implements OAuth2User {
     public String getName() {
         return user.getName();
     }
+
+    public User getUser() {
+        return user;
+    }
 }

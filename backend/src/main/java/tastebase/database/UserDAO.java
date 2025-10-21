@@ -26,14 +26,41 @@ public class UserDAO {
         return null;
     }
 
-    public static User create(User user) {
-        String query = "insert into users (provider, provider_id, name, email) values (?, ?, ?, ?, ?)";
+    public static User findByID(int id) {
+        String query = "select * from users where id = ?";
+
         try (Connection conn = SQLConnector.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return mapRow(rs);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
+    }
+
+    public static User upsert(User user) {
+        String query =
+                "INSERT INTO users (provider, provider_id, name, email) " +
+                        "VALUES (?, ?, ?, ?) " +
+                        "ON DUPLICATE KEY UPDATE " +
+                        "provider = VALUES(provider), " +
+                        "provider_id = VALUES(provider_id), " +
+                        "name = VALUES(name)";
+
+        try (Connection conn = SQLConnector.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+
             ps.setString(1, user.getProvider());
             ps.setString(2, user.getProviderID());
             ps.setString(3, user.getName());
             ps.setString(4, user.getEmail());
+
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();

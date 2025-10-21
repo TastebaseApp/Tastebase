@@ -16,6 +16,7 @@ import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import tastebase.Config;
+import tastebase.api.service.OIDCUserService;
 import tastebase.api.service.oAuthUserService;
 
 @Configuration
@@ -23,7 +24,7 @@ import tastebase.api.service.oAuthUserService;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, oAuthUserService userService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, oAuthUserService oAuthUserService, OIDCUserService oidcUserService) throws Exception {
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
@@ -33,7 +34,9 @@ public class SecurityConfig {
                 .cors().and()
                 .oauth2Login(oauth -> {
                     oauth.userInfoEndpoint(userInfo -> {
-                        userInfo.userService(userService);
+                        userInfo
+                                .userService(oAuthUserService)
+                                .oidcUserService(oidcUserService);
                     });
                 })
                 .logout(logout -> logout

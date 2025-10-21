@@ -21,11 +21,8 @@ public class oAuthUserService extends DefaultOAuth2UserService implements OAuth2
     @Override
     public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(request);
+        Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        return buildUserPrincipal(request, oAuth2User.getAttributes());
-    }
-
-    private UserPrincipal buildUserPrincipal(OAuth2UserRequest request, Map<String, Object> attributes) {
         String provider = request.getClientRegistration().getRegistrationId();
         String providerID = (String) attributes.get("sub");
         String email = (String) attributes.get("email");
@@ -38,7 +35,7 @@ public class oAuthUserService extends DefaultOAuth2UserService implements OAuth2
             user.setProviderID(providerID);
             user.setName(name);
             user.setProvider(provider);
-            UserDAO.create(user);
+            UserDAO.upsert(user);
         }
 
         return new UserPrincipal(user, attributes);

@@ -1,25 +1,26 @@
 package tastebase.api.service;
 
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Service;
 import tastebase.database.UserDAO;
 import tastebase.obj.User;
 import tastebase.obj.UserPrincipal;
 
 import java.util.Map;
 
+@Service
 public class OIDCUserService extends OidcUserService {
 
     @Override
-    public OIDCUserService loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(request);
+    public OidcUser loadUser(OidcUserRequest request) throws OAuth2AuthenticationException {
+        OidcUser oidcUser = super.loadUser(request);
+        Map<String,Object> attributes = oidcUser.getAttributes();
 
-        return buildUserPrincipal(request, oAuth2User.getAttributes());
-    }
-
-    private UserPrincipal buildUserPrincipal(OAuth2UserRequest request, Map<String, Object> attributes) {
         String provider = request.getClientRegistration().getRegistrationId();
         String providerID = (String) attributes.get("sub");
         String email = (String) attributes.get("email");
@@ -32,10 +33,9 @@ public class OIDCUserService extends OidcUserService {
             user.setProviderID(providerID);
             user.setName(name);
             user.setProvider(provider);
-            UserDAO.create(user);
+            UserDAO.upsert(user);
         }
 
-        return new UserPrincipal(user, attributes);
-
-
+        return new UserPrincipal(user, attributes, request.getIdToken(), oidcUser.getUserInfo());
     }
+}

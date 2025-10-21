@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.stereotype.Service;
 import tastebase.database.SQLConnector;
+import tastebase.App;
 import tastebase.obj.Item;
 import tastebase.obj.Pantry;
 
@@ -94,5 +95,13 @@ public class PantryService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public JsonArray searchIngredients(String query) {
+        JsonArray results = new JsonArray();
+        for (var ingredient : App.getSpoonacularService().searchIngredients(query)) {
+            results.add(ingredient);
+        }
+        return results;
     }
 }

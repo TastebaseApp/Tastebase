@@ -8,6 +8,7 @@ type ContextShape = {
   error?: string;
   refresh: () => Promise<void>;
   addRecipe: (recipe: Recipe) => void; // Added addRecipe to the context shape
+  getRecipeById: (id: number) => Promise<Recipe>; // Added getRecipeById to the context shape
 };
 
 const RecipeContext = createContext<ContextShape | undefined>(undefined);
@@ -22,7 +23,7 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setError(undefined);
 
     try {
-      const list = await recipeService.listRecipes();
+      const list = await recipeService.searchRecipes();
       setRecipes(list);
     } catch (e: any) {
       setError(e?.message ?? 'Failed to load');
@@ -40,8 +41,12 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     recipeService.addRecipe(recipe);
   };
 
+  const getRecipeById = async (id: number): Promise<Recipe> => {
+    return await recipeService.getRecipeById(id);
+  };
+
   return (
-    <RecipeContext.Provider value={{ recipes, loading, error, refresh: load, addRecipe }}>
+    <RecipeContext.Provider value={{ recipes, loading, error, refresh: load, addRecipe, getRecipeById }}>
       {children}
     </RecipeContext.Provider>
   );

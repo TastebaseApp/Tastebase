@@ -2,7 +2,6 @@ package tastebase.api.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -13,27 +12,48 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import tastebase.Config;
+import tastebase.api.service.OIDCUserService;
+import tastebase.api.service.oAuthUserService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            oAuthUserService oAuthUserService,
+            OIDCUserService oidcUserService,
+            OAuth2JwtSuccessHandler oAuth2JwtSuccessHandler,
+            JWTUtil jWTUtil) throws Exception {
+
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .antMatchers("/home").authenticated()
+                                .antMatchers("/home", "/whoami").authenticated()
                                 .anyRequest().permitAll()
                 )
                 .cors().and()
-                .oauth2Login(Customizer.withDefaults());
+                .oauth2Login(oauth -> {
+                    oauth.userInfoEndpoint(userInfo -> {
+                        userInfo
+                                .userService(oAuthUserService)
+                                .oidcUserService(oidcUserService);
+                    })
+                    .successHandler(oAuth2JwtSuccessHandler);
+                })
+                .addFilterBefore(new JwtAuthenticationFilter(jWTUtil), UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessUrl("/")
+                );
         return http.build();
     }
 

@@ -4,35 +4,61 @@ import java.util.HashSet;
 import java.util.UUID;
 
 public class User {
-    private UUID userId;
+    private int ID;
+    private String provider;
+    private String providerID;
+
     private String name;
     private String email;
+
     HashSet<Recipe> favorites;
 
-    public User(UUID userId, String name, String email) {
-        this.userId = userId;
+    public User() {
+        this.favorites = new HashSet<>();
+    }
+
+    public User(int ID, String name, String email) {
+        this.ID = ID;
         this.name = name;
         this.email = email;
         this.favorites = new HashSet<>();
     }
 
-    public User(UUID userId, String name, String email, HashSet<Recipe> favorites) {
-        this.userId = userId;
-        this.name = name;
-        this.email = email;
-        this.favorites = favorites;
+
+    public String getProvider() {
+        return provider;
     }
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public String getProviderID() {
+        return providerID;
+    }
+    public void setProviderID(String providerID) {
+        this.providerID = providerID;
+    }
+
 
     public String getName() {
         return name;
+    }
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
         return email;
     }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public UUID getUserId() {
-        return userId;
+    public int getID() {
+        return ID;
+    }
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public void addFavorite(Recipe favorite) {

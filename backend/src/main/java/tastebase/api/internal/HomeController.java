@@ -32,9 +32,8 @@ public class HomeController {
     }
 
     @GetMapping("/whoami")
-    public User login(@AuthenticationPrincipal UserPrincipal principal, Model model, HttpServletResponse response) throws IOException {
+    public User whoAmI(@AuthenticationPrincipal UserPrincipal principal, Model model, HttpServletResponse response) throws IOException {
         User user = principal.getUser();
-        //response.sendRedirect("/");
         return user;
     }
 }

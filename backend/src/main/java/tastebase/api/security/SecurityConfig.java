@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -24,7 +25,13 @@ import tastebase.api.service.oAuthUserService;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, oAuthUserService oAuthUserService, OIDCUserService oidcUserService) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            oAuthUserService oAuthUserService,
+            OIDCUserService oidcUserService,
+            OAuth2JwtSuccessHandler oAuth2JwtSuccessHandler,
+            JWTUtil jWTUtil) throws Exception {
+
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
@@ -37,12 +44,13 @@ public class SecurityConfig {
                         userInfo
                                 .userService(oAuthUserService)
                                 .oidcUserService(oidcUserService);
-                    });
+                    })
+                    .successHandler(oAuth2JwtSuccessHandler);
                 })
+                .addFilterBefore(new JwtAuthenticationFilter(jWTUtil), UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
-                        .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .logoutSuccessUrl("/")
                 );

@@ -7,7 +7,7 @@ public class Pantry {
     private int pantryID;
     private String pantryName;
 
-    private final List<Item> pantryItems;
+    private List<Item> pantryItems;
     
     public Pantry(int pantryID, String pantryName) {
         this.pantryID = pantryID;
@@ -56,5 +56,7 @@ public class Pantry {
     public void setName(String newName) {
         this.pantryName = newName;
     }
-
+    public void setItems(List<Item> newItems) {
+        this.pantryItems = newItems;
+    }
 }

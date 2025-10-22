@@ -1,8 +1,7 @@
-package tastebase.api.security;
+package tastebase.api.security.jwt;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -14,9 +13,9 @@ import java.util.Collections;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JWTUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-    public JwtAuthenticationFilter(JWTUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 

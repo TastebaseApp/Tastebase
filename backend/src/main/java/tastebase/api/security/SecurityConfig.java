@@ -17,8 +17,14 @@ import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import tastebase.Config;
+import tastebase.api.security.jwt.JwtAuthenticationFilter;
+import tastebase.api.security.jwt.JwtLogoutHandler;
+import tastebase.api.security.jwt.JwtUtil;
+import tastebase.api.security.jwt.OAuth2JwtSuccessHandler;
 import tastebase.api.service.OIDCUserService;
-import tastebase.api.service.oAuthUserService;
+import tastebase.api.service.OAuthUserService;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -27,18 +33,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            oAuthUserService oAuthUserService,
+            OAuthUserService oAuthUserService,
             OIDCUserService oidcUserService,
             OAuth2JwtSuccessHandler oAuth2JwtSuccessHandler,
-            JWTUtil jWTUtil) throws Exception {
+            JwtUtil jWTUtil,
+            JwtLogoutHandler jwtLogoutHandler) throws Exception {
 
         http
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .antMatchers("/home", "/whoami").authenticated()
+                                .antMatchers("/logout").authenticated()
                                 .anyRequest().permitAll()
                 )
                 .cors().and()
+                .csrf().disable()
                 .oauth2Login(oauth -> {
                     oauth.userInfoEndpoint(userInfo -> {
                         userInfo
@@ -50,9 +59,8 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(jWTUtil), UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
-                        .deleteCookies("JSESSIONID")
-                        .logoutSuccessUrl("/")
+                        .addLogoutHandler(jwtLogoutHandler)
+                        .logoutSuccessHandler((request, response, authentication) -> {})
                 );
         return http.build();
     }

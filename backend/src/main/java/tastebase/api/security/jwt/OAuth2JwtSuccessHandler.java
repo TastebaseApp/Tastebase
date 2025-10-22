@@ -1,4 +1,4 @@
-package tastebase.api.security;
+package tastebase.api.security.jwt;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -12,16 +12,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @Component
 public class OAuth2JwtSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JWTUtil jwtUtil;
+    private final JwtUtil jwtUtil;
     private final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
 
-    public OAuth2JwtSuccessHandler(JWTUtil jwtUtil) {
+    public OAuth2JwtSuccessHandler(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
@@ -43,7 +42,7 @@ public class OAuth2JwtSuccessHandler implements AuthenticationSuccessHandler {
         String redirectUri = (savedRequest != null) ? savedRequest.getRedirectUrl() : "/";
 
         String redirectWithToken = UriComponentsBuilder.fromUriString(redirectUri)
-                .queryParam("token", token)
+                .replaceQueryParam("token", token)
                 .build()
                 .toUriString();
 

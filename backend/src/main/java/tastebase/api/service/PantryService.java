@@ -16,8 +16,26 @@ public class PantryService {
     // Temporarily hold everything in shared pantry.
     private Pantry pantry = new Pantry(1, "Shared Pantry");
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
     public PantryService() {
-        initPantry();
+        if (!pantryExists(pantry.getPantryID())) {
+            initPantry();
+        }
+    }
+
+    private boolean pantryExists(int pantryId) {
+        String query = "SELECT COUNT(*) FROM pantries WHERE ID = ?";
+        try (PreparedStatement ps = SQLConnector.getConnection().prepareStatement(query)) {
+            ps.setInt(1, pantryId);
+            var rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public boolean addItem(int id, String name, double amount, String unit) {
@@ -29,14 +47,17 @@ public class PantryService {
     }
 
     public boolean removeItem(int id) {
-        return pantry.removeItem(id);
+        if (pantry.removeItem(id)) {
+            savePantry();
+            return true;
+        }
+        return false;
     }
 
     public List<Item> getItems() {
         return pantry.getItems();
     }
 
-    // This is so scuffed I need to figure out how to use Upsert
     private void initPantry() {
         String statement = "INSERT INTO pantries (ID, Name, Items) VALUES (?, ?, ?)";
         try (PreparedStatement ps = SQLConnector.getConnection().prepareStatement(statement)) {

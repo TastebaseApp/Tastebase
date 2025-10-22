@@ -1,5 +1,26 @@
 import { Recipe } from '../types/pantry';
 
+/**
+ * Removes HTML tags and links from text content
+ * @param html - HTML string to clean
+ * @returns Clean text without HTML tags
+ */
+function cleanHtml(html: string): string {
+  return html
+    // Remove HTML tags (including links)
+    .replace(/<[^>]*>/g, '')
+    // Decode common HTML entities
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    // Clean up extra whitespace
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 // Backend JSON types for recipes
 export interface BackendRecipe {
   id: number;
@@ -77,7 +98,7 @@ export function parseRecipes(
       }
       
       if (recipe.summary) {
-        parsedRecipe.summary = recipe.summary.trim();
+        parsedRecipe.summary = cleanHtml(recipe.summary.trim());
       }
       
       if (recipe.dishTypes && Array.isArray(recipe.dishTypes)) {
@@ -125,7 +146,7 @@ export function parseSingleRecipe(
     }
     
     if (recipe.summary) {
-      parsedRecipe.summary = recipe.summary.trim();
+      parsedRecipe.summary = cleanHtml(recipe.summary.trim());
     }
     
     if (recipe.dishTypes && Array.isArray(recipe.dishTypes)) {

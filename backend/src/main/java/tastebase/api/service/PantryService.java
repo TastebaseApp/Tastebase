@@ -1,5 +1,6 @@
 package tastebase.api.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import org.springframework.stereotype.Service;
 import tastebase.database.SQLConnector;
@@ -36,7 +37,9 @@ public class PantryService {
         try (PreparedStatement ps = SQLConnector.getConnection().prepareStatement(statement)) {
             ps.setInt(1, this.pantry.getPantryID());
             ps.setString(2, this.pantry.getPantryName());
-            ps.setString(3, this.pantry.getItems().toString());
+            ObjectMapper mapper = new ObjectMapper();
+            String itemsJson = mapper.writeValueAsString(this.pantry.getItems());
+            ps.setString(3, itemsJson);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

@@ -7,7 +7,9 @@ public class Item {
     private String itemName;
 
     private Quantity amount;
-    
+
+    public Item() {}
+
     public Item(int itemID, String itemName, double quantity, String unit) {
         this.itemID = itemID;
         this.itemName = itemName;
@@ -28,7 +30,7 @@ public class Item {
     public void setItemID(int newID) {
         this.itemID = newID;
     }
-    public void setName(String newName) {
+    public void setItemName(String newName) {
         this.itemName = newName;
     }
     public void setAmount(Quantity newAmount) {

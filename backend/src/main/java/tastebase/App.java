@@ -29,7 +29,8 @@ public class App {
         System.out.println("Starting Spring API");
         SpringApplication.run(App.class, args);
 
-        spoonacularService = new SpoonacularService();}
+        spoonacularService = new SpoonacularService();
+    }
 
     public static SpoonacularService getSpoonacularService() {
         return spoonacularService;

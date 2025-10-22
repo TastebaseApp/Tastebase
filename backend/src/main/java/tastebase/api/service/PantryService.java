@@ -16,6 +16,10 @@ public class PantryService {
     // Temporarily hold everything in shared pantry.
     private Pantry pantry = new Pantry(1, "Shared Pantry");
 
+    public PantryService() {
+        initPantry();
+    }
+
     public boolean addItem(int id, String name, double amount, String unit) {
         if (pantry.addItem(new Item(id, name, amount, unit))) {
             savePantry();
@@ -32,14 +36,28 @@ public class PantryService {
         return pantry.getItems();
     }
 
-    private void savePantry() {
+    // This is so scuffed I need to figure out how to use Upsert
+    private void initPantry() {
         String statement = "INSERT INTO pantries (ID, Name, Items) VALUES (?, ?, ?)";
         try (PreparedStatement ps = SQLConnector.getConnection().prepareStatement(statement)) {
             ps.setInt(1, this.pantry.getPantryID());
             ps.setString(2, this.pantry.getPantryName());
             ObjectMapper mapper = new ObjectMapper();
             String itemsJson = mapper.writeValueAsString(this.pantry.getItems());
-            ps.setString(3, itemsJson);
+            ps.setString(3, itemsJson); ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void savePantry() {
+        String statement = "UPDATE pantries SET Name = ?, Items = ? WHERE ID = ?";
+        try (PreparedStatement ps = SQLConnector.getConnection().prepareStatement(statement)) {
+            ps.setString(1, this.pantry.getPantryName());
+            ObjectMapper mapper = new ObjectMapper();
+            String itemsJson = mapper.writeValueAsString(this.pantry.getItems());
+            ps.setString(2, itemsJson);
+            ps.setInt(3, this.pantry.getPantryID()); // WHERE clause uses ID
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

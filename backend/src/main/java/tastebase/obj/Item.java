@@ -7,7 +7,9 @@ public class Item {
     private String itemName;
 
     private Quantity amount;
-    
+
+    public Item() {}
+
     public Item(int itemID, String itemName, double quantity, String unit) {
         this.itemID = itemID;
         this.itemName = itemName;

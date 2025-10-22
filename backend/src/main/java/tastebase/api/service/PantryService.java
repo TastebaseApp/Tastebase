@@ -25,17 +25,29 @@ public class PantryService {
     }
 
     private boolean pantryExists(int pantryId) {
-        String query = "SELECT COUNT(*) FROM pantries WHERE ID = ?";
-        try (PreparedStatement ps = SQLConnector.getConnection().prepareStatement(query)) {
+        String statement = "SELECT ID, Name, Items FROM pantries WHERE ID = ? LIMIT 1";
+        try (var conn = SQLConnector.getConnection(); var ps = conn.prepareStatement(statement)) {
             ps.setInt(1, pantryId);
-            var rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+            try (var rs = ps.executeQuery()) {
+                if (!rs.next()) return false;
+
+                // load our pantry's values from db
+                this.pantry.setPantryID(rs.getInt("ID"));
+                this.pantry.setName(rs.getString("Name"));
+                String itemsText = rs.getString("Items");
+                this.pantry.setItems(parseItems(itemsText));
+
+                return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
+    }
+    private java.util.List<Item> parseItems(String json) {
+        if (json == null || json.isBlank()) return new java.util.ArrayList<>();
+        var type = new com.google.gson.reflect.TypeToken<java.util.List<Item>>(){}.getType();
+        return new com.google.gson.Gson().fromJson(json, type);
     }
 
     public boolean addItem(int id, String name, double amount, String unit) {

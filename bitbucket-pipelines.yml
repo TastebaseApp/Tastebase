@@ -16,6 +16,7 @@ pipelines:
             - export DB_URL=${DB_URL}
             - export SPN_KEY=${SPN_KEY}
             - export GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+            - export JWT_SECRET=${JWT_SECRET}
 
             # Build the JAR
             - gradle clean bootJar

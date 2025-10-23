@@ -1,3 +1,6 @@
+Figma Design Differences:
+gaps between individual recipes should be higher
+
 ///////////////////////////
 Color Palette:
 Gradient: #f2b63d - #d46e33

@@ -1,0 +1,42 @@
+Figma Design Differences:
+gaps between individual recipes should be higher
+
+///////////////////////////
+Color Palette:
+Gradient: #f2b63d - #d46e33
+Black: #000000
+White: #FFFFFF
+Light Grey: #d9d9d9
+Grey: #8c8c8c
+///////////////////////////
+
+Border Radius : 15
+
+Header Text
+size: 24pt
+color: #000000
+font: Alata
+
+Button Text
+size: 24pt
+color: #FFFFFF
+font: Alata
+
+Header 2 Text
+size: 24pt
+color: #8c8c8c
+font: Alata
+
+Paragraph text
+size: 16pt
+color: #8c8c8c
+font: Inter
+
+Input text
+size: 16pt
+color: #000000
+font: Inter
+
+Input Area
+color: #d9d9d9
+

@@ -5,8 +5,13 @@ import { Colors } from "../constants/theme";
 import { StyleSheet, useColorScheme } from "react-native";
 import { useRecipes } from "@/context/RecipeContext";
 
-export default function RecipeList() {
-  const { recipes, loading, error } = useRecipes(); // Get recipes from RecipeContext
+interface RecipeListProps {
+  showFavorites?: boolean;
+}
+
+export default function RecipeList({ showFavorites = false }: RecipeListProps) {
+  const { recipes, favoriteRecipes, loading, error } = useRecipes(); // Get recipes from RecipeContext
+  const displayRecipes = showFavorites ? favoriteRecipes : recipes;
   const colorScheme = useColorScheme() || 'light';
 
   if (loading) {
@@ -31,8 +36,8 @@ export default function RecipeList() {
 
   return (
     <ThemedView style={[styles.container, { borderColor: Colors[colorScheme].tint }]}>
-      {(recipes.length > 0) ? 
-        recipes.map((recipe, index) => (
+      {(displayRecipes.length > 0) ? 
+        displayRecipes.map((recipe, index) => (
           <Recipe 
             key={index} 
             recipe={recipe} 
@@ -42,10 +47,10 @@ export default function RecipeList() {
       ( // Show message if recipe array is empty
         <ThemedView style={styles.emptyContainer}>
           <ThemedText type="subtitle" style={styles.emptyMessage}>
-            No recipes found.
+            {showFavorites ? 'No favorite recipes found.' : 'No recipes found.'}
           </ThemedText>
           <ThemedText type="subtitle" style={styles.emptyMessage}>
-            Try adjusting your search or filters.
+            {showFavorites ? 'Add some recipes to your favorites to see them here.' : 'Try adjusting your search or filters.'}
           </ThemedText>
         </ThemedView>
       )}

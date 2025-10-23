@@ -8,9 +8,11 @@ import java.util.*;
 
 public class Trie {
     private final TrieNode root;
+    private int size;
 
     public Trie() {
         root = new TrieNode();
+        size = 0;
     }
 
     public void insert(String word) {
@@ -19,18 +21,19 @@ public class Trie {
         if (!isValidWord(word)) return;
         for (int i = 0; i < word.length(); i++) {
             char c = word.charAt(i);
-            if (node.children[c - 'a'] == null) {
-                node.children[c - 'a'] = new TrieNode(c);
+            if (node.child(c) == null) {
+                node.addChild(new TrieNode(c));
             }
-            node = node.children[c - 'a'];
+            node = node.child(c);
         }
+        if (!node.endOfWord) size++;
         node.endOfWord = true;
         node.frequency++;
     }
 
     public boolean isValidWord(String word) {
         for (char c : word.toCharArray()) {
-            if (!Character.isLetter(c)) return false;
+            if (!Character.isLetter(c) || !List.of(' ', '_', '-').contains(c)) return false;
         }
         return true;
     }
@@ -39,11 +42,11 @@ public class Trie {
         TrieNode node = root;
         for (int i = 0; i < word.length(); i++) {
             char c = word.charAt(i);
-            if (node.children[c - 'a'] == null) {
+            if (node.child(c) == null) {
                 return false;
             }
 
-            node = node.children[c - 'a'];
+            node = node.child(c);
         }
         return node != null && node.endOfWord;
     }
@@ -52,10 +55,10 @@ public class Trie {
         TrieNode node = root;
         for (int i = 0; i < prefix.length(); i++) {
             char c = prefix.charAt(i);
-            if (node.children[c - 'a'] == null) {
+            if (node.child(c) == null) {
                 return false;
             }
-            node = node.children[c - 'a'];
+            node = node.child(c);
         }
         return true;
     }
@@ -81,11 +84,15 @@ public class Trie {
         StringBuffer curr = new StringBuffer();
 
         for (char c : prefix.toCharArray()) {
-            node = node.children[c - 'a'];
+            node = node.child(c);
             if (node == null) return list;
             curr.append(c);
         }
         suggestHelper(node, list, curr, count);
         return list;
+    }
+
+    public int getSize() {
+        return size;
     }
 }

@@ -6,8 +6,12 @@ import com.google.gson.reflect.TypeToken;
 import org.springframework.stereotype.Service;
 import tastebase.database.SQLConnector;
 import tastebase.App;
+import tastebase.App;
+import tastebase.database.TrieDAO;
 import tastebase.obj.Item;
 import tastebase.obj.Pantry;
+import tastebase.obj.Recipe;
+import tastebase.util.Trie;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -19,10 +23,15 @@ public class PantryService {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    private final Trie ingredientTrie;
+
     public PantryService() {
         if (!pantryExists(pantry.getPantryID())) {
             initPantry();
         }
+
+        ingredientTrie = TrieDAO.load();
+        System.out.println("Ingredient trie loaded");
     }
 
     private boolean pantryExists(int pantryId) {
@@ -99,9 +108,16 @@ public class PantryService {
 
     public JsonArray searchIngredients(String query) {
         JsonArray results = new JsonArray();
-        for (var ingredient : App.getSpoonacularService().searchIngredients(query)) {
+        for (var ingredient : ingredientTrie.suggest(query, 25)) {
             results.add(ingredient);
         }
         return results;
+    }
+
+    public void addIngredientToTrie(String ingredient) {
+        if (!ingredientTrie.search(ingredient)) {
+            ingredientTrie.insert(ingredient);
+            TrieDAO.insert(ingredient);
+        };
     }
 }

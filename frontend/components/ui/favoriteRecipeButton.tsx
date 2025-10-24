@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Pressable, StyleProp, ViewStyle } from 'react-native';
 import { useRecipes } from '../../context/RecipeContext';
 import { Recipe } from '../../types/pantry';
@@ -12,6 +12,11 @@ interface FavoriteRecipeButtonProps {
 const FavoriteRecipeButton: React.FC<FavoriteRecipeButtonProps> = ({ recipe, style }) => {
   const { favoriteRecipes, addRecipe, removeRecipe } = useRecipes();
   const [isFavorite, setIsFavorite] = useState(favoriteRecipes.some(r => r.id === recipe.id));
+
+  // Sync local state with context changes
+  useEffect(() => {
+    setIsFavorite(favoriteRecipes.some(r => r.id === recipe.id));
+  }, [favoriteRecipes, recipe.id]);
 
   const handleToggleRecipe = () => {
     if (isFavorite) {

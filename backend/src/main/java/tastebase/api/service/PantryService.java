@@ -31,7 +31,6 @@ public class PantryService {
         }
 
         ingredientTrie = TrieDAO.load();
-        System.out.println("Ingredient trie loaded");
     }
 
     private boolean pantryExists(int pantryId) {

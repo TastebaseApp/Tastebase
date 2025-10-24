@@ -22,12 +22,12 @@ public class TrieNode {
     }
 
     public TrieNode child(char c) {
+        c = Character.toLowerCase(c);
         if (Character.isLetter(c)) {
             return children[c - 'a'];
         }
         switch (c) {
             case ' ':
-            case '_':
                 return children[26];
             case '-':
                 return children[27];
@@ -41,7 +41,6 @@ public class TrieNode {
         }
         switch (node.c) {
             case ' ':
-            case '_':
                 children[26] = node;
             case '-':
                 children[27] = node;

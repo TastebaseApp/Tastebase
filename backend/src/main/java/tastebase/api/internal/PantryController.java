@@ -36,7 +36,6 @@ public class PantryController {
                 item.getAmount().getAmount(),
                 item.getAmount().getUnit()
         );
-        // update db logic next
     }
 
     @DeleteMapping("/remove")

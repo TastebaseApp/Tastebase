@@ -1,12 +1,12 @@
 package tastebase.api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonArray;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.springframework.stereotype.Service;
 import tastebase.database.SQLConnector;
 import tastebase.obj.Item;
 import tastebase.obj.Pantry;
-import tastebase.obj.Recipe;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -25,17 +25,30 @@ public class PantryService {
     }
 
     private boolean pantryExists(int pantryId) {
-        String query = "SELECT COUNT(*) FROM pantries WHERE ID = ?";
-        try (PreparedStatement ps = SQLConnector.getConnection().prepareStatement(query)) {
+        String statement = "SELECT ID, Name, Items FROM pantries WHERE ID = ? LIMIT 1";
+        try (var conn = SQLConnector.getConnection(); var ps = conn.prepareStatement(statement)) {
             ps.setInt(1, pantryId);
-            var rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+            try (var rs = ps.executeQuery()) {
+                if (!rs.next()) return false;
+
+                // load our pantry's values from db
+                this.pantry.setPantryID(rs.getInt("ID"));
+                this.pantry.setName(rs.getString("Name"));
+                this.pantry.setItems(parseItems(rs.getString("Items")));
+
+                return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
+    }
+    private List<Item> parseItems(String json) {
+        if (json == null || json.isBlank()) return List.of();
+        
+        Gson gson = new Gson();
+        var type = new TypeToken<List<Item>>() {}.getType();
+        return gson.fromJson(json, type);
     }
 
     public boolean addItem(int id, String name, double amount, String unit) {
@@ -43,7 +56,7 @@ public class PantryService {
             savePantry();
             return true;
         }
-        else return false;
+        return false;
     }
 
     public boolean removeItem(int id) {
@@ -63,8 +76,7 @@ public class PantryService {
         try (PreparedStatement ps = SQLConnector.getConnection().prepareStatement(statement)) {
             ps.setInt(1, this.pantry.getPantryID());
             ps.setString(2, this.pantry.getPantryName());
-            ObjectMapper mapper = new ObjectMapper();
-            String itemsJson = mapper.writeValueAsString(this.pantry.getItems());
+            String itemsJson = MAPPER.writeValueAsString(this.pantry.getItems());
             ps.setString(3, itemsJson); ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,10 +87,9 @@ public class PantryService {
         String statement = "UPDATE pantries SET Name = ?, Items = ? WHERE ID = ?";
         try (PreparedStatement ps = SQLConnector.getConnection().prepareStatement(statement)) {
             ps.setString(1, this.pantry.getPantryName());
-            ObjectMapper mapper = new ObjectMapper();
-            String itemsJson = mapper.writeValueAsString(this.pantry.getItems());
+            String itemsJson = MAPPER.writeValueAsString(this.pantry.getItems());
             ps.setString(2, itemsJson);
-            ps.setInt(3, this.pantry.getPantryID()); // WHERE clause uses ID
+            ps.setInt(3, this.pantry.getPantryID());
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

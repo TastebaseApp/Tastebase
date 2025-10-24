@@ -20,6 +20,8 @@ const MAPPING = {
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
   'fork.knife': 'restaurant',
+  'star': 'star',
+  'star.fill': 'star-outline',
 } as IconMapping;
 
 /**

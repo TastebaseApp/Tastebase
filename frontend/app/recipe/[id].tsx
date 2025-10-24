@@ -7,6 +7,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useRecipes } from '@/context/RecipeContext';
 import { Recipe } from '@/types/pantry';
+import FavoriteRecipeButton from '@/components/ui/favoriteRecipeButton';
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -106,10 +107,13 @@ export default function RecipeDetailScreen() {
             />
           )}
           
-          {/* Recipe Title */}
-          <ThemedText type="title" style={styles.title}>
-            {recipe.title}
-          </ThemedText>
+          {/* Recipe Favorite Star & Title */}
+          <ThemedView style={styles.titleRow}>
+            <FavoriteRecipeButton recipe={recipe} style={styles.starIcon} />
+            <ThemedText type="title" style={styles.title}>
+              {recipe.title}
+            </ThemedText>
+          </ThemedView>
           
           {/* Cooking Time */}
           {recipe.readyInMinutes && (
@@ -140,12 +144,20 @@ const styles = StyleSheet.create({
   recipeImage: {
     backgroundColor: '#f0f0f0', // Fallback color if image fails to load
   },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginLeft: 30,
+  },
+  starIcon: {
+    marginTop: 8,
+  },
   title: {
     textAlign: 'left',
-    marginHorizontal: 20,
+    marginHorizontal: 10,
     marginTop: 20,
     marginBottom: 10,
-    paddingHorizontal: 10,
   },
   cookingTime: {
     textAlign: 'left',

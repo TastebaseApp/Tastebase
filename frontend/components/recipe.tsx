@@ -4,6 +4,7 @@ import { Colors } from "../constants/theme";
 import { Recipe as RecipeType } from "../types/pantry";
 import { Pressable, StyleSheet, useColorScheme } from "react-native";
 import { router } from "expo-router";
+import FavoriteRecipeButton from "./ui/favoriteRecipeButton";
 
 type RecipeProps = {
   recipe: RecipeType;
@@ -26,9 +27,12 @@ export default function Recipe({ recipe, onPress }: RecipeProps) {
     <Pressable 
       style={[styles.container, { borderColor: Colors[colorScheme].tint }]} 
       onPress={handlePress}>
-      <ThemedText type="subtitle" style={[styles.title, { borderColor: Colors[colorScheme].tint }]}>
-        {recipe.title}
-      </ThemedText>
+      <ThemedView style={[styles.row, { justifyContent: 'flex-start' }]}>
+        <FavoriteRecipeButton recipe={recipe} style={styles.starIcon} />
+        <ThemedText type="subtitle" style={[styles.title, { borderColor: Colors[colorScheme].tint }]}>
+          {recipe.title}
+        </ThemedText>
+      </ThemedView>
       <ThemedText type="default" style={styles.summary}>{recipe.summary}</ThemedText>
       <ThemedView style={styles.row}>
         <ThemedText type="default" style={styles.rowText}>
@@ -71,5 +75,9 @@ const styles = StyleSheet.create({
   },
   rowText: {
     fontWeight: 'bold',
+  },
+  starIcon: {
+    marginRight: 5,
+    marginTop: 8,
   },
 });

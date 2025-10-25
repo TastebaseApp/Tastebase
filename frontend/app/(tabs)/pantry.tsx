@@ -1,5 +1,7 @@
-import { StyleSheet, Modal } from 'react-native';
+import { StyleSheet, Modal, View } from 'react-native';
 import { useState } from 'react';
+import ParallaxScrollView from '@/components/parallax-scroll-view';
+import { Image } from 'expo-image';
 
 import { ThemedView as ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
@@ -19,19 +21,31 @@ export default function TabPantryScreen() {
     setShowAdd(false);
     return result;
   };
+  
 
   return (
-    <ThemedView style={styles.container}>
-        <ThemedText type="title" style={styles.header}>Pantry</ThemedText>
-        <AddIngredientButton onPress={() => setShowAdd(true)} />
-        <AddIngredientModal
-        visible={showAdd}
-        onClose={() => setShowAdd(false)}
-        onAdd={ handleAdd }
-        />
-        <ThemedText style={styles.subtitle}>All your ingredients, at a glance.</ThemedText>
-        <IngredientList/>
-    </ThemedView>
+    <ParallaxScrollView
+          headerBackgroundColor={{ light: '#FFFFFF', dark: '#1D3D47' }}
+          headerImage={
+            <View style = {styles.headerContainer}>
+              <Image
+                source={require('@/assets/icons/LongTasteBaseLogo.png')}
+                style={styles.Logo}
+              />
+            </View>
+          }>
+      <ThemedView style={styles.container}>
+          <ThemedText type="title" style={styles.header}>Pantry</ThemedText>
+          <AddIngredientButton onPress={() => setShowAdd(true)} />
+          <AddIngredientModal
+          visible={showAdd}
+          onClose={() => setShowAdd(false)}
+          onAdd={ handleAdd }
+          />
+          <ThemedText style={styles.subtitle}>All your ingredients, at a glance.</ThemedText>
+          <IngredientList/>
+      </ThemedView>
+    </ParallaxScrollView>
   );
 }
 
@@ -47,5 +61,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 10,
     textAlign: 'center',
+  },
+  Logo: {
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
+    height: 30,
+    width: 200,
+    resizeMode: 'contain',
+  },
+  headerContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 40,
   },
 });

@@ -2,6 +2,7 @@ package tastebase.api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.stereotype.Service;
 import tastebase.database.SQLConnector;

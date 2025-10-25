@@ -1,5 +1,6 @@
 package tastebase.api.internal;
 
+import com.google.gson.JsonArray;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,16 @@ public class PantryController {
     @Operation(summary = "Get pantry items", description = "Returns a json list of all the pantry items.")
     public List<Item> getPantryItems() {
         return pantryService.getItems();
+    }
+
+    @GetMapping("/autocomplete-ingredients")
+    @Operation(summary = "Autocomplete ingredients", description = "Returns a json list of ingredients that match the query.")
+    public JsonArray autocompleteIngredients(@RequestParam String query) {
+        if (query == null || query.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No query provided");
+        }
+
+        return pantryService.searchIngredients(query);
     }
 
     @PutMapping("/add")

@@ -1,9 +1,12 @@
 package tastebase.api.service;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.springframework.stereotype.Service;
 import tastebase.App;
 import tastebase.database.SQLConnector;
+import tastebase.database.TrieDAO;
+import tastebase.obj.Item;
 import tastebase.obj.Recipe;
 
 import java.sql.DriverManager;
@@ -12,6 +15,13 @@ import java.sql.ResultSet;
 
 @Service
 public class RecipeService {
+
+    private final PantryService pantryService;
+
+    public RecipeService(PantryService pantryService) {
+        this.pantryService = pantryService;
+    }
+
     public Recipe getRandomRecipe() {
         Recipe recipe = App.getSpoonacularService().getRandomRecipe();
         saveRecipe(recipe);
@@ -56,6 +66,11 @@ public class RecipeService {
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        for (var element : recipe.getFullRecipe().getAsJsonArray("extendedIngredients")) {
+            JsonObject ingredient = element.getAsJsonObject();
+            pantryService.addIngredientToTrie(ingredient.get("nameClean").getAsString());
         }
     }
 

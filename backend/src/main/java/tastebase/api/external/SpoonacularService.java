@@ -94,4 +94,28 @@ public class SpoonacularService {
             return null;
         }
     }
+
+    public List<JsonElement> searchIngredients(String query) {
+        String url = baseUrl + "food/ingredients/autocomplete?query=" + query + "&number=5&apiKey=" + apiKey;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.body() != null) {
+                JsonArray ingredients = JsonParser.parseString(response.body()).getAsJsonArray();
+                return ingredients.asList();
+            } else {
+                System.out.println("Error: Empty response from Spoonacular API");
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

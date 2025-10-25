@@ -16,7 +16,7 @@ export default function HomeScreen() {
         <View style = {styles.headerContainer}>
           <Image
             source={require('@/assets/icons/LongTasteBaseLogo.png')}
-            style={styles.reactLogo}
+            style={styles.Logo}
           />
         </View>
       }>
@@ -91,12 +91,12 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
-  reactLogo: {
+  Logo: {
     position: 'absolute',
     bottom: 20,
     alignSelf: 'center',
-    height: 60,
-    width: 300,
+    height: 30,
+    width: 200,
     resizeMode: 'contain',
   },
   headerContainer: {

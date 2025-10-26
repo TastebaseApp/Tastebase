@@ -25,7 +25,7 @@ export default function TabPantryScreen() {
 
   return (
     <ParallaxScrollView
-          headerBackgroundColor={{ light: '#FFFFFF', dark: '#1D3D47' }}
+          headerBackgroundColor={{ light: '#FFFFFF', dark: '#000000' }}
           headerImage={
             <View style = {styles.headerContainer}>
               <Image

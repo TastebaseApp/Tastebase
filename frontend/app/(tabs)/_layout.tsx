@@ -31,7 +31,7 @@ export default function TabLayout() {
                   ? require('@/assets/icons/Large_HomeIcon_Selected_Gradient.png')
                   : require('@/assets/icons/Large_HomeIcon_Unselected.png')
               }
-              style={styles.tabIcon}
+              style={{width: 35, height: 35, resizeMode: 'contain'}}
             />
           ),
         }}

@@ -11,7 +11,7 @@ import AddRecipeButton from '@/components/ui/AddRecipeButton';
 export default function TabTwoScreen() {
   return (
     <ParallaxScrollView
-          headerBackgroundColor={{ light: '#FFFFFF', dark: '#1D3D47' }}
+          headerBackgroundColor={{ light: '#FFFFFF', dark: '#000000' }}
           headerImage={
             <View style = {styles.headerContainer}>
               <Image

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   Image,
+  ScrollView,
 } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useThemeColor } from "@/hooks/use-theme-color";
@@ -111,76 +112,77 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
           <ThemedText type="title" style={styles.title}>
             Add Ingredient
           </ThemedText>
+          <ScrollView style={{ maxHeight: 480 }}>
+            <View style={styles.rowsContainer}>
+              {rows.map((r) => (
+                <View key={r.id} style={styles.rowInputs}>
+                  <TouchableOpacity
+                    onPress={() => removeRow(r.id)}
+                    style={styles.iconBtn}
+                    hitSlop={8}
+                  >
+                    <Image
+                      source={require("@/assets/icons/Minus circle.png")}
+                      style={{
+                        height: 28,
+                        width: 28,
+                        resizeMode: "contain",
+                        justifyContent: "center",
+                      }}
+                    />
+                  </TouchableOpacity>
+                  <View style={styles.inputGroup}>
+                    <ThemedText>Amount</ThemedText>
+                    <TextInput
+                      value={r.amount}
+                      onChangeText={updateRow(r.id, "amount")}
+                      keyboardType="numeric"
+                      placeholder="1"
+                      placeholderTextColor={"rgba(0,0,0,0.55)"}
+                      cursorColor={text}
+                      selectionColor={"rgba(0,0,0,0.25)"}
+                      style={[
+                        styles.input,
+                        { color: text, borderColor: "rgba(0,0,0,0.2)" },
+                      ]}
+                    />
+                  </View>
 
-          <View style={styles.rowsContainer}>
-            {rows.map((r) => (
-              <View key={r.id} style={styles.rowInputs}>
-                <TouchableOpacity
-                  onPress={() => removeRow(r.id)}
-                  style={styles.iconBtn}
-                  hitSlop={8}
-                >
-                  <Image
-                    source={require("@/assets/icons/Minus circle.png")}
-                    style={{
-                      height: 28,
-                      width: 28,
-                      resizeMode: "contain",
-                      justifyContent: "center",
-                    }}
-                  />
-                </TouchableOpacity>
-                <View style={styles.inputGroup}>
-                  <ThemedText>Amount</ThemedText>
-                  <TextInput
-                    value={r.amount}
-                    onChangeText={updateRow(r.id, "amount")}
-                    keyboardType="numeric"
-                    placeholder="1"
-                    placeholderTextColor={"rgba(0,0,0,0.55)"}
-                    cursorColor={text}
-                    selectionColor={"rgba(0,0,0,0.25)"}
-                    style={[
-                      styles.input,
-                      { color: text, borderColor: "rgba(0,0,0,0.2)" },
-                    ]}
-                  />
-                </View>
+                  <View style={styles.inputGroup}>
+                    <ThemedText>Unit</ThemedText>
+                    <TextInput
+                      value={r.unit}
+                      onChangeText={updateRow(r.id, "unit")}
+                      placeholder="cup"
+                      placeholderTextColor={"rgba(0,0,0,0.55)"}
+                      cursorColor={text}
+                      selectionColor={"rgba(0,0,0,0.25)"}
+                      style={[
+                        styles.input,
+                        { color: text, borderColor: "rgba(0,0,0,0.2)" },
+                      ]}
+                    />
+                  </View>
 
-                <View style={styles.inputGroup}>
-                  <ThemedText>Unit</ThemedText>
-                  <TextInput
-                    value={r.unit}
-                    onChangeText={updateRow(r.id, "unit")}
-                    placeholder="cup"
-                    placeholderTextColor={"rgba(0,0,0,0.55)"}
-                    cursorColor={text}
-                    selectionColor={"rgba(0,0,0,0.25)"}
-                    style={[
-                      styles.input,
-                      { color: text, borderColor: "rgba(0,0,0,0.2)" },
-                    ]}
-                  />
+                  <View style={[styles.inputGroup, { flex: 2 }]}>
+                    <ThemedText>Name</ThemedText>
+                    <TextInput
+                      value={r.name}
+                      onChangeText={updateRow(r.id, "name")}
+                      placeholder="e.g., Sugar"
+                      placeholderTextColor={"rgba(0,0,0,0.55)"}
+                      cursorColor={text}
+                      selectionColor={"rgba(0,0,0,0.25)"}
+                      style={[
+                        styles.input,
+                        { color: text, borderColor: "rgba(0,0,0,0.2)" },
+                      ]}
+                    />
+                  </View>
                 </View>
-
-                <View style={[styles.inputGroup, { flex: 2 }]}>
-                  <ThemedText>Name</ThemedText>
-                  <TextInput
-                    value={r.name}
-                    onChangeText={updateRow(r.id, "name")}
-                    placeholder="e.g., Sugar"
-                    placeholderTextColor={"rgba(0,0,0,0.55)"}
-                    cursorColor={text}
-                    selectionColor={"rgba(0,0,0,0.25)"}
-                    style={[
-                      styles.input,
-                      { color: text, borderColor: "rgba(0,0,0,0.2)" },
-                    ]}
-                  />
-                </View>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
+          </ScrollView>
           <TouchableOpacity
             onPress={addRow}
             style={styles.plusBox}

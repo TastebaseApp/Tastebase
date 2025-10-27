@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { Image, StyleSheet } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -12,31 +13,69 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
+        tabBarShowLabel: false, // 🔹 Hides text labels
         tabBarButton: HapticTab,
-      }}>
+        tabBarStyle: {
+          backgroundColor: Colors[colorScheme ?? 'light'].background,
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={
+                focused
+                  ? require('@/assets/icons/Large_HomeIcon_Selected_Gradient.png')
+                  : require('@/assets/icons/Large_HomeIcon_Unselected.png')
+              }
+              style={{width: 35, height: 35, resizeMode: 'contain'}}
+            />
+          ),
         }}
       />
+
       <Tabs.Screen
         name="recipes"
         options={{
-          title: 'Recipes',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="fork.knife" color={color} />,
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={
+                focused
+                  ? require('@/assets/icons/Large_UserIcon_Selected_Gradient.png')
+                  : require('@/assets/icons/Large_UserIcon_Unselected.png')
+              }
+              style={styles.tabIcon}
+            />
+          ),
         }}
       />
+
       <Tabs.Screen
         name="pantry"
         options={{
-          title: 'Pantry',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="cart.fill" color={color} />,
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={
+                focused
+                  ? require('@/assets/icons/Large_pantryIcon_Selected_Gradient.png')
+                  : require('@/assets/icons/Large_pantryIcon_Unselected.png')
+              }
+              style={styles.tabIcon}
+            />
+          ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabIcon: {
+    width: 28, 
+    height: 28, 
+    resizeMode: 'contain'
+  }
+});

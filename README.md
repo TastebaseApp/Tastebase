@@ -228,6 +228,18 @@ This feature gives the user the ability to list the required ingredients necessa
 - Review with team and refine based on feedback
     - [EWOK-83](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-83)
     - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-83-review-with-team-and-refine-base)
+
+**Aaron:** "Worked on the storage and management of the pantry in our database"
+
+- Clean up Pantry Spring Boot calls
+    - [EWOK-76](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-76)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-76-clean-up-pantry-spring-boot-call)
+- Create SQL Calls for Backend Obj
+    - [EWOK-39](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-39)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-39-create-sql-calls-for-backend-obj)
+- Load Pantry Information from DB
+    - [EWOK-84](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-84)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-84-load-pantry-information-from-db)
     
 **Russell:** Unit tested full stack capabilities with as few blocks as possible
     - [EWOK-43](https://cs3398-ewoks-fall.atlassian.net/jira/software/projects/EWOK/list/?jql=project%20%3D%20%22EWOK%22%20ORDER%20BY%20created%20DESC&selectedIssue=EWOK-43)

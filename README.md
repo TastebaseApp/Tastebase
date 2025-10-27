@@ -202,7 +202,33 @@ This feature gives the user the ability to list the required ingredients necessa
     - [EWOK-87](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-87)
     - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-87-backend-ingredient-api-endpoint)
     
+**Jeremiah:** "Created interactive UI Designs and began implementation."
 
+- Update Color Scheme
+    - [EWOK-63](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-63)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-63-update-color-scheme)
+- Creat navigation header/footer layout
+    - [EWOK-67](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-67)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-67-create-navigation-header-footer-)
+- Finalize color palette, fonts, and UI icons
+    - [EWOK-73](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-73)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-73-finalize-color-palette-and-ui-ic)
+- Create component for recipe suggestions
+    - [EWOK-74](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-74)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-74-create-component-for-recipe-sugg)
+- Design component for individual ingredients
+    - [EWOK-77](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-77)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-77-design-component-for-individual-)
+- Design "Add Ingredient" Popup considering autocomplete
+    - [EWOK-78](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-78)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-78-design-add-ingredient-popup-cons)
+- Design individual recipe description popup tab
+    - [EWOK-79](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-79)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-79-design-individual-recipe-descrip)
+- Review with team and refine based on feedback
+    - [EWOK-83](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-83)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-83-review-with-team-and-refine-base)
+    
 **Russell:** Unit tested full stack capabilities with as few blocks as possible
     - [EWOK-43](https://cs3398-ewoks-fall.atlassian.net/jira/software/projects/EWOK/list/?jql=project%20%3D%20%22EWOK%22%20ORDER%20BY%20created%20DESC&selectedIssue=EWOK-43)
     - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/commits/2374fcb8d32b5cf539a0784a329b6c56dc902f5e)

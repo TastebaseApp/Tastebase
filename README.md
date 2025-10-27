@@ -71,6 +71,7 @@ This feature gives the user the ability to list the required ingredients necessa
 - As a general user, I want to add personal notes or tweaks to a saved recipe so that I can remember improvements.
 
 ## Sprint 1 (September 22 - October 3)
+**Demo Branch:** dev
 ### Contributions
 
 **Heston:** "Provided UI for the pantry list and recipe tab to display recipes to the user"
@@ -161,6 +162,7 @@ This feature gives the user the ability to list the required ingredients necessa
     - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-57-add-api-connections-for-frontend)
 
 ## Sprint 2 (October 13 - October 24)
+**Demo Branch:** dev
 ### Contributions
 
 **Heston:** "Added JSON parsing files to support frontend/backend connections."

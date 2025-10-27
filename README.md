@@ -180,6 +180,28 @@ This feature gives the user the ability to list the required ingredients necessa
 - Add UI input to favorite a recipe
     - [EWOK-7](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-7)
     - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-7-add-favorite-UI-input)
+    
+**Dylan:** "Added security to the API through OAuth2."
+
+- Add API security checks
+    - [EWOK-85](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-85)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-85-add-api-security-checks)
+- Set up OATH credentials
+    - [EWOK-21](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-21)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-21-set-up-oath-credentials)
+- Automate Gradle jar deployment
+    - [EWOK-86](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-86)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-86-automate-gradle-jar-deployment)
+- Add logout
+    - [EWOK-22](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-22)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-22-add-logout)
+- Connect OATH account to backend user
+    - [EWOK-23](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-23)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-23-connect-oath-account-to-backend-)
+- Update ingredient input with API parsing
+    - [EWOK-87](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-87)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-87-backend-ingredient-api-endpoint)
+    
 
 **Russell:** Unit tested full stack capabilities with as few blocks as possible
     - [EWOK-43](https://cs3398-ewoks-fall.atlassian.net/jira/software/projects/EWOK/list/?jql=project%20%3D%20%22EWOK%22%20ORDER%20BY%20created%20DESC&selectedIssue=EWOK-43)

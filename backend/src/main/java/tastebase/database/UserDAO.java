@@ -6,10 +6,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 public class UserDAO {
 
+    private static final HashMap<String, User> userCache = new HashMap<>();
+
     public static User findByEmail(String email) {
+        if (userCache.containsKey(email)) return userCache.get(email);
         String query = "select * from users where email = ?";
         try (Connection conn = SQLConnector.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(query);
@@ -17,7 +21,8 @@ public class UserDAO {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return mapRow(rs);
+                userCache.put(email, mapRow(rs));
+                return userCache.get(email);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

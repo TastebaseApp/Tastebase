@@ -24,7 +24,6 @@ export default function TabTwoScreen() {
         <ThemedText type="title">My Favorite Recipes</ThemedText>
         <ThemedText type="default" style={styles.subtitle}>Hmm... What to cook..?</ThemedText>
         <AddRecipeButton />
-        <RecipeList />
         <RecipeList showFavorites={true} />
       </ThemedView>
     </ParallaxScrollView>

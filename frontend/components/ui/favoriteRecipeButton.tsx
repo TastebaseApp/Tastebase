@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Pressable, StyleProp, ViewStyle } from 'react-native';
+import { Pressable, StyleProp, useColorScheme, ViewStyle } from 'react-native';
 import { useRecipes } from '../../context/RecipeContext';
 import { Recipe } from '../../types/pantry';
 import { IconSymbol } from './icon-symbol';
+import { Colors } from '@/constants/theme';
 
 interface FavoriteRecipeButtonProps {
   recipe: Recipe;
@@ -10,6 +11,7 @@ interface FavoriteRecipeButtonProps {
 }
 
 const FavoriteRecipeButton: React.FC<FavoriteRecipeButtonProps> = ({ recipe, style }) => {
+  const colorScheme = useColorScheme() || 'light';
   const { favoriteRecipes, addRecipe, removeRecipe } = useRecipes();
   const [isFavorite, setIsFavorite] = useState(favoriteRecipes.some(r => r.id === recipe.id));
 
@@ -29,7 +31,7 @@ const FavoriteRecipeButton: React.FC<FavoriteRecipeButtonProps> = ({ recipe, sty
   };
 
   return (<Pressable onPress={handleToggleRecipe} style={style}>
-    <IconSymbol size={24} name={isFavorite ? "star" : "star.fill"} color="white" />
+    <IconSymbol size={24} name={isFavorite ? "star" : "star.fill"} color={Colors[colorScheme].tabIconSelected} />
   </Pressable>
   );
 }

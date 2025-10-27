@@ -16,31 +16,47 @@ async function getJson<T>(response: Response): Promise<T> {
 }
 
 export const recipeService = {
-  // Function to search recipes by ingredients (default: no ingredients = get all)
+  // Function to search recipes by ingredients (default: no ingredients = get 10 random recipes)
   async searchRecipes(ingredients: string = ''): Promise<Recipe[]> {
     if (!API_BASE) {
       throw new Error('API_BASE is not set');
     }
 
-    const url = ingredients 
-      ? `${API_BASE}/api/recipes/search?ingredients=${encodeURIComponent(ingredients)}`
-      : `${API_BASE}/api/recipes/random`;
-    
-    const resp = await fetch(url, {
-      method: 'GET',
-      headers: { 'Accept': 'application/json' },
-    });
+    if (ingredients) {
+      // Search with specific ingredients
+      const url = `${API_BASE}/api/recipes/search?ingredients=${encodeURIComponent(ingredients)}`;
+      
+      const resp = await fetch(url, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+      });
 
-    if (!resp.ok) {
-      throw new Error(`Failed to search recipes (${resp.status})`);
+      if (!resp.ok) {
+        throw new Error(`Failed to search recipes (${resp.status})`);
+      }
+
+      const data = await getJson<any[]>(resp);
+      const arrayData = Array.isArray(data) ? data : [data];
+      validateRecipesFormat(arrayData);
+      const recipes = parseRecipes(arrayData);
+      
+      return recipes.map((r) => ({ ...r, ingredients: r.ingredients?.map(i => ({ ...i, amount: { ...i.amount } })) }));
+    } else {
+      // No ingredients provided - get 10 random recipes
+      const recipes: Recipe[] = [];
+      
+      for (let i = 0; i < 10; i++) {
+        try {
+          const randomRecipe = await this.getRandomRecipe();
+          recipes.push(randomRecipe);
+        } catch (error) {
+          console.warn(`Failed to fetch random recipe ${i + 1}:`, error);
+          // Continue with remaining recipes even if one fails
+        }
+      }
+      
+      return recipes;
     }
-
-    const data = await getJson<any[]>(resp);
-    const arrayData = Array.isArray(data) ? data : [data];
-    validateRecipesFormat(arrayData);
-    const recipes = parseRecipes(arrayData);
-    
-    return recipes.map((r) => ({ ...r, ingredients: r.ingredients?.map(i => ({ ...i, amount: { ...i.amount } })) }));
   },
 
   // Function to get a random recipe

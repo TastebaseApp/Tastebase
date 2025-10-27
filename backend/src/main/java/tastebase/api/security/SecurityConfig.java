@@ -44,9 +44,9 @@ public class SecurityConfig {
                         authorizeRequests
                                 .antMatchers("/home", "/whoami").authenticated()
                                 .antMatchers("/logout").authenticated()
+                                .antMatchers("/api/user/**").authenticated()
                                 .anyRequest().permitAll()
                 )
-                .cors().and()
                 .csrf().disable()
                 .oauth2Login(oauth -> {
                     oauth.userInfoEndpoint(userInfo -> {

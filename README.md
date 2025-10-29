@@ -261,7 +261,7 @@ Project is: _in progress_
 - Unit test for tab navigation
 
 ### Features:
-- Feature to be added 1
+- Loading and Storing User's favorite recipes to and from the database
 - Feature to be added 2
 
 ### Recipe Recommendation:

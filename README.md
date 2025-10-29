@@ -97,18 +97,18 @@ This feature gives the user the ability to list the required ingredients necessa
 **Russell:** "Created and Tested Frontend and Backend Functionalities"
 
 - Created Backend Flowchart Diagram
-    - [EWOK-49] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-49
-    - [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/a5822bc87a4158dbf853c9452ad930b2ee395c04
+    - [EWOK-49](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-49)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/a5822bc87a4158dbf853c9452ad930b2ee395c04)
 - Created Frontend Flowchart Diagram
-    - [EWOK-50] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-50
-    - [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-50-frontend-flowchart
+    - [EWOK-50](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-50)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-50-frontend-flowchart)
 - Added Dynamic Recipe List Manipulation + Random Recipe Button 
-    - [EWOK-10] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-10
-    - [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/commits/56614e3bb2de9fb1fa84119a88e24c05051ef7f0
+    - [EWOK-10](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-10)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/commits/56614e3bb2de9fb1fa84119a88e24c05051ef7f0)
 - Scraped 301 Recipes from online API to JSON 
 - Created REST API for commands to curl/post recipes
-    - [EWOK-51] https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-51
-    - [Bitbucket] https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/f7a3d63d8a50ec959c334ff549bd832acaf14031
+    - [EWOK-51](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-51)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/commits/f7a3d63d8a50ec959c334ff549bd832acaf14031)
 
 **Aaron:** "Provided backend objects and Spring Boot API to interact with them."
 
@@ -160,7 +160,7 @@ This feature gives the user the ability to list the required ingredients necessa
     - [EWOK-57](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-57)
     - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-57-add-api-connections-for-frontend)
 
-## Sprint 1 (October 13 - October 24)
+## Sprint 2 (October 13 - October 24)
 ### Contributions
 
 **Heston:** "Added JSON parsing files to support frontend/backend connections."
@@ -171,6 +171,12 @@ This feature gives the user the ability to list the required ingredients necessa
 - Create JSON Recipe Parser
     - [EWOK-70](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-70)
     - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-70-create-json-recipe-parser)
+
+**Russell:** Unit tested full stack capabilities with as few blocks as possible
+    - [EWOK-43](https://cs3398-ewoks-fall.atlassian.net/jira/software/projects/EWOK/list/?jql=project%20%3D%20%22EWOK%22%20ORDER%20BY%20created%20DESC&selectedIssue=EWOK-43)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/commits/2374fcb8d32b5cf539a0784a329b6c56dc902f5e)
+
+    Russell's Next Steps: 
 
 ## Project Status
 Project is: _in progress_

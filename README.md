@@ -71,6 +71,7 @@ This feature gives the user the ability to list the required ingredients necessa
 - As a general user, I want to add personal notes or tweaks to a saved recipe so that I can remember improvements.
 
 ## Sprint 1 (September 22 - October 3)
+**Demo Branch:** dev
 ### Contributions
 
 **Heston:** "Provided UI for the pantry list and recipe tab to display recipes to the user"
@@ -161,6 +162,7 @@ This feature gives the user the ability to list the required ingredients necessa
     - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-57-add-api-connections-for-frontend)
 
 ## Sprint 2 (October 13 - October 24)
+**Demo Branch:** dev
 ### Contributions
 
 **Heston:** "Added JSON parsing files to support frontend/backend connections."
@@ -171,7 +173,76 @@ This feature gives the user the ability to list the required ingredients necessa
 - Create JSON Recipe Parser
     - [EWOK-70](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-70)
     - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-70-create-json-recipe-parser)
+- Replace recipe service files with APU accessors
+    - [EWOK-66](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-66)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-66-replace-service-files)
+- Enable ability to tap a recipe card to open its details
+    - [EWOK-30](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-30)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-30-open-recipe-details)
+- Add UI input to favorite a recipe
+    - [EWOK-7](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-7)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-7-add-favorite-UI-input)
+    
+**Dylan:** "Added security to the API through OAuth2."
 
+- Add API security checks
+    - [EWOK-85](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-85)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-85-add-api-security-checks)
+- Set up OATH credentials
+    - [EWOK-21](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-21)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-21-set-up-oath-credentials)
+- Automate Gradle jar deployment
+    - [EWOK-86](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-86)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-86-automate-gradle-jar-deployment)
+- Add logout
+    - [EWOK-22](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-22)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-22-add-logout)
+- Connect OATH account to backend user
+    - [EWOK-23](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-23)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/feature/EWOK-23-connect-oath-account-to-backend-)
+- Update ingredient input with API parsing
+    - [EWOK-87](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-87)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-87-backend-ingredient-api-endpoint)
+    
+**Jeremiah:** "Created interactive UI Designs and began implementation."
+
+- Update Color Scheme
+    - [EWOK-63](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-63)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-63-update-color-scheme)
+- Creat navigation header/footer layout
+    - [EWOK-67](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-67)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-67-create-navigation-header-footer-)
+- Finalize color palette, fonts, and UI icons
+    - [EWOK-73](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-73)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-73-finalize-color-palette-and-ui-ic)
+- Create component for recipe suggestions
+    - [EWOK-74](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-74)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-74-create-component-for-recipe-sugg)
+- Design component for individual ingredients
+    - [EWOK-77](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-77)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-77-design-component-for-individual-)
+- Design "Add Ingredient" Popup considering autocomplete
+    - [EWOK-78](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-78)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-78-design-add-ingredient-popup-cons)
+- Design individual recipe description popup tab
+    - [EWOK-79](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-79)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-79-design-individual-recipe-descrip)
+- Review with team and refine based on feedback
+    - [EWOK-83](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-83)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-83-review-with-team-and-refine-base)
+
+**Aaron:** "Worked on the storage and management of the pantry in our database"
+
+- Clean up Pantry Spring Boot calls
+    - [EWOK-76](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-76)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-76-clean-up-pantry-spring-boot-call)
+- Create SQL Calls for Backend Obj
+    - [EWOK-39](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-39)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-39-create-sql-calls-for-backend-obj)
+- Load Pantry Information from DB
+    - [EWOK-84](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-84)
+    - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/ewoks3398project/branch/EWOK-84-load-pantry-information-from-db)
+    
 **Russell:** Unit tested full stack capabilities with as few blocks as possible
     - [EWOK-43](https://cs3398-ewoks-fall.atlassian.net/jira/software/projects/EWOK/list/?jql=project%20%3D%20%22EWOK%22%20ORDER%20BY%20created%20DESC&selectedIssue=EWOK-43)
     - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/commits/2374fcb8d32b5cf539a0784a329b6c56dc902f5e)
@@ -190,13 +261,59 @@ Project is: _in progress_
 - Unit test for tab navigation
 
 ### Features:
-- Feature to be added 1
-- Feature to be added 2
+- Loading and Storing User's favorite recipes to and from the database
+- Connect pantry to backend with Spoonacular ingredient parsing.
+- Search for recipes based on the user's available ingredients.
+- Create user login & logout
 
 ### Recipe Recommendation:
 - Recommend recipes based on different cultures. For example, when the user asks for Indian or Greek recipes.
 - Recommend recipes based on food nutrients. For example, when the user asks for high-protein, high carbohydrate, zero-carbohydrate(keto), low-fat, low sugar, high sugar, etc.
 - When the user has nothing in their pantry, ask them what kind of food they might want and give recommendations based off this initial user input
+
+## Getting Started
+Here are instruction on how to run the app locally from your device.
+
+### Prerequisites
+- Node.js (v16 or higher)
+- Expo CLI (`npm install -g @expo/cli`)
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Configure the backend API URL (optional):
+   Create a `.env` file in the frontend directory and set your backend URL:
+   ```
+   EXPO_PUBLIC_API_BASE_URL=https://example-deployed-backend-url.com
+   ```
+   
+   If no `.env` file is created, the app will use the localhost, in which case you would need to run the backend locally too. This would not connect to the app's deployed server. If you do neither of these things, crucial features (including seeing recipes) won't work. 
+
+4. Start the Expo development server:
+   ```bash
+   npm start
+   ```
+
+5. Run on your preferred platform:
+   - **Mobile**: Install Expo Go app on your phone and scan the QR code
+   - **Android Emulator**: `npm run android` *or* run development server and input 'a' 
+   - **iOS Simulator**: `npm run ios` (macOS only)
+   - **Web**: `npm run web` *or* run development server and input 'w'
+
+### Backend Information
+The backend is already deployed and running on a server. The frontend automatically connects to the deployed backend API. No local backend setup is required for normal usage.
+
+### API Documentation
+The deployed backend API documentation is available at the deployed server's Swagger UI endpoint. Go to base server url to see this documentation. 
 
 
 <!-- ## Acknowledgements

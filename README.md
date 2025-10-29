@@ -262,7 +262,9 @@ Project is: _in progress_
 
 ### Features:
 - Loading and Storing User's favorite recipes to and from the database
-- Feature to be added 2
+- Connect pantry to backend with Spoonacular ingredient parsing.
+- Search for recipes based on the user's available ingredients.
+- Create user login & logout
 
 ### Recipe Recommendation:
 - Recommend recipes based on different cultures. For example, when the user asks for Indian or Greek recipes.

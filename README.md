@@ -271,6 +271,50 @@ Project is: _in progress_
 - Recommend recipes based on food nutrients. For example, when the user asks for high-protein, high carbohydrate, zero-carbohydrate(keto), low-fat, low sugar, high sugar, etc.
 - When the user has nothing in their pantry, ask them what kind of food they might want and give recommendations based off this initial user input
 
+## Getting Started
+Here are instruction on how to run the app locally from your device.
+
+### Prerequisites
+- Node.js (v16 or higher)
+- Expo CLI (`npm install -g @expo/cli`)
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Configure the backend API URL (optional):
+   Create a `.env` file in the frontend directory and set your backend URL:
+   ```
+   EXPO_PUBLIC_API_BASE_URL=https://example-deployed-backend-url.com
+   ```
+   
+   If no `.env` file is created, the app will use the localhost, in which case you would need to run the backend locally too. This would not connect to the app's deployed server. If you do neither of these things, crucial features (including seeing recipes) won't work. 
+
+4. Start the Expo development server:
+   ```bash
+   npm start
+   ```
+
+5. Run on your preferred platform:
+   - **Mobile**: Install Expo Go app on your phone and scan the QR code
+   - **Android Emulator**: `npm run android` *or* run development server and input 'a' 
+   - **iOS Simulator**: `npm run ios` (macOS only)
+   - **Web**: `npm run web` *or* run development server and input 'w'
+
+### Backend Information
+The backend is already deployed and running on a server. The frontend automatically connects to the deployed backend API. No local backend setup is required for normal usage.
+
+### API Documentation
+The deployed backend API documentation is available at the deployed server's Swagger UI endpoint. Go to base server url to see this documentation. 
+
 
 <!-- ## Acknowledgements
 Give credit here.

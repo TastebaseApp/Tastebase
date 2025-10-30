@@ -1,5 +1,6 @@
 package tastebase.api.internal;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping
-    public User getUser(@AuthenticationPrincipal UserPrincipal principal) {
+    public User getUser(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal) {
         if (principal == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No authenticated user");
         }

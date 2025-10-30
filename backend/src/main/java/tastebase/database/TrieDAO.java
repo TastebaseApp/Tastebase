@@ -1,7 +1,6 @@
 package tastebase.database;
 
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import tastebase.obj.Item;
+import tastebase.obj.Ingredient;
 import tastebase.util.Trie;
 
 import java.sql.Connection;
@@ -30,13 +29,13 @@ public class TrieDAO {
         return trie;
     }
 
-    public static void insert(Item item) {
+    public static void insert(Ingredient ingredient) {
         String query = "INSERT INTO ingredients (ingredient_name) values (?)";
 
         try (Connection conn = SQLConnector.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(query);
 
-            ps.setString(1, item.getItemName());
+            ps.setString(1, ingredient.getIngredientName());
 
             ps.execute();
         } catch (SQLException e) {

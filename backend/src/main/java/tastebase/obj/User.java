@@ -1,7 +1,8 @@
 package tastebase.obj;
 
+import tastebase.database.PantryDAO;
+
 import java.util.HashSet;
-import java.util.UUID;
 
 public class User {
     private int ID;
@@ -11,7 +12,8 @@ public class User {
     private String name;
     private String email;
 
-    HashSet<Recipe> favorites;
+    private HashSet<Recipe> favorites;
+    private Pantry pantry;
 
     public User() {
         this.favorites = new HashSet<>();
@@ -69,5 +71,31 @@ public class User {
     }
     public HashSet<Recipe> getFavorites() {
         return favorites;
+    }
+
+    public Pantry getPantry() {
+        if (pantry == null) {
+            if (PantryDAO.exists(ID)) {
+                pantry = PantryDAO.getPantry(ID);
+            } else {
+                pantry = new Pantry(ID, getEmail());
+                PantryDAO.upsert(pantry);
+            }
+        }
+        return pantry;
+    }
+    public void setPantry(Pantry pantry) {
+        this.pantry = pantry;
+        PantryDAO.upsert(pantry);
+    }
+    public void addIngredient(Ingredient ingredient) {
+        getPantry().addItem(ingredient);
+    }
+    public boolean removeIngredient(Ingredient ingredient) {
+        if (getPantry().removeItem(ingredient.getIngredientId())) {
+            PantryDAO.upsert(getPantry());
+            return true;
+        }
+        return false;
     }
 }

@@ -2,13 +2,15 @@ package tastebase.api.internal;
 
 import com.google.gson.JsonArray;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import tastebase.App;
 import tastebase.api.service.PantryService;
-import tastebase.obj.Item;
+import tastebase.obj.Ingredient;
+import tastebase.obj.User;
+import tastebase.obj.UserPrincipal;
 
 import java.util.List;
 
@@ -21,11 +23,11 @@ public class PantryController {
         this.pantryService = pantryService;
     }
 
-    // Pantry API
     @GetMapping("/items")
     @Operation(summary = "Get pantry items", description = "Returns a json list of all the pantry items.")
-    public List<Item> getPantryItems() {
-        return pantryService.getItems();
+    public List<Ingredient> getPantryItems(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        User user = userPrincipal.getUser();
+        return pantryService.getItems(user.getPantry());
     }
 
     @GetMapping("/autocomplete-ingredients")
@@ -40,19 +42,14 @@ public class PantryController {
 
     @PutMapping("/add")
     @Operation(summary = "Add an item", description = "Add an individual item to the pantry.")
-    public Boolean addPantryItem(@RequestBody Item item) {
-        return pantryService.addItem(
-                item.getItemID(),
-                item.getItemName(),
-                item.getAmount().getAmount(),
-                item.getAmount().getUnit()
-        );
+    public Boolean addPantryItem(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody Ingredient ingredient) {
+        return pantryService.addItem(userPrincipal.getUser().getPantry(), ingredient);
     }
 
     @DeleteMapping("/remove")
     @Operation(summary = "Remove an item", description = "Removes an individual pantry item by ID.")
-    public Boolean removePantryItem(@RequestParam int id) {
-        if (pantryService.removeItem(id))
+    public Boolean removePantryItem(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal, @RequestParam int id) {
+        if (pantryService.removeItem(userPrincipal.getUser().getPantry(), id))
             return true;
         else
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);

@@ -36,9 +36,9 @@ This feature allows users to add and remove ingredients from their personal pant
 
 - As a general user, I want to view a list of my ingredients so that I can easily track my available ingredients for cooking. 
 
-- As a general user, I want to add ingredients to my pantry so that I can keep my pantry up to date when I buy new food items. 
+- As a general user, I want to add ingredients to my pantry so that I can keep my pantry up to date when I buy new food ingredients. 
 
-- As a general user, I want to delete ingredients from my pantry so that I can keep my pantry up to date as I use or get rid of food items.
+- As a general user, I want to delete ingredients from my pantry so that I can keep my pantry up to date as I use or get rid of food ingredients.
 
 
 ### Recipe Suggestion

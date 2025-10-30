@@ -1,5 +1,6 @@
 package tastebase.api.internal;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,14 +26,14 @@ public class HomeController {
     }
 
     @GetMapping("/home")
-    public String home(@AuthenticationPrincipal OAuth2User principal, Model model, HttpServletResponse response) throws IOException {
+    public String home(@Parameter(hidden = true) @AuthenticationPrincipal OAuth2User principal, Model model, HttpServletResponse response) throws IOException {
         model.addAttribute("name", principal.getAttribute("name"));
         response.sendRedirect("/whoami");
         return "home";
     }
 
     @GetMapping("/whoami")
-    public User whoAmI(@AuthenticationPrincipal UserPrincipal principal, Model model, HttpServletResponse response) throws IOException {
+    public User whoAmI(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal, Model model, HttpServletResponse response) throws IOException {
         User user = principal.getUser();
         return user;
     }

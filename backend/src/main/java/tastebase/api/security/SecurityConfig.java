@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 .antMatchers("/home", "/whoami").authenticated()
                                 .antMatchers("/logout").authenticated()
                                 .antMatchers("/api/user/**").authenticated()
+                                .antMatchers("/api/pantry/**").authenticated()
                                 .anyRequest().permitAll()
                 )
                 .csrf().disable()

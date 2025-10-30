@@ -5,11 +5,8 @@ import com.google.gson.JsonObject;
 import org.springframework.stereotype.Service;
 import tastebase.App;
 import tastebase.database.SQLConnector;
-import tastebase.database.TrieDAO;
-import tastebase.obj.Item;
 import tastebase.obj.Recipe;
 
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 

@@ -10,4 +10,5 @@ SPN_KEY=${SPN_KEY}
 server.port=3001
 spring.security.oauth2.client.registration.google.client-id=912293105039-661kp1ev3u6gjdpv205ati257nf6cbtf.apps.googleusercontent.com
 spring.security.oauth2.client.registration.google.client-secret=${GOOGLE_CLIENT_SECRET}
+springdoc.swagger-ui.url=/v3/api-docs
 jwt.key=${JWT_KEY}

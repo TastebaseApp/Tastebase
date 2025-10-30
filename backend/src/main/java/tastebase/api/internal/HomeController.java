@@ -1,6 +1,7 @@
 package tastebase.api.internal;
 
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
+@Tag(name = "Home", description = "Miscellaneous end points")
 public class HomeController {
     @GetMapping("/")
     public String redirectToSwagger(HttpServletResponse response) throws IOException {

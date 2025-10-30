@@ -3,6 +3,8 @@ package tastebase.api.internal;
 import com.google.gson.JsonArray;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/pantry")
+@SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Pantry", description = "Endpoints for pantry management")
 public class PantryController {
     private final PantryService pantryService;
 

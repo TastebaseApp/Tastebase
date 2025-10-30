@@ -2,6 +2,7 @@ package tastebase.api.internal;
 
 import com.google.gson.JsonArray;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -12,6 +13,7 @@ import tastebase.obj.Recipe;
 
 @RestController
 @RequestMapping("/api/recipes/")
+@Tag(name = "Recipes", description = "Endpoints for recipe searching")
 public class RecipeController {
     private final RecipeService recipeService;
 

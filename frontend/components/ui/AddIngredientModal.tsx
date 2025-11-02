@@ -17,76 +17,21 @@ import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { rgbaColor } from "react-native-reanimated/lib/typescript/Colors";
 
-type ParseResult = { added: number; skipped: string[] };
-
-export async function parseAndAddItems(
-  raw: string,
-  addItem: (amt: number, unit: string, name: string) => Promise<void>
-): Promise<ParseResult> {
-  const skipped: string[] = [];
-  let added = 0;
-
-  const entries = raw
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-
-  for (const entry of entries) {
-    const parts = entry.split(/\s+/).filter(Boolean);
-
-    if (parts.length < 1) {
-      skipped.push(entry);
-      continue;
-    }
-
-    let amt = 0;
-    if (!Number.isFinite(amt)) {
-      skipped.push(entry);
-      continue;
-    }
-
-    let unit: string;
-    let name: string;
-
-    if (parts.length === 2) {
-      unit = parts[1];
-      name = parts[1];
-      amt = Number(parts[0]);
-    } else if (parts.length === 1) {
-      amt = 1;
-      unit = parts[0];
-      name = parts[0];
-    } else {
-      amt = Number(parts[0]);
-      unit = parts[1];
-      name = parts.slice(2).join(" ");
-    }
-
-    if (!name) {
-      skipped.push(entry);
-      continue;
-    }
-
-    await addItem(amt, unit, name);
-    added++;
-  }
-
-  return { added, skipped };
-}
-
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onAdd: (raw: string) => Promise<ParseResult>;
+  onAdd: (items: SubmitRow[]) => Promise<void>;
 };
+
+type SubmitRow = {id: number, amount: number; unit: string; name: string };
 
 export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [unit, setUnit] = useState("");
 
-  type Row = { id: string; amount: string; unit: string; name: string };
-  const uid = () => Math.random().toString(36).slice(2, 9);
+  type Row = { id: number; amount: string; unit: string; name: string };
+  const uid = () => Math.floor(Math.random() * 1000) + 1; // IMPERMANENT UNIQUE ID GENERATOR
 
   const [rows, setRows] = useState<Row[]>([
     { id: uid(), amount: "", unit: "", name: "" },
@@ -95,10 +40,10 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
   const addRow = () =>
     setRows((r) => [...r, { id: uid(), amount: "", unit: "", name: "" }]);
 
-  const updateRow = (id: string, key: keyof Row) => (val: string) =>
+  const updateRow = (id: number, key: keyof Row) => (val: string) =>
     setRows((r) => r.map((x) => (x.id === id ? { ...x, [key]: val } : x)));
 
-  const removeRow = (id: string) =>
+  const removeRow = (id: number) =>
     setRows((r) => (r.length === 1 ? r : r.filter((x) => x.id !== id)));
 
   const bg = useThemeColor({}, "background");
@@ -198,7 +143,6 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
             <TouchableOpacity
               style={styles.btn}
               onPress={async () => {
-                // only include rows that have a name
                 const items = rows
                   .filter((r) => r.name.trim().length)
                   .map((r) => {
@@ -206,22 +150,17 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
                     const amt =
                       Number.isFinite(amtNum) && amtNum > 0 ? amtNum : 1;
                     const unitStr = r.unit.trim();
-                    const nameStr = r.name.trim();
-                    // collapse extra spaces, then trim
-                    return `${amt} ${unitStr} ${nameStr}`
-                      .replace(/\s+/g, " ")
-                      .trim();
+                    const nameStr = r.name.trim().replace(/\s+/g, " ");
+                    const idStr = r.id;
+                    return { id: idStr, amount: amt, unit: unitStr, name: nameStr };
                   });
 
                 if (!items.length) {
-                  // nothing valid to add; you can show a toast/snackbar here if you want
                   return;
                 }
 
-                // join for your existing parser "1 cup Sugar, 2 tsp Salt, ..."
-                const raw = items.join(", ");
-                await onAdd(raw); // <-- await the async call so failures bubble up
-                onClose(); // optional: close on success
+                await onAdd(items); // pass structured rows directly
+                onClose();
               }}
             >
               <ThemedText style={{ fontWeight: "600" }}>Add</ThemedText>

@@ -7,7 +7,6 @@ import { ThemedView as ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { AddIngredientButton } from '@/components/ui/AddIngredientButton';
 import { AddIngredientModal } from '@/components/ui/AddIngredientModal';
-import { parseAndAddItems } from '@/components/ui/AddIngredientModal';
 import IngredientList from '@/components/ui/IngredientList';
 import { usePantry } from '@/context/PantryContext';
 
@@ -15,13 +14,13 @@ import { usePantry } from '@/context/PantryContext';
 export default function TabPantryScreen() {
   const [showAdd, setShowAdd] = useState(false);
   const { addItem } = usePantry();
-
-  const handleAdd = async (raw: string) => {
-    const result = await parseAndAddItems(raw, addItem);
+  const handleAdd = async (items: { amount: number; unit: string; name: string; id: number }[]) => {
+    for (const it of items) {
+      await addItem(it.id, it.amount, it.unit, it.name);
+    }
     setShowAdd(false);
-    return result;
   };
-  
+
 
   return (
     <ParallaxScrollView

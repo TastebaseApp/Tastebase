@@ -40,6 +40,7 @@ public class SecurityConfig {
             JwtLogoutHandler jwtLogoutHandler) throws Exception {
 
         http
+                .cors().and()
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .antMatchers("/home", "/whoami").authenticated()

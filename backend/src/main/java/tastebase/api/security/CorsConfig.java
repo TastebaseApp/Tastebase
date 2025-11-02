@@ -21,7 +21,7 @@ public class CorsConfig {
                         .allowedOriginPatterns("*")
                         .allowedMethods("*")
                         .allowedHeaders("*")
-                        .exposedHeaders("*")
+                        .exposedHeaders("Authorization", "Content-Type", "token")
                         .allowCredentials(true);
             }
         };
@@ -33,12 +33,12 @@ public class CorsConfig {
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:*",
                 "https://localhost:*",
-                "http://tastebase.dylanpriebe.cc:*",
-                "https://tastebase.dylanpriebe.cc:*"
+                "http://tastebase.dylanpriebe.cc",
+                "https://tastebase.dylanpriebe.cc"
         ));
-        config.setAllowedMethods(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setExposedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization", "Content-Type", "token"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

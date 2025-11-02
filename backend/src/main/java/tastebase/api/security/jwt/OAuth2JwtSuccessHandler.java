@@ -38,8 +38,12 @@ public class OAuth2JwtSuccessHandler implements AuthenticationSuccessHandler {
 
         String token = jwtUtil.generateToken(email);
 
-        SavedRequest savedRequest = requestCache.getRequest(request, response);
-        String redirectUri = (savedRequest != null) ? savedRequest.getRedirectUrl() : "/";
+        String redirectUri = (String) request.getSession().getAttribute("frontend_redirect_uri");
+
+        if (redirectUri == null || redirectUri.isEmpty()) {
+            SavedRequest savedRequest = requestCache.getRequest(request, response);
+            redirectUri = (savedRequest != null) ? savedRequest.getRedirectUrl() : "/";
+        }
 
         String redirectWithToken = UriComponentsBuilder.fromUriString(redirectUri)
                 .replaceQueryParam("token", token)

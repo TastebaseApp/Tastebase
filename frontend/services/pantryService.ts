@@ -1,28 +1,73 @@
-import { Item, Pantry } from '../types/pantry';
+import { Item } from '../types/pantry';
+import { parsePantryItems } from '../utils/pantryParser';
 
-let nextId = 100;
-const pantry: Pantry = {
-  pantryID: 1,
-  pantryName: 'Main Pantry',
-  pantryItems: [
-    // { itemID: nextId++, itemName: 'Flour', amount: { amount: 1, unit: 'kg' } },
-    // { itemID: nextId++, itemName: 'Salt', amount: { amount: 0.5, unit: 'kg' } },
-  ],
-};
+const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
+const pantry = {
+  pantryItems: [] as Item[],
+  nextId: 0,
+} 
 
+async function getJson<T>(response: Response): Promise<T> {
+  const text = await response.text();
+  try {
+    return JSON.parse(text) as T;
+  } catch (e) {
+    throw new Error('Failed to parse JSON response');
+  }
+}
 
 export const pantryService = {
-  async listItems(): Promise<Item[]> {
-    await new Promise((r) => setTimeout(r, 150));
-    return pantry.pantryItems.map((i) => ({ ...i, amount: { ...i.amount } }));
+  /**
+   * Lists all pantry items from the API
+   * @param token - Authentication token
+   * @returns Promise resolving to array of Item objects
+   */
+  async listItems(token: string | null): Promise<Item[]> {
+    if (!token) {
+      throw new Error('Authentication token required');
+    }
+
+    const url = `${API_BASE}/api/pantry/items`;
+    
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch pantry items (${response.status})`);
+      }
+
+      const data = await getJson<any[]>(response);
+      const items = parsePantryItems(data);
+      
+      // Update local list with API data
+      pantry.pantryItems = items;
+      
+      return items.map((i) => ({ ...i, amount: { ...i.amount } }));
+    } catch (error) {
+      // Network or API error — fall back to local behavior but surface the
+      // error in the console so it's visible during development.
+      // eslint-disable-next-line no-console
+      console.error("Failed to fetch items via API, using local fallback:", error);
+
+      // Local in-memory behavior (same as previous implementation)
+      await new Promise((r) => setTimeout(r, 150));
+      return pantry.pantryItems.map((i) => ({ ...i, amount: { ...i.amount } }));
+    }
   },
-  async addItem(amt: number, unit: string, name: string, id: number): Promise<Item> { // Realistically we would need to doublecheck everything against the API here. Same for remove.
+  async addItem(id: number, amt: number, unit: string, name: string, token: string | null): Promise<Item> { // Realistically we would need to doublecheck everything against the API here. Same for remove.
     console.log('[pantryService] addItem called', { amt, unit, name, id });
+    if (!token) {
+      throw new Error('Authentication token required');
+    }
 
-    const url = "https://tastebase.dylanpriebe.cc/api/pantry/add";
-
-    const token = "AUTH-TOKEN"; // Replace with actual token retrieval logic
+    const url = `${API_BASE}/api/pantry/add`;
 
     const body = {
       ingredientId: id, // Need to find a way to retrieve ID
@@ -49,7 +94,7 @@ export const pantryService = {
 
       const data = await response.json();
       const item: Item = {
-        itemID: (data.itemID ?? data.id) || nextId++,
+        itemID: (data.itemID ?? data.id) || pantry.nextId++,
         itemName: data.ingredientName ?? data.itemName ?? name,
         amount: {
           amount: data.amount?.amount ?? amt,
@@ -98,7 +143,7 @@ export const pantryService = {
       }
 
       const newItem: Item = {
-        itemID: nextId++,
+        itemID: pantry.nextId++,
         itemName: name,
         amount: { amount: amt, unit: unit },
       };
@@ -106,16 +151,57 @@ export const pantryService = {
       return { ...newItem, amount: { ...newItem.amount } };
     }
   },
-  async removeAmount(itemID: number, amt: number): Promise<Item | null> {
-    await new Promise((r) => setTimeout(r, 120));
-    const item = pantry.pantryItems.find(i => i.itemID === itemID);
-    if (!item) throw new Error('Item not found');
-    item.amount.amount -= amt;
-    if (item.amount.amount <= 0) {
-      pantry.pantryItems = pantry.pantryItems.filter(i => i.itemID !== itemID);
-      return null;
+
+  /**
+   * Removes an ingredient from the pantry via API
+   * @param itemID - ID of the item to remove
+   * @param token - Authentication token
+   * @returns Promise that resolves when the item is removed
+   */
+  async removeIngredient(itemID: number, token: string | null): Promise<void> {
+    if (!token) {
+      throw new Error('Authentication token required');
     }
-    return { ...item, amount: { ...item.amount } };
+
+    const url = `${API_BASE}/api/pantry/remove?id=${itemID}`;
+    
+    try {
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Item not found');
+        }
+        throw new Error(`Failed to remove pantry item (${response.status})`);
+      }
+
+      // Remove from local list on success
+      const index = pantry.pantryItems.findIndex(i => i.itemID === itemID);
+      if (index !== -1) {
+        pantry.pantryItems.splice(index, 1);
+      }
+    } catch (error) {
+      // Network or API error — fall back to local behavior but surface the
+      // error in the console so it's visible during development.
+      // eslint-disable-next-line no-console
+      console.error("Failed to remove item via API, using local fallback:", error);
+
+      // Local in-memory behavior (same as previous implementation)
+      await new Promise((r) => setTimeout(r, 120));
+      
+      const index = pantry.pantryItems.findIndex(i => i.itemID === itemID);
+      if (index === -1) {
+        throw new Error('Item not found');
+      }
+      
+      pantry.pantryItems.splice(index, 1);
+    }
   },
 };
 

@@ -16,14 +16,14 @@ type Props = {
 };
 
 export default function RemoveIngredientButton({ itemID, currentAmount, unit }: Props) {
-  const { removeAmount } = usePantry();
+  const { removeIngredient } = usePantry();
   const [val, setVal] = useState('');
   const iconColor = useThemeColor({}, 'text');
 
   const onMinus = async () => {
-    const amt = parseFloat(val);
-    if (!Number.isFinite(amt) || amt <= 0) return;
-    await removeAmount(itemID, amt);
+    // Since removeIngredient removes the entire ingredient, we can ignore the amount input
+    // or use it just for confirmation. For now, we'll remove the ingredient regardless of amount.
+    await removeIngredient(itemID);
     setVal('');
   };
 

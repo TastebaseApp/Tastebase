@@ -7,6 +7,7 @@ type ContextShape = {
   token: string | null;
   loading: boolean;
   login: () => void;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<ContextShape | undefined>(undefined);
@@ -59,6 +60,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  /**
+   * Logs out the user by:
+   * 1. Calling the backend /logout endpoint to blacklist the token
+   * 2. Removing token from localStorage
+   * 3. Clearing token from state
+   */
+  const logout = useCallback(async () => {
+    const currentToken = token;
+    
+    // If already logged out (no token), nothing to do
+    if (!currentToken) {
+      console.log('Already logged out');
+      return;
+    }
+    
+    // Clear token from state immediately
+    setToken(null);
+    hasInitiatedLogin.current = false;
+    
+    // Remove token from localStorage
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem('auth_token');
+    }
+    
+    // Call backend logout endpoint to blacklist the token
+    if (currentToken) {
+      try {
+        const logoutUrl = `${API_BASE}/logout`;
+        await fetch(logoutUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${currentToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+      } catch (error) {
+        console.error('Failed to call backend logout endpoint:', error);
+        // Continue with logout anyway - token is already cleared locally
+      }
+    }
+  }, [token]);
+
   useEffect(() => {
     // Extract token from URL (handles both expo-router params and direct URL parsing)
     const urlToken = getTokenFromUrl();
@@ -101,7 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [token, loading, login, getTokenFromUrl]);
 
   return (
-    <AuthContext.Provider value={{ token, loading, login }}>
+    <AuthContext.Provider value={{ token, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

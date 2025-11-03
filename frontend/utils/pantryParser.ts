@@ -215,10 +215,61 @@ export function convertItemUnits(
   };
 }
 
+// Backend pantry API types (different from Spoonacular API format)
+export interface PantryApiIngredient {
+  ingredientId: number;
+  ingredientName: string;
+  amount: {
+    amount: number;
+    unit: string;
+  };
+}
+
+/**
+ * Parses pantry API response (array of Ingredient objects) into frontend Item format
+ * @param jsonData - Array of pantry API Ingredient objects or JSON string
+ * @returns Array of Item objects compatible with frontend types
+ */
+export function parsePantryItems(
+  jsonData: PantryApiIngredient[] | string
+): Item[] {
+  // Parse JSON string if needed
+  const data: PantryApiIngredient[] = typeof jsonData === 'string' 
+    ? JSON.parse(jsonData) 
+    : jsonData;
+
+  if (!Array.isArray(data)) {
+    throw new Error('Invalid pantry data: expected array of ingredients');
+  }
+
+  return data.map((ingredient) => {
+    // Validate ingredient structure
+    if (ingredient.ingredientId === undefined || !ingredient.ingredientName || !ingredient.amount) {
+      throw new Error(`Invalid pantry ingredient: missing required fields`);
+    }
+
+    // Create quantity object
+    const quantity: Quantity = {
+      amount: ingredient.amount.amount,
+      unit: ingredient.amount.unit || 'unit' // fallback for empty units
+    };
+
+    // Create item object
+    const item: Item = {
+      itemID: ingredient.ingredientId,
+      itemName: ingredient.ingredientName.trim(),
+      amount: quantity
+    };
+
+    return item;
+  });
+}
+
 // Default export for convenience
 export default {
   parseIngredients,
   parseSingleIngredient,
   validateIngredientsFormat,
-  convertItemUnits
+  convertItemUnits,
+  parsePantryItems
 };

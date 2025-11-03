@@ -29,20 +29,37 @@ export const pantryService = {
     }
 
     const url = `${API_BASE}/api/pantry/items`;
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json',
-      },
-    });
+    
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch pantry items (${response.status})`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch pantry items (${response.status})`);
+      }
+
+      const data = await getJson<any[]>(response);
+      const items = parsePantryItems(data);
+      
+      // Update local list with API data
+      pantry.pantryItems = items;
+      
+      return items.map((i) => ({ ...i, amount: { ...i.amount } }));
+    } catch (error) {
+      // Network or API error — fall back to local behavior but surface the
+      // error in the console so it's visible during development.
+      // eslint-disable-next-line no-console
+      console.error("Failed to fetch items via API, using local fallback:", error);
+
+      // Local in-memory behavior (same as previous implementation)
+      await new Promise((r) => setTimeout(r, 150));
+      return pantry.pantryItems.map((i) => ({ ...i, amount: { ...i.amount } }));
     }
-
-    const data = await getJson<any[]>(response);
-    return parsePantryItems(data);
   },
   async addItem(id: number, amt: number, unit: string, name: string, token: string | null): Promise<Item> { // Realistically we would need to doublecheck everything against the API here. Same for remove.
     console.log('[pantryService] addItem called', { amt, unit, name, id });
@@ -147,19 +164,43 @@ export const pantryService = {
     }
 
     const url = `${API_BASE}/api/pantry/remove?id=${itemID}`;
-    const response = await fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json',
-      },
-    });
+    
+    try {
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
+      });
 
-    if (!response.ok) {
-      if (response.status === 404) {
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Item not found');
+        }
+        throw new Error(`Failed to remove pantry item (${response.status})`);
+      }
+
+      // Remove from local list on success
+      const index = pantry.pantryItems.findIndex(i => i.itemID === itemID);
+      if (index !== -1) {
+        pantry.pantryItems.splice(index, 1);
+      }
+    } catch (error) {
+      // Network or API error — fall back to local behavior but surface the
+      // error in the console so it's visible during development.
+      // eslint-disable-next-line no-console
+      console.error("Failed to remove item via API, using local fallback:", error);
+
+      // Local in-memory behavior (same as previous implementation)
+      await new Promise((r) => setTimeout(r, 120));
+      
+      const index = pantry.pantryItems.findIndex(i => i.itemID === itemID);
+      if (index === -1) {
         throw new Error('Item not found');
       }
-      throw new Error(`Failed to remove pantry item (${response.status})`);
+      
+      pantry.pantryItems.splice(index, 1);
     }
   },
 };

@@ -65,6 +65,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // First check URL params (for OAuth redirect) - but only process once
     if (urlToken && !token) {
+      // Store token in localStorage for persistence
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('auth_token', urlToken);
+      }
       setToken(urlToken);
       // Remove token from URL to prevent re-processing (after a short delay to avoid re-trigger)
       if (typeof window !== 'undefined') {
@@ -79,12 +83,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
-    // Trigger login automatically if no token exists and login hasn't been initiated
-    if (!token && !hasInitiatedLogin.current) {
+    // On initial load, check localStorage for stored token
+    if (loading && !token && !hasInitiatedLogin.current) {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const storedToken = localStorage.getItem('auth_token');
+        if (storedToken) {
+          setToken(storedToken);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Trigger login automatically if no token exists anywhere
       setLoading(false);
       login();
     }
-  }, [token, login, getTokenFromUrl]);
+  }, [token, loading, login, getTokenFromUrl]);
 
   return (
     <AuthContext.Provider value={{ token, loading, login }}>

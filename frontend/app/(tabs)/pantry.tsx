@@ -14,13 +14,13 @@ import { usePantry } from '@/context/PantryContext';
 export default function TabPantryScreen() {
   const [showAdd, setShowAdd] = useState(false);
   const { addItem } = usePantry();
-  const handleAdd = async (items: { amount: number; unit: string; name: string }[]) => {
+  const handleAdd = async (items: { amount: number; unit: string; name: string; id: number }[]) => {
     for (const it of items) {
-      await addItem(it.amount, it.unit, it.name);
+      await addItem(it.id, it.amount, it.unit, it.name);
     }
     setShowAdd(false);
   };
-  
+
 
   return (
     <ParallaxScrollView

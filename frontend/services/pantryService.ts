@@ -17,15 +17,15 @@ export const pantryService = {
     await new Promise((r) => setTimeout(r, 150));
     return pantry.pantryItems.map((i) => ({ ...i, amount: { ...i.amount } }));
   },
-  async addItem(amt: number, unit: string, name: string): Promise<Item> { // Realistically we would need to doublecheck everything against the API here. Same for remove.
-    console.log('[pantryService] addItem called', { amt, unit, name });
+  async addItem(amt: number, unit: string, name: string, id: number): Promise<Item> { // Realistically we would need to doublecheck everything against the API here. Same for remove.
+    console.log('[pantryService] addItem called', { amt, unit, name, id });
 
     const url = "https://tastebase.dylanpriebe.cc/api/pantry/add";
 
     const token = "AUTH-TOKEN"; // Replace with actual token retrieval logic
 
     const body = {
-      ingredientId: 2, // Need to find a way to retrieve ID
+      ingredientId: id, // Need to find a way to retrieve ID
       ingredientName: name,
       amount: { amount: amt, unit },
     };

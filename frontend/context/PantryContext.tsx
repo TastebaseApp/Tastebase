@@ -7,7 +7,7 @@ type ContextShape = {
   loading: boolean;
   error?: string;
   refresh: () => Promise<void>;
-  addItem: (amt: number, unit: string, name: string) => Promise<void>;
+  addItem: (id: number, amt: number, unit: string, name: string) => Promise<void>;
   removeAmount: (itemID: number, amt: number) => Promise<void>;
 };
 
@@ -31,9 +31,9 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
-  const addItem = async (amt: number, unit: string, name: string) => {
+  const addItem = async (id: number, amt: number, unit: string, name: string) => {
     const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
-    const updated = await pantryService.addItem(amt, unit, name);
+    const updated = await pantryService.addItem(amt, unit, name, id);
     setItems(prev => {
       const idx = prev.findIndex(
         i => i.itemID === updated.itemID ||

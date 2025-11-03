@@ -23,15 +23,15 @@ type Props = {
   onAdd: (items: SubmitRow[]) => Promise<void>;
 };
 
-type SubmitRow = { amount: number; unit: string; name: string };
+type SubmitRow = {id: number, amount: number; unit: string; name: string };
 
 export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [unit, setUnit] = useState("");
 
-  type Row = { id: string; amount: string; unit: string; name: string };
-  const uid = () => Math.random().toString(36).slice(2, 9);
+  type Row = { id: number; amount: string; unit: string; name: string };
+  const uid = () => Math.floor(Math.random() * 1000) + 1; // IMPERMANENT UNIQUE ID GENERATOR
 
   const [rows, setRows] = useState<Row[]>([
     { id: uid(), amount: "", unit: "", name: "" },
@@ -40,10 +40,10 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
   const addRow = () =>
     setRows((r) => [...r, { id: uid(), amount: "", unit: "", name: "" }]);
 
-  const updateRow = (id: string, key: keyof Row) => (val: string) =>
+  const updateRow = (id: number, key: keyof Row) => (val: string) =>
     setRows((r) => r.map((x) => (x.id === id ? { ...x, [key]: val } : x)));
 
-  const removeRow = (id: string) =>
+  const removeRow = (id: number) =>
     setRows((r) => (r.length === 1 ? r : r.filter((x) => x.id !== id)));
 
   const bg = useThemeColor({}, "background");
@@ -151,7 +151,8 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
                       Number.isFinite(amtNum) && amtNum > 0 ? amtNum : 1;
                     const unitStr = r.unit.trim();
                     const nameStr = r.name.trim().replace(/\s+/g, " ");
-                    return { amount: amt, unit: unitStr, name: nameStr };
+                    const idStr = r.id;
+                    return { id: idStr, amount: amt, unit: unitStr, name: nameStr };
                   });
 
                 if (!items.length) {

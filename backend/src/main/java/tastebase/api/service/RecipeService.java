@@ -64,11 +64,6 @@ public class RecipeService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        for (var element : recipe.getFullRecipe().getAsJsonArray("extendedIngredients")) {
-            JsonObject ingredient = element.getAsJsonObject();
-            pantryService.addIngredientToTrie(ingredient.get("nameClean").getAsString());
-        }
     }
 
     public static boolean hasRecipe(int id) {

@@ -34,16 +34,6 @@ public class PantryController {
         return pantryService.getItems(user.getPantry());
     }
 
-    @GetMapping("/autocomplete-ingredients")
-    @Operation(summary = "Autocomplete ingredients", description = "Returns a json list of ingredients that match the query.")
-    public JsonArray autocompleteIngredients(@RequestParam String query) {
-        if (query == null || query.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No query provided");
-        }
-
-        return pantryService.searchIngredients(query);
-    }
-
     @PutMapping("/add")
     @Operation(summary = "Add an item", description = "Add an individual item to the pantry.")
     public Boolean addPantryItem(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody Ingredient ingredient) {

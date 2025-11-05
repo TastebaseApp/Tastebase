@@ -95,8 +95,8 @@ public class SpoonacularService {
         }
     }
 
-    public List<JsonElement> searchIngredients(String query) {
-        String url = baseUrl + "food/ingredients/autocomplete?query=" + query + "&number=5&apiKey=" + apiKey;
+    public List<JsonElement> searchIngredients(String query, int number) {
+        String url = baseUrl + "food/ingredients/autocomplete?query=" + query + "&number=" + number + "&metaInformation=true&apiKey=" + apiKey;
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()

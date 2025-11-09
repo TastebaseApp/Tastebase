@@ -23,6 +23,15 @@ export interface BackendIngredientsResponse {
   ingredients: BackendIngredient[];
 }
 
+// Type for ingredient search API response (direct array format)
+export interface SearchIngredientResponse {
+  name: string;
+  image: string;
+  id: number;
+  aisle: string;
+  possibleUnits: string[];
+}
+
 // Parser configuration
 export interface ParserConfig {
   useMetricUnits?: boolean; // true for metric, false for US units
@@ -30,64 +39,42 @@ export interface ParserConfig {
 }
 
 /**
- * Parses backend ingredients JSON and converts to frontend Item format
- * @param jsonData - The backend ingredients JSON response
- * @param config - Optional configuration for parsing behavior
+ * Parses ingredient search API response and converts to frontend Item format
+ * @param jsonData - The ingredient search API response (array of SearchIngredientResponse or JSON string)
  * @returns Array of Item objects compatible with frontend types
  */
 export function parseIngredients(
-  jsonData: BackendIngredientsResponse | string,
-  config: ParserConfig = {}
+  jsonData: SearchIngredientResponse[] | string
 ): Item[] {
-  const {
-    useMetricUnits = true,
-    providedIds = []
-  } = config;
-
   // Parse JSON string if needed
-  const data: BackendIngredientsResponse = typeof jsonData === 'string' 
+  const parsedData: SearchIngredientResponse[] = typeof jsonData === 'string' 
     ? JSON.parse(jsonData) 
     : jsonData;
 
-  if (!data.ingredients || !Array.isArray(data.ingredients)) {
+  if (!Array.isArray(parsedData)) {
     throw new Error('Invalid ingredients data: expected array of ingredients');
   }
 
-  return data.ingredients.map((ingredient, index) => {
+  return parsedData.map((ingredient: SearchIngredientResponse, index: number) => {
     // Validate ingredient structure
-    if (!ingredient.name || !ingredient.amount) {
-      throw new Error(`Invalid ingredient at index ${index}: missing name or amount`);
+    if (!ingredient.name || ingredient.id === undefined) {
+      throw new Error(`Invalid ingredient at index ${index}: missing name or id`);
     }
 
-    // Choose unit system
-    const amountData = useMetricUnits ? ingredient.amount.metric : ingredient.amount.us;
-    
-    // Create quantity object
+    // Use first possible unit, or default to "unit" if none available
+    const defaultUnit = ingredient.possibleUnits && ingredient.possibleUnits.length > 0
+      ? ingredient.possibleUnits[0]
+      : 'unit';
+
+    // Create quantity object with default amount of 1
     const quantity: Quantity = {
-      amount: amountData.value,
-      unit: amountData.unit || 'unit' // fallback for empty units
+      amount: 1,
+      unit: defaultUnit
     };
-
-    // Determine item ID with priority order:
-    // 1. ID from JSON data (if present)
-    // 2. ID from providedIds array (if available)
-    // 3. 0 (fallback)
-    let itemId: number;
-    
-    if (ingredient.id !== undefined && ingredient.id !== null) {
-      // Use ID from JSON data
-      itemId = ingredient.id;
-    } else if (providedIds.length > index && providedIds[index] !== undefined) {
-      // Use provided ID for this index
-      itemId = providedIds[index];
-    } else {
-      // Fallback to 0
-      itemId = 0;
-    }
 
     // Create item object
     const item: Item = {
-      itemID: itemId,
+      itemID: ingredient.id,
       itemName: ingredient.name.trim(),
       amount: quantity
     };

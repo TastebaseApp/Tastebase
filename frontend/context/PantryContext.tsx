@@ -3,11 +3,14 @@ import { Item } from '../types/pantry';
 import pantryService from '../services/pantryService';
 import { useAuth } from './AuthContext';
 
+const MAX_INGREDIENTS = 10;
+
 type ContextShape = {
   items: Item[];
   loading: boolean;
   error?: string;
   refresh: () => Promise<void>;
+  searchIngredient: (query: string) => Promise<Item[]>;
   addItem: (id: number, amt: number, unit: string, name: string) => Promise<void>;
   removeIngredient: (itemID: number) => Promise<void>;
 };
@@ -38,6 +41,20 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setLoading(false);
     }
   }, [token]);
+
+  const searchIngredient = async (query: string) => {
+    if (!token) {
+      setError('Authentication required');
+      return [];
+    }
+    try {
+      const list = await pantryService.searchIngredient(query, MAX_INGREDIENTS);
+      return list;
+    } catch (e: any) {
+      setError(e?.message ?? 'Failed to search ingredients');
+      return [];
+    }
+  };
 
   const addItem = async (id: number, amt: number, unit: string, name: string) => {
     if (!token) {
@@ -81,7 +98,7 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [token, load]);
 
   return (
-    <PantryContext.Provider value={{ items, loading, error, refresh: load, addItem, removeIngredient }}>
+    <PantryContext.Provider value={{ items, loading, error, refresh: load, searchIngredient, addItem, removeIngredient }}>
       {children}
     </PantryContext.Provider>
   );

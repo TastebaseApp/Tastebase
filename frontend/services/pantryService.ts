@@ -1,5 +1,5 @@
 import { Item } from '../types/pantry';
-import { parsePantryItems } from '../utils/pantryParser';
+import { SearchIngredientResponse, parseIngredients, parsePantryItems } from '../utils/pantryParser';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
@@ -61,6 +61,19 @@ export const pantryService = {
       return pantry.pantryItems.map((i) => ({ ...i, amount: { ...i.amount } }));
     }
   },
+
+  async searchIngredient(query: string, number: number): Promise<Item[]> {
+    const url = `${API_BASE}/api/ingredients/getIngredients?query=${query}&number=${number}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+    const data = await getJson<SearchIngredientResponse[]>(response);
+    return parseIngredients(data);
+  },
+  
   async addItem(id: number, amt: number, unit: string, name: string, token: string | null): Promise<Item> { // Realistically we would need to doublecheck everything against the API here. Same for remove.
     console.log('[pantryService] addItem called', { amt, unit, name, id });
     if (!token) {

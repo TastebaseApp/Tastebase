@@ -1,10 +1,10 @@
-import { Item } from '../types/pantry';
-import { SearchIngredientResponse, parseIngredients, parsePantryItems } from '../utils/pantryParser';
+import { Ingredient } from '../types/pantry';
+import { SearchIngredientResponse, parseIngredients, parsePantryIngredients } from '../utils/pantryParser';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
 const pantry = {
-  pantryItems: [] as Item[],
+  pantryItems: [] as Ingredient[],
   nextId: 0,
 } 
 
@@ -19,11 +19,11 @@ async function getJson<T>(response: Response): Promise<T> {
 
 export const pantryService = {
   /**
-   * Lists all pantry items from the API
+   * Lists all pantry ingredients from the API
    * @param token - Authentication token
-   * @returns Promise resolving to array of Item objects
+   * @returns Promise resolving to array of Ingredient objects
    */
-  async listItems(token: string | null): Promise<Item[]> {
+  async listIngredients(token: string | null): Promise<Ingredient[]> {
     if (!token) {
       throw new Error('Authentication token required');
     }
@@ -44,12 +44,12 @@ export const pantryService = {
       }
 
       const data = await getJson<any[]>(response);
-      const items = parsePantryItems(data);
+      const ingredients = parsePantryIngredients(data);
       
       // Update local list with API data
-      pantry.pantryItems = items;
+      pantry.pantryItems = ingredients;
       
-      return items.map((i) => ({ ...i, amount: { ...i.amount } }));
+      return ingredients.map((i) => ({ ...i, amount: { ...i.amount } }));
     } catch (error) {
       // Network or API error — fall back to local behavior but surface the
       // error in the console so it's visible during development.
@@ -62,7 +62,7 @@ export const pantryService = {
     }
   },
 
-  async searchIngredient(query: string, number: number): Promise<Item[]> {
+  async searchIngredient(query: string, number: number): Promise<Ingredient[]> {
     const url = `${API_BASE}/api/ingredients/getIngredients?query=${query}&number=${number}`;
     const response = await fetch(url, {
       method: 'GET',
@@ -74,8 +74,8 @@ export const pantryService = {
     return parseIngredients(data);
   },
   
-  async addItem(id: number, amt: number, unit: string, name: string, token: string | null): Promise<Item> { // Realistically we would need to doublecheck everything against the API here. Same for remove.
-    console.log('[pantryService] addItem called', { amt, unit, name, id });
+  async addIngredient(id: number, amt: number, unit: string, name: string, token: string | null): Promise<Ingredient> { // Realistically we would need to doublecheck everything against the API here. Same for remove.
+    console.log('[pantryService] addIngredient called', { amt, unit, name, id });
     if (!token) {
       throw new Error('Authentication token required');
     }
@@ -101,12 +101,12 @@ export const pantryService = {
       if (!response.ok) {
         const text = await response.text().catch(() => '<no body>');
         const err = new Error(`Remote add failed: ${response.status} ${response.statusText} - ${text}`);
-        console.error('pantryService.addItem:', err);
+        console.error('pantryService.addIngredient:', err);
         throw err;
       }
 
       const data = await response.json();
-      const item: Item = {
+      const item: Ingredient = {
         itemID: (data.itemID ?? data.id) || pantry.nextId++,
         itemName: data.ingredientName ?? data.itemName ?? name,
         amount: {
@@ -155,7 +155,7 @@ export const pantryService = {
         return { ...existing, amount: { ...existing.amount } };
       }
 
-      const newItem: Item = {
+      const newItem: Ingredient = {
         itemID: pantry.nextId++,
         itemName: name,
         amount: { amount: amt, unit: unit },

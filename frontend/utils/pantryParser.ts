@@ -1,4 +1,4 @@
-import { Item, Quantity } from '../types/pantry';
+import { Ingredient, Quantity } from '../types/pantry';
 
 // Backend JSON types for ingredients
 export interface BackendIngredientAmount {
@@ -39,13 +39,13 @@ export interface ParserConfig {
 }
 
 /**
- * Parses ingredient search API response and converts to frontend Item format
+ * Parses ingredient search API response and converts to frontend Ingredient format
  * @param jsonData - The ingredient search API response (array of SearchIngredientResponse or JSON string)
- * @returns Array of Item objects compatible with frontend types
+ * @returns Array of Ingredient objects compatible with frontend types
  */
 export function parseIngredients(
   jsonData: SearchIngredientResponse[] | string
-): Item[] {
+): Ingredient[] {
   // Parse JSON string if needed
   const parsedData: SearchIngredientResponse[] = typeof jsonData === 'string' 
     ? JSON.parse(jsonData) 
@@ -73,10 +73,12 @@ export function parseIngredients(
     };
 
     // Create item object
-    const item: Item = {
+    const item: Ingredient = {
       itemID: ingredient.id,
       itemName: ingredient.name.trim(),
-      amount: quantity
+      amount: quantity,
+      image: ingredient.image,
+      possibleUnits: ingredient.possibleUnits
     };
 
     return item;
@@ -88,13 +90,13 @@ export function parseIngredients(
  * @param ingredient - Single backend ingredient object
  * @param itemId - Optional ID to assign to the item (will use ingredient.id if not provided)
  * @param useMetricUnits - Whether to use metric or US units
- * @returns Item object compatible with frontend types
+ * @returns Ingredient object compatible with frontend types
  */
 export function parseSingleIngredient(
   ingredient: BackendIngredient,
   itemId?: number,
   useMetricUnits: boolean = true
-): Item {
+): Ingredient {
   if (!ingredient.name || !ingredient.amount) {
     throw new Error('Invalid ingredient: missing name or amount');
   }
@@ -171,17 +173,17 @@ export function validateIngredientsFormat(data: any): boolean {
 }
 
 /**
- * Utility function to convert between metric and US units for an existing Item
- * @param item - Item to convert
+ * Utility function to convert between metric and US units for an existing Ingredient
+ * @param item - Ingredient to convert
  * @param useMetricUnits - true for metric, false for US
  * @param backendData - Original backend data to get conversion values
- * @returns New Item with converted units
+ * @returns New Ingredient with converted units
  */
-export function convertItemUnits(
-  item: Item,
+export function convertIngredientUnits(
+  item: Ingredient,
   useMetricUnits: boolean,
   backendData: BackendIngredientsResponse
-): Item {
+): Ingredient {
   const ingredient = backendData.ingredients.find(ing => 
     ing.name.toLowerCase().trim() === item.itemName.toLowerCase().trim()
   );
@@ -213,13 +215,13 @@ export interface PantryApiIngredient {
 }
 
 /**
- * Parses pantry API response (array of Ingredient objects) into frontend Item format
+ * Parses pantry API response (array of Ingredient objects) into frontend Ingredient format
  * @param jsonData - Array of pantry API Ingredient objects or JSON string
- * @returns Array of Item objects compatible with frontend types
+ * @returns Array of Ingredient objects compatible with frontend types
  */
-export function parsePantryItems(
+export function parsePantryIngredients(
   jsonData: PantryApiIngredient[] | string
-): Item[] {
+): Ingredient[] {
   // Parse JSON string if needed
   const data: PantryApiIngredient[] = typeof jsonData === 'string' 
     ? JSON.parse(jsonData) 
@@ -242,7 +244,7 @@ export function parsePantryItems(
     };
 
     // Create item object
-    const item: Item = {
+    const item: Ingredient = {
       itemID: ingredient.ingredientId,
       itemName: ingredient.ingredientName.trim(),
       amount: quantity
@@ -257,6 +259,6 @@ export default {
   parseIngredients,
   parseSingleIngredient,
   validateIngredientsFormat,
-  convertItemUnits,
-  parsePantryItems
+  convertIngredientUnits,
+  parsePantryIngredients
 };

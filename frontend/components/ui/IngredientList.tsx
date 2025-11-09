@@ -6,7 +6,7 @@ import { Colors } from "../../constants/theme";
 import RemoveIngredientButton from "./RemoveIngredientButton";
 
 export default function IngredientList() {
-  const { items, loading, error } = usePantry(); // Pantry object from PantryContext
+  const { ingredients, loading, error } = usePantry(); // Pantry object from PantryContext
   const colorScheme = useColorScheme() || 'light';
 
   if (loading) return <ActivityIndicator />;
@@ -23,7 +23,7 @@ export default function IngredientList() {
         <ThemedText type="subtitle" style={[{ fontStyle: 'italic' }]}>Item</ThemedText>
         <ThemedText type="default" style={[{ fontStyle: 'italic' }]}>Amount</ThemedText>
       </ThemedView>
-      {items.length != 0 && items.map((item) => (
+      {ingredients.length != 0 && ingredients.map((item) => (
         <ThemedView key={item.itemID} style={[styles.row, { borderColor: Colors[colorScheme].tint }]}>
           <ThemedText type="subtitle">{item.itemName}</ThemedText>
           
@@ -35,7 +35,7 @@ export default function IngredientList() {
         </ThemedView>
 
       ))}
-      {items.length == 0 && (
+      {ingredients.length == 0 && (
         <ThemedView style={styles.message}>
           <ThemedText type="defaultSemiBold">
             Your pantry is empty. Select the + button to add ingredients. </ThemedText>

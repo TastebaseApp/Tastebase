@@ -1,17 +1,40 @@
-import { PropsWithChildren, useState } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { red } from 'react-native-reanimated/lib/typescript/Colors';
 
 type Props = {
   onPress: () => void;
 };
+
+/**
+ * Utility function to add quantity to an existing ingredient
+ * @param addIngredient - The addIngredient function from usePantry hook
+ * @param itemID - The ID of the ingredient
+ * @param amountToAdd - The amount to add
+ * @param unit - The unit of measurement
+ * @param ingredientName - The name of the ingredient
+ */
+export async function addIngredientQuantity(
+  addIngredient: (id: number, amt: number, unit: string, name: string) => Promise<void>,
+  itemID: number,
+  amountToAdd: number,
+  unit: string,
+  ingredientName: string
+): Promise<void> {
+  if (isNaN(amountToAdd) || amountToAdd <= 0) {
+    console.log('[AddIngredientButton] Invalid amount, not adding');
+    return;
+  }
+  
+  try {
+    console.log('[AddIngredientButton] Adding quantity:', { itemID, amountToAdd, unit, ingredientName });
+    await addIngredient(itemID, amountToAdd, unit, ingredientName);
+    console.log('[AddIngredientButton] Successfully added quantity');
+  } catch (error) {
+    console.error('[AddIngredientButton] Failed to add quantity:', error);
+    throw error;
+  }
+}
 
 export function AddIngredientButton({ onPress }: Props) {
   const iconColor = useThemeColor({}, 'text');

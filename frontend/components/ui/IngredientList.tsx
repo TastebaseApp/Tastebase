@@ -1,13 +1,21 @@
 import { ThemedView } from "../themed-view";
 import { ThemedText } from "../themed-text";
-import { StyleSheet, ActivityIndicator, useColorScheme, TextInput, TouchableOpacity } from "react-native";
+import { StyleSheet, ActivityIndicator, useWindowDimensions } from "react-native";
 import { usePantry } from '../../context/PantryContext';
-import { Colors } from "../../constants/theme";
-import RemoveIngredientButton from "./RemoveIngredientButton";
+import IngredientCard from "./IngredientCard";
+
+const containerPadding = 16;
+const gap = 12;
 
 export default function IngredientList() {
   const { ingredients, loading, error } = usePantry(); // Pantry object from PantryContext
-  const colorScheme = useColorScheme() || 'light';
+  const { width: screenWidth } = useWindowDimensions();
+  
+  // Calculate card width dynamically based on current window dimensions
+  // Using narrower cards (45% of available width per card) with increased gap for a more square appearance
+  const availableWidth = screenWidth - (containerPadding * 2);
+  // Use 0.45 multiplier instead of 0.5 to make cards narrower and more square
+  const cardWidth = (availableWidth * 0.45);
 
   if (loading) return <ActivityIndicator />;
 
@@ -17,61 +25,56 @@ export default function IngredientList() {
     </ThemedView>
   );
 
-  return (
-    <ThemedView style={[styles.container, { borderColor: Colors[colorScheme].tint }]}>
-      <ThemedView style={[styles.header, { borderColor: Colors[colorScheme].tint }]}>
-        <ThemedText type="subtitle" style={[{ fontStyle: 'italic' }]}>Item</ThemedText>
-        <ThemedText type="default" style={[{ fontStyle: 'italic' }]}>Amount</ThemedText>
+  if (ingredients.length === 0) {
+    return (
+      <ThemedView style={styles.emptyContainer}>
+        <ThemedText type="defaultSemiBold" style={styles.emptyText}>
+          Your pantry is empty. Select the + button to add ingredients.
+        </ThemedText>
       </ThemedView>
-      {ingredients.length != 0 && ingredients.map((item) => (
-        <ThemedView key={item.itemID} style={[styles.row, { borderColor: Colors[colorScheme].tint }]}>
-          <ThemedText type="subtitle">{item.itemName}</ThemedText>
-          
-          <RemoveIngredientButton
-            itemID={item.itemID}
-            currentAmount={item.amount.amount}
-            unit={item.amount.unit}
-          />
-        </ThemedView>
+    );
+  }
 
-      ))}
-      {ingredients.length == 0 && (
-        <ThemedView style={styles.message}>
-          <ThemedText type="defaultSemiBold">
-            Your pantry is empty. Select the + button to add ingredients. </ThemedText>
-        </ThemedView>
-      )}
+  return (
+    <ThemedView style={styles.container}>
+      <ThemedView style={styles.grid}>
+        {ingredients.map((item, index) => (
+          <ThemedView 
+            key={item.itemID} 
+            style={[
+              styles.cardWrapper, 
+              { width: cardWidth },
+              index % 2 === 0 ? { marginRight: gap } : {}
+            ]}
+          >
+            <IngredientCard ingredient={item} cardWidth={cardWidth} />
+          </ThemedView>
+        ))}
+      </ThemedView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    marginHorizontal: containerPadding,
+    marginTop: 8,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+  },
+  cardWrapper: {
+    marginBottom: 6,
+  },
+  emptyContainer: {
     marginHorizontal: 20,
-    borderRadius: 8,
-    borderWidth: 5,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderBottomWidth: 2,
-    borderStyle: 'solid',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderStyle: 'dashed',
-  },
-  message: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    textAlign: 'center',
-    paddingHorizontal: 12,
     paddingVertical: 32,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  emptyText: {
+    textAlign: 'center',
   },
 });

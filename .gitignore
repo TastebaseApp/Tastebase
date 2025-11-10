@@ -5,6 +5,8 @@
 
 backend/.env
 
+frontend\expo-env.d.ts
+
 # Node artifact files
 node_modules/
 dist/
@@ -60,3 +62,5 @@ backend/src/main/.env
 
 # Java Version
 /backend/.jdk/
+
+/frontend/.env

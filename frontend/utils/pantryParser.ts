@@ -212,6 +212,7 @@ export interface PantryApiIngredient {
     amount: number;
     unit: string;
   };
+  image?: string;
 }
 
 /**
@@ -247,7 +248,8 @@ export function parsePantryIngredients(
     const item: Ingredient = {
       itemID: ingredient.ingredientId,
       itemName: ingredient.ingredientName.trim(),
-      amount: quantity
+      amount: quantity,
+      image: ingredient.image
     };
 
     return item;

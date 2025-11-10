@@ -64,10 +64,52 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     try {
       const updated = await pantryService.addIngredient(id, amt, unit, name, token);
-      // Reload ingredients to get the latest state from the server
-      await load();
+      console.log('[PantryContext] addIngredient - updated ingredient from service:', updated);
+      
+      // Update local state immediately for better UX without full reload
+      setIngredients(prev => {
+        console.log('[PantryContext] addIngredient - current ingredients:', prev);
+        const existingIndex = prev.findIndex(
+          i => i.itemID === updated.itemID || 
+          (i.itemName.trim().toLowerCase() === updated.itemName.trim().toLowerCase() && 
+           i.amount.unit.trim().toLowerCase() === updated.amount.unit.trim().toLowerCase())
+        );
+        
+        console.log('[PantryContext] addIngredient - existingIndex:', existingIndex);
+        
+        if (existingIndex !== -1) {
+          // The service might return the new total or just the amount we sent
+          // If the backend adds it, use the returned amount; otherwise add it ourselves
+          const existingAmount = prev[existingIndex].amount.amount;
+          const returnedAmount = updated.amount.amount;
+          
+          // If returned amount is less than or equal to what we sent, backend didn't add it
+          // So we need to add it ourselves
+          const newAmount = returnedAmount <= amt 
+            ? existingAmount + amt 
+            : returnedAmount;
+          
+          console.log('[PantryContext] addIngredient - existingAmount:', existingAmount, 'returnedAmount:', returnedAmount, 'newAmount:', newAmount);
+          
+          const updatedList = [...prev];
+          updatedList[existingIndex] = {
+            ...updated,
+            amount: {
+              ...updated.amount,
+              amount: newAmount
+            }
+          };
+          console.log('[PantryContext] addIngredient - updated list:', updatedList);
+          return updatedList;
+        } else {
+          // Add new ingredient
+          return [...prev, updated];
+        }
+      });
     } catch (e: any) {
       setError(e?.message ?? 'Failed to add ingredient');
+      // Reload on error to sync state
+      await load();
     }
   };
 

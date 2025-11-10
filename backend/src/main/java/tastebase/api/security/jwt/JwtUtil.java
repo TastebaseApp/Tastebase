@@ -19,7 +19,7 @@ import java.util.Date;
 public class JwtUtil {
 
     private final SecretKey KEY;
-    private final long EXPIRATION = 1000 * 60 * 60 * 24; // 1 Day
+    private final long EXPIRATION = 1000 * 60 * 60 * 24 * 365; // 1 Year
 
     public JwtUtil() {
         byte[] keyBytes = Base64.getDecoder().decode(Config.get("jwt.key"));

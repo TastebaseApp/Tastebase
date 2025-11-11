@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tastebase.api.service.UserService;
 import tastebase.obj.User;
 import tastebase.obj.UserPrincipal;
 
@@ -21,6 +22,12 @@ import java.io.IOException;
 @RestController
 @Tag(name = "Home", description = "Miscellaneous end points")
 public class HomeController {
+    private final UserService userService;
+
+    public HomeController(UserService userService) {
+        this.userService = userService;
+    }
+
     @GetMapping("/")
     public String redirectToSwagger(HttpServletResponse response) throws IOException {
         response.sendRedirect("/swagger-ui.html");
@@ -36,7 +43,6 @@ public class HomeController {
 
     @GetMapping("/whoami")
     public User whoAmI(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal, Model model, HttpServletResponse response) throws IOException {
-        User user = principal.getUser();
-        return user;
+        return userService.getUser(principal);
     }
 }

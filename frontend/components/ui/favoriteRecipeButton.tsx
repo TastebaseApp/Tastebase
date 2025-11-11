@@ -20,11 +20,11 @@ const FavoriteRecipeButton: React.FC<FavoriteRecipeButtonProps> = ({ recipe, sty
     setIsFavorite(favoriteRecipes.some(r => r.id === recipe.id));
   }, [favoriteRecipes, recipe.id]);
 
-  const handleToggleRecipe = () => {
+  const handleToggleRecipe = async () => {
     if (isFavorite) {
-      removeRecipe(recipe);
+      await removeRecipe(recipe);
     } else {
-      addRecipe(recipe);
+      await addRecipe(recipe);
     }
 
     setIsFavorite(!isFavorite);

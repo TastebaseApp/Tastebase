@@ -10,7 +10,7 @@ const AddRecipeButton: React.FC = () => {
   // Function to handle adding a random recipe.
   const handleAddRecipe = async (): Promise<void> => {
     const randomRecipe = await getRandomRecipe();
-    addRecipe(randomRecipe);
+    await addRecipe(randomRecipe);
   };
     // Predefined cache of recipes in JSON format.
   //   const recipesCache = `

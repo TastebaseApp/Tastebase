@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import recipeService from '../services/recipeService';
 import { Recipe } from '../types/pantry';
+import * as storage from '@/utils/storage';
 import { useAuth } from './AuthContext';
 
 type ContextShape = {
@@ -9,8 +10,8 @@ type ContextShape = {
   loading: boolean;
   error?: string;
   refresh: () => Promise<void>;
-  addRecipe: (recipe: Recipe) => void; // Add recipe to favorites
-  removeRecipe: (recipe: Recipe) => void; // Remove recipe from favorites
+  addRecipe: (recipe: Recipe) => Promise<void>; // Add recipe to favorites
+  removeRecipe: (recipe: Recipe) => Promise<void>; // Remove recipe from favorites
   getRecipeById: (id: number) => Promise<Recipe>; // Added getRecipeById to the context shape
   getRandomRecipe: () => Promise<Recipe>; // Get a random recipe
   getRandomRecipes: (number: number) => Promise<Recipe[]>; // Get multiple random recipes
@@ -26,22 +27,22 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [error, setError] = useState<string | undefined>();
   const { token } = useAuth();
 
-  // Load favorite IDs from localStorage on initialization
+  // Load favorite IDs from storage on initialization
   useEffect(() => {
-    const loadFavoriteIDs = () => {
+    const loadFavoriteIDs = async () => {
       if (!token) {
         setFavoriteIDs([]);
         setFavoriteRecipes([]);
         return;
       }
       try {
-        const storedIDs = localStorage.getItem('favoriteRecipeIDs');
+        const storedIDs = await storage.getItem('favoriteRecipeIDs');
         if (storedIDs) {
           const parsedIDs = JSON.parse(storedIDs);
           setFavoriteIDs(parsedIDs);
         }
       } catch (error) {
-        console.error('Error loading favorite IDs from localStorage:', error);
+        console.error('Error loading favorite IDs from storage:', error);
       }
     };
     
@@ -88,29 +89,29 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     load();
   }, []);
 
-  const addRecipe = (recipe: Recipe) => {
+  const addRecipe = async (recipe: Recipe) => {
     setFavoriteRecipes((prevRecipes) => [...prevRecipes, recipe]);
     const newIDs = [...favoriteIDs, recipe.id];
     setFavoriteIDs(newIDs);
     
-    // Save to localStorage
+    // Save to storage (web: localStorage, mobile: AsyncStorage)
     try {
-      localStorage.setItem('favoriteRecipeIDs', JSON.stringify(newIDs));
+      await storage.setItem('favoriteRecipeIDs', JSON.stringify(newIDs));
     } catch (error) {
-      console.error('Error saving favorite IDs to localStorage:', error);
+      console.error('Error saving favorite IDs to storage:', error);
     }
   };
 
-  const removeRecipe = (recipe: Recipe) => {
+  const removeRecipe = async (recipe: Recipe) => {
     setFavoriteRecipes((prevRecipes) => prevRecipes.filter(r => r.id !== recipe.id));
     const newIDs = favoriteIDs.filter(id => id !== recipe.id);
     setFavoriteIDs(newIDs);
     
-    // Save to localStorage
+    // Save to storage (web: localStorage, mobile: AsyncStorage)
     try {
-      localStorage.setItem('favoriteRecipeIDs', JSON.stringify(newIDs));
+      await storage.setItem('favoriteRecipeIDs', JSON.stringify(newIDs));
     } catch (error) {
-      console.error('Error saving favorite IDs to localStorage:', error);
+      console.error('Error saving favorite IDs to storage:', error);
     }
   };
 

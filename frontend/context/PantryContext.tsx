@@ -88,7 +88,6 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             amount: newQty
           }
         };
-        console.log('[PantryContext] addIngredient - updated list (optimistic):', updatedList);
         return updatedList;
       } else {
         // Add new ingredient
@@ -97,7 +96,6 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           itemName: name,
           amount: { amount: newQty, unit },
         };
-        console.log('[PantryContext] addIngredient - adding new ingredient (optimistic):', newIngredient);
         return [...prev, newIngredient];
       }
     });
@@ -105,10 +103,8 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Attempt to sync with backend in the background (don't block UI)
     try {
       await pantryService.addIngredient(id, newQty, unit, name, token);
-      console.log('[PantryContext] addIngredient - backend sync successful');
     } catch (e: any) {
-      // Log error but don't revert optimistic update
-      console.warn('[PantryContext] addIngredient - backend sync failed (keeping optimistic update):', e?.message);
+      // Don't revert optimistic update on error
       // Don't reload - keep the optimistic update
     }
   };
@@ -133,7 +129,6 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Update local state immediately (optimistic update)
     setIngredients(prev => {
       if (shouldRemove) {
-        console.log('[PantryContext] reduceIngredient - removing ingredient (amount <= 0)');
         return prev.filter(i => i.itemID !== itemID);
       }
 
@@ -148,7 +143,6 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             amount: newAmount
           }
         };
-        console.log('[PantryContext] reduceIngredient - updated list (optimistic):', updatedList);
         return updatedList;
       }
 
@@ -157,18 +151,20 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // Attempt to sync with backend in the background (don't block UI)
     try {
-      await pantryService.reduceIngredient(itemID, newAmount, ingredient.amount.unit, token);
-      console.log('[PantryContext] reduceIngredient - backend sync successful');
+      if (shouldRemove) {
+        // If amount is 0 or below, call DELETE API to remove the ingredient
+        await pantryService.removeIngredient(itemID, token);
+      } else {
+        // Otherwise, call POST API to update the quantity
+        await pantryService.reduceIngredient(itemID, newAmount, ingredient.amount.unit, token);
+      }
     } catch (e: any) {
-      // Log error but don't revert optimistic update
-      console.warn('[PantryContext] reduceIngredient - backend sync failed (keeping optimistic update):', e?.message);
+      // Don't revert optimistic update on error
       // Don't reload - keep the optimistic update
     }
   };
 
   const removeIngredient = async (itemID: number) => {
-    console.log('[PantryContext] removeIngredient called with itemID:', itemID, 'type:', typeof itemID);
-    
     if (!token) {
       setError('Authentication required');
       return;
@@ -176,23 +172,14 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // Remove from local state immediately (optimistic update)
     setIngredients(prev => {
-      console.log('[PantryContext] removeIngredient - current ingredients before removal:', prev.map(i => ({ itemID: i.itemID, name: i.itemName })));
-      const filtered = prev.filter(i => {
-        const matches = i.itemID === itemID;
-        console.log(`[PantryContext] Comparing ${i.itemID} (${typeof i.itemID}) === ${itemID} (${typeof itemID}): ${matches}`);
-        return !matches;
-      });
-      console.log('[PantryContext] removeIngredient - filtered list (optimistic):', filtered.map(i => ({ itemID: i.itemID, name: i.itemName })));
-      return filtered;
+      return prev.filter(i => i.itemID !== itemID);
     });
 
     // Attempt to sync with backend in the background (don't block UI)
     try {
       await pantryService.removeIngredient(itemID, token);
-      console.log('[PantryContext] removeIngredient - backend DELETE successful');
     } catch (e: any) {
-      // Log error but don't revert optimistic update
-      console.warn('[PantryContext] removeIngredient - backend DELETE failed (keeping optimistic update):', e?.message);
+      // Don't revert optimistic update on error
       // Don't reload - keep the optimistic update
     }
   };

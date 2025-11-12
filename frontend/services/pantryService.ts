@@ -51,11 +51,7 @@ export const pantryService = {
       
       return ingredients.map((i) => ({ ...i, amount: { ...i.amount } }));
     } catch (error) {
-      // Network or API error — fall back to local behavior but surface the
-      // error in the console so it's visible during development.
-      // eslint-disable-next-line no-console
-      console.error("Failed to fetch items via API, using local fallback:", error);
-
+      // Network or API error — fall back to local behavior
       // Local in-memory behavior (same as previous implementation)
       await new Promise((r) => setTimeout(r, 150));
       return pantry.pantryItems.map((i) => ({ ...i, amount: { ...i.amount } }));
@@ -75,7 +71,6 @@ export const pantryService = {
   },
   
   async addIngredient(id: number, newQty: number, unit: string, name: string, token: string | null): Promise<Ingredient> {
-    console.log('[pantryService] addIngredient called', { newQty, unit, name, id });
     if (!token) {
       throw new Error('Authentication token required');
     }
@@ -94,7 +89,6 @@ export const pantryService = {
       if (!response.ok) {
         const text = await response.text().catch(() => '<no body>');
         const err = new Error(`Remote add failed: ${response.status} ${response.statusText} - ${text}`);
-        console.error('pantryService.addIngredient:', err);
         throw err;
       }
 
@@ -120,10 +114,8 @@ export const pantryService = {
       return { ...item, amount: { ...item.amount } };
     } catch (error) {
       // Backend endpoint doesn't exist or failed - this is expected
-      // Don't throw, just log warning and return a calculated result for reference
+      // Don't throw, just return a calculated result for reference
       // Since we're using optimistic updates, the state is already updated
-      console.warn("Backend add endpoint not available, using optimistic update only:", error);
-
       // Return a calculated result (though it won't be used since we already updated optimistically)
       const index = pantry.pantryItems.findIndex(i => i.itemID === id);
       if (index !== -1) {
@@ -149,7 +141,6 @@ export const pantryService = {
    * @returns Promise resolving to the updated Ingredient object
    */
   async reduceIngredient(itemID: number, newQty: number, unit: string, token: string | null): Promise<Ingredient> {
-    console.log('[pantryService] reduceIngredient called', { itemID, newQty, unit });
     if (!token) {
       throw new Error('Authentication token required');
     }
@@ -168,7 +159,6 @@ export const pantryService = {
       if (!response.ok) {
         const text = await response.text().catch(() => '<no body>');
         const err = new Error(`Remote reduce failed: ${response.status} ${response.statusText} - ${text}`);
-        console.error('pantryService.reduceIngredient:', err);
         throw err;
       }
 
@@ -198,10 +188,8 @@ export const pantryService = {
       return { ...item, amount: { ...item.amount } };
     } catch (error) {
       // Backend endpoint doesn't exist or failed - this is expected
-      // Don't throw, just log warning and return a calculated result for reference
+      // Don't throw, just return a calculated result for reference
       // Since we're using optimistic updates, the state is already updated
-      console.warn("Backend reduce endpoint not available, using optimistic update only:", error);
-
       // Return a calculated result (though it won't be used since we already updated optimistically)
       const index = pantry.pantryItems.findIndex(i => i.itemID === itemID);
       if (index !== -1) {
@@ -254,9 +242,8 @@ export const pantryService = {
       }
     } catch (error) {
       // Backend endpoint doesn't exist or failed - this is expected
-      // Don't throw, just log warning since we're using optimistic updates
+      // Don't throw since we're using optimistic updates
       // The state is already updated, so we don't need to revert
-      console.warn("Backend DELETE endpoint not available, using optimistic update only:", error);
       // Don't throw - the optimistic update is already applied
     }
   },

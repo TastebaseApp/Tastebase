@@ -22,16 +22,12 @@ export async function addIngredientQuantity(
   ingredientName: string
 ): Promise<void> {
   if (isNaN(amountToAdd) || amountToAdd <= 0) {
-    console.log('[AddIngredientButton] Invalid amount, not adding');
     return;
   }
   
   try {
-    console.log('[AddIngredientButton] Adding quantity:', { itemID, amountToAdd, unit, ingredientName });
     await addIngredient(itemID, amountToAdd, unit, ingredientName);
-    console.log('[AddIngredientButton] Successfully added quantity');
   } catch (error) {
-    console.error('[AddIngredientButton] Failed to add quantity:', error);
     throw error;
   }
 }

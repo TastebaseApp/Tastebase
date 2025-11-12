@@ -25,10 +25,8 @@ export default function RemoveIngredientButton({ itemID, currentAmount, unit, in
     }
 
     const amountToSubtract = parseFloat(val);
-    console.log('[RemoveIngredientButton] onMinus called', { val, amountToSubtract, itemID, unit, ingredientName });
 
     if (isNaN(amountToSubtract) || amountToSubtract <= 0) {
-      console.log('[RemoveIngredientButton] Invalid amount, not reducing');
       return;
     }
 
@@ -36,7 +34,6 @@ export default function RemoveIngredientButton({ itemID, currentAmount, unit, in
       await reduceIngredient(itemID, amountToSubtract);
       setVal('1');
     } catch (error) {
-      console.error('[RemoveIngredientButton] Failed to reduce ingredient:', error);
       // Optionally show error to user
     }
   };
@@ -49,10 +46,8 @@ export default function RemoveIngredientButton({ itemID, currentAmount, unit, in
     }
     
     const amountToAdd = parseFloat(val);
-    console.log('[RemoveIngredientButton] onPlus called', { val, amountToAdd, itemID, unit, ingredientName });
     
     if (isNaN(amountToAdd) || amountToAdd <= 0) {
-      console.log('[RemoveIngredientButton] Invalid amount, not adding');
       return;
     }
     
@@ -60,7 +55,6 @@ export default function RemoveIngredientButton({ itemID, currentAmount, unit, in
       await addIngredientQuantity(addIngredient, itemID, amountToAdd, unit, ingredientName);
       setVal('1');
     } catch (error) {
-      console.error('[RemoveIngredientButton] Failed to add ingredient:', error);
       // Optionally show error to user
     }
   };

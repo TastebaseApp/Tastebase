@@ -13,15 +13,32 @@ type Props = {
 };
 
 export default function RemoveIngredientButton({ itemID, currentAmount, unit, ingredientName }: Props) {
-  const { removeIngredient, addIngredient } = usePantry();
+  const { removeIngredient, addIngredient, reduceIngredient } = usePantry();
   const [val, setVal] = useState('1');
   const iconColor = useThemeColor({}, 'text');
 
-  const onMinus = async () => {
-    // Since removeIngredient removes the entire ingredient, we can ignore the amount input
-    // or use it just for confirmation. For now, we'll remove the ingredient regardless of amount.
-    await removeIngredient(itemID);
-    setVal('1');
+  const onMinus = async (e?: any) => {
+    // Prevent default behavior to avoid page refresh
+    if (e) {
+      e.preventDefault?.();
+      e.stopPropagation?.();
+    }
+
+    const amountToSubtract = parseFloat(val);
+    console.log('[RemoveIngredientButton] onMinus called', { val, amountToSubtract, itemID, unit, ingredientName });
+
+    if (isNaN(amountToSubtract) || amountToSubtract <= 0) {
+      console.log('[RemoveIngredientButton] Invalid amount, not reducing');
+      return;
+    }
+
+    try {
+      await reduceIngredient(itemID, amountToSubtract);
+      setVal('1');
+    } catch (error) {
+      console.error('[RemoveIngredientButton] Failed to reduce ingredient:', error);
+      // Optionally show error to user
+    }
   };
 
   const onPlus = async (e?: any) => {
@@ -51,7 +68,11 @@ export default function RemoveIngredientButton({ itemID, currentAmount, unit, in
   return (
     <View style={styles.wrap}>
       <View style={styles.controlsRow}>
-        <TouchableOpacity style={[styles.minus, { borderColor: iconColor }]} onPress={onMinus}>
+        <TouchableOpacity 
+          style={[styles.minus, { borderColor: iconColor }]} 
+          onPress={onMinus}
+          activeOpacity={0.7}
+        >
           <ThemedText style={styles.minusText}>−</ThemedText>
         </TouchableOpacity>
         <TextInput

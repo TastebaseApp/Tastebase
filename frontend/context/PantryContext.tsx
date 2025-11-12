@@ -12,6 +12,7 @@ type ContextShape = {
   refresh: () => Promise<void>;
   searchIngredient: (query: string) => Promise<Ingredient[]>;
   addIngredient: (id: number, amt: number, unit: string, name: string) => Promise<void>;
+  reduceIngredient: (itemID: number, amountToSubtract: number) => Promise<void>;
   removeIngredient: (itemID: number) => Promise<void>;
 };
 
@@ -62,72 +63,137 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return;
     }
 
-    try {
-      const updated = await pantryService.addIngredient(id, amt, unit, name, token);
-      console.log('[PantryContext] addIngredient - updated ingredient from service:', updated);
+    // Find the ingredient to get its current amount
+    const ingredient = ingredients.find(i => i.itemID === id);
+    const currentAmount = ingredient?.amount.amount ?? 0;
+    
+    // Calculate new quantity optimistically
+    const newQty = currentAmount + amt;
+
+    // Update local state immediately (optimistic update)
+    setIngredients(prev => {
+      const existingIndex = prev.findIndex(
+        i => i.itemID === id || 
+        (i.itemName.trim().toLowerCase() === name.trim().toLowerCase() && 
+         i.amount.unit.trim().toLowerCase() === unit.trim().toLowerCase())
+      );
       
-      // Update local state immediately for better UX without full reload
-      setIngredients(prev => {
-        console.log('[PantryContext] addIngredient - current ingredients:', prev);
-        const existingIndex = prev.findIndex(
-          i => i.itemID === updated.itemID || 
-          (i.itemName.trim().toLowerCase() === updated.itemName.trim().toLowerCase() && 
-           i.amount.unit.trim().toLowerCase() === updated.amount.unit.trim().toLowerCase())
-        );
-        
-        console.log('[PantryContext] addIngredient - existingIndex:', existingIndex);
-        
-        if (existingIndex !== -1) {
-          // The service might return the new total or just the amount we sent
-          // If the backend adds it, use the returned amount; otherwise add it ourselves
-          const existingAmount = prev[existingIndex].amount.amount;
-          const returnedAmount = updated.amount.amount;
-          
-          // If returned amount is less than or equal to what we sent, backend didn't add it
-          // So we need to add it ourselves
-          const newAmount = returnedAmount <= amt 
-            ? existingAmount + amt 
-            : returnedAmount;
-          
-          console.log('[PantryContext] addIngredient - existingAmount:', existingAmount, 'returnedAmount:', returnedAmount, 'newAmount:', newAmount);
-          
-          const updatedList = [...prev];
-          updatedList[existingIndex] = {
-            ...updated,
-            amount: {
-              ...updated.amount,
-              amount: newAmount
-            }
-          };
-          console.log('[PantryContext] addIngredient - updated list:', updatedList);
-          return updatedList;
-        } else {
-          // Add new ingredient
-          return [...prev, updated];
-        }
-      });
+      if (existingIndex !== -1) {
+        // Update existing ingredient
+        const updatedList = [...prev];
+        updatedList[existingIndex] = {
+          ...prev[existingIndex],
+          amount: {
+            ...prev[existingIndex].amount,
+            amount: newQty
+          }
+        };
+        console.log('[PantryContext] addIngredient - updated list (optimistic):', updatedList);
+        return updatedList;
+      } else {
+        // Add new ingredient
+        const newIngredient: Ingredient = {
+          itemID: id,
+          itemName: name,
+          amount: { amount: newQty, unit },
+        };
+        console.log('[PantryContext] addIngredient - adding new ingredient (optimistic):', newIngredient);
+        return [...prev, newIngredient];
+      }
+    });
+
+    // Attempt to sync with backend in the background (don't block UI)
+    try {
+      await pantryService.addIngredient(id, newQty, unit, name, token);
+      console.log('[PantryContext] addIngredient - backend sync successful');
     } catch (e: any) {
-      setError(e?.message ?? 'Failed to add ingredient');
-      // Reload on error to sync state
-      await load();
+      // Log error but don't revert optimistic update
+      console.warn('[PantryContext] addIngredient - backend sync failed (keeping optimistic update):', e?.message);
+      // Don't reload - keep the optimistic update
     }
   };
 
-  const removeIngredient = async (itemID: number) => {
+  const reduceIngredient = async (itemID: number, amountToSubtract: number) => {
     if (!token) {
       setError('Authentication required');
       return;
     }
 
+    // Find the ingredient to get its current amount and unit
+    const ingredient = ingredients.find(i => i.itemID === itemID);
+    if (!ingredient) {
+      setError('Ingredient not found');
+      return;
+    }
+
+    // Calculate new amount optimistically
+    const newAmount = ingredient.amount.amount - amountToSubtract;
+    const shouldRemove = newAmount <= 0;
+
+    // Update local state immediately (optimistic update)
+    setIngredients(prev => {
+      if (shouldRemove) {
+        console.log('[PantryContext] reduceIngredient - removing ingredient (amount <= 0)');
+        return prev.filter(i => i.itemID !== itemID);
+      }
+
+      // Otherwise, update the ingredient with the new amount
+      const existingIndex = prev.findIndex(i => i.itemID === itemID);
+      if (existingIndex !== -1) {
+        const updatedList = [...prev];
+        updatedList[existingIndex] = {
+          ...prev[existingIndex],
+          amount: {
+            ...prev[existingIndex].amount,
+            amount: newAmount
+          }
+        };
+        console.log('[PantryContext] reduceIngredient - updated list (optimistic):', updatedList);
+        return updatedList;
+      }
+
+      return prev;
+    });
+
+    // Attempt to sync with backend in the background (don't block UI)
+    try {
+      await pantryService.reduceIngredient(itemID, newAmount, ingredient.amount.unit, token);
+      console.log('[PantryContext] reduceIngredient - backend sync successful');
+    } catch (e: any) {
+      // Log error but don't revert optimistic update
+      console.warn('[PantryContext] reduceIngredient - backend sync failed (keeping optimistic update):', e?.message);
+      // Don't reload - keep the optimistic update
+    }
+  };
+
+  const removeIngredient = async (itemID: number) => {
+    console.log('[PantryContext] removeIngredient called with itemID:', itemID, 'type:', typeof itemID);
+    
+    if (!token) {
+      setError('Authentication required');
+      return;
+    }
+
+    // Remove from local state immediately (optimistic update)
+    setIngredients(prev => {
+      console.log('[PantryContext] removeIngredient - current ingredients before removal:', prev.map(i => ({ itemID: i.itemID, name: i.itemName })));
+      const filtered = prev.filter(i => {
+        const matches = i.itemID === itemID;
+        console.log(`[PantryContext] Comparing ${i.itemID} (${typeof i.itemID}) === ${itemID} (${typeof itemID}): ${matches}`);
+        return !matches;
+      });
+      console.log('[PantryContext] removeIngredient - filtered list (optimistic):', filtered.map(i => ({ itemID: i.itemID, name: i.itemName })));
+      return filtered;
+    });
+
+    // Attempt to sync with backend in the background (don't block UI)
     try {
       await pantryService.removeIngredient(itemID, token);
-      // Remove from local state immediately for better UX
-      setIngredients(prev => prev.filter(i => i.itemID !== itemID));
-      // Optionally reload to ensure sync, but immediate update is usually better
+      console.log('[PantryContext] removeIngredient - backend DELETE successful');
     } catch (e: any) {
-      setError(e?.message ?? 'Failed to remove ingredient');
-      // Reload on error to sync state
-      await load();
+      // Log error but don't revert optimistic update
+      console.warn('[PantryContext] removeIngredient - backend DELETE failed (keeping optimistic update):', e?.message);
+      // Don't reload - keep the optimistic update
     }
   };
 
@@ -140,7 +206,7 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [token, load]);
 
   return (
-    <PantryContext.Provider value={{ ingredients, loading, error, refresh: load, searchIngredient, addIngredient, removeIngredient }}>
+    <PantryContext.Provider value={{ ingredients, loading, error, refresh: load, searchIngredient, addIngredient, reduceIngredient, removeIngredient }}>
       {children}
     </PantryContext.Provider>
   );

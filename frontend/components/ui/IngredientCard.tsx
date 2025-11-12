@@ -23,6 +23,11 @@ export default function IngredientCard({ ingredient, cardWidth }: Props) {
   const cardHeight = cardWidth * 1.25;
 
   const handleDelete = async () => {
+    console.log('[IngredientCard] handleDelete called', { 
+      itemID: ingredient.itemID, 
+      itemIDType: typeof ingredient.itemID,
+      ingredientName: ingredient.itemName 
+    });
     await removeIngredient(ingredient.itemID);
   };
 

@@ -81,6 +81,16 @@ public class UserDAO {
         }
     }
 
+    public static void saveFavorite(User user, int recipeID) throws SQLException {
+        String query = "INSERT IGNORE INTO user_favorites (user_id, recipe_id) VALUES (?, ?)";
+        try (Connection conn = SQLConnector.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, user.getID());
+            ps.setInt(2, recipeID);
+            ps.execute();
+        }
+    }
+
     private static User mapRow(ResultSet rs) throws SQLException {
         User user = new User();
         user.setID(rs.getInt("id"));

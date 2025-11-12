@@ -3,11 +3,13 @@ package tastebase.api.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import tastebase.database.UserDAO;
 import tastebase.obj.Recipe;
 import tastebase.obj.User;
 import tastebase.obj.UserPrincipal;
 import tastebase.obj.dto.UserDTO;
 
+import java.sql.SQLException;
 import java.util.Set;
 
 @Service
@@ -31,6 +33,11 @@ public class UserService {
 
     public void favoriteRecipe(User user, int recipeID) {
         user.addFavorite(recipeID);
+        try {
+            UserDAO.saveFavorite(user, recipeID);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void deleteFavoriteRecipe(User user, int recipeID) {

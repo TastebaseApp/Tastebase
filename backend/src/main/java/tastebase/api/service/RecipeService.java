@@ -1,7 +1,6 @@
 package tastebase.api.service;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.springframework.stereotype.Service;
 import tastebase.App;
 import tastebase.database.SQLConnector;
@@ -9,6 +8,7 @@ import tastebase.obj.Recipe;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 
 @Service
 public class RecipeService {
@@ -19,10 +19,14 @@ public class RecipeService {
         this.pantryService = pantryService;
     }
 
-    public Recipe getRandomRecipe() {
-        Recipe recipe = App.getSpoonacularService().getRandomRecipe();
-        saveRecipe(recipe);
-        return recipe;
+    public List<Recipe> getRandomRecipes(int number) {
+        List<Recipe> recipes = App.getSpoonacularService().getRandomRecipes(number);
+
+        for (Recipe recipe : recipes) {
+            saveRecipe(recipe);
+        }
+
+        return recipes;
     }
 
     public Recipe getRecipeByID(int id) {

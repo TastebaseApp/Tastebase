@@ -1,15 +1,14 @@
 package tastebase.api.internal;
 
-import com.google.gson.JsonArray;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import tastebase.App;
 import tastebase.api.service.RecipeService;
-import tastebase.database.SQLConnector;
 import tastebase.obj.Recipe;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/recipes/")
@@ -22,12 +21,12 @@ public class RecipeController {
     }
 
     @GetMapping("/random")
-    @Operation(summary = "Get a random recipe", description = "Returns a randomly selected recipe in its entirety.")
-    public String getRandomRecipe() {
-        Recipe recipe = recipeService.getRandomRecipe();
-        if (recipe == null)
+    @Operation(summary = "Get random recipes", description = "Returns a list of randomly selected recipes in its entirety.")
+    public String getRandomRecipe(@RequestParam (name = "number", defaultValue = "10") int number) {
+        List<Recipe> recipes = recipeService.getRandomRecipes(number);
+        if (recipes == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        return recipe.toString();
+        return recipes.toString();
     }
 
     @GetMapping("/search")

@@ -2,6 +2,7 @@ package tastebase.api.external;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import tastebase.Config;
 import tastebase.obj.Recipe;
@@ -10,6 +11,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SpoonacularService {
@@ -72,8 +75,8 @@ public class SpoonacularService {
         }
     }
 
-    public Recipe getRandomRecipe() {
-        String url = baseUrl + "recipes/random?apiKey=" + apiKey;
+    public List<Recipe> getRandomRecipes(int number) {
+        String url = baseUrl + "recipes/random?number=" + number + "&apiKey=" + apiKey;
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -83,12 +86,24 @@ public class SpoonacularService {
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.body() != null) {
-                return new Recipe(response);
-            } else {
+
+            if (response.body() == null || response.body().isBlank()) {
                 System.out.println("Error: Empty response from Spoonacular API");
-                return null;
+                return Collections.emptyList();
             }
+
+            JsonObject json = JsonParser.parseString(response.body()).getAsJsonObject();
+            JsonArray arr = json.getAsJsonArray("recipes");
+
+            List<Recipe> results = new ArrayList<>();
+
+            for (JsonElement element : arr) {
+                JsonObject recipeObj = element.getAsJsonObject();
+                results.add(new Recipe(recipeObj));
+            }
+
+            return results;
+
         } catch (Exception e) {
             e.printStackTrace();
             return null;

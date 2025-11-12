@@ -82,13 +82,27 @@ public class UserDAO {
         }
     }
 
-    public static void saveFavorite(User user, int recipeID) throws SQLException {
+    public static void deleteFavorite(User user, int recipeID) {
+        String query = "DELETE FROM user_favorites WHERE user_id = ? AND recipe_id = ?";
+        try (Connection conn = SQLConnector.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, user.getID());
+            ps.setInt(2, recipeID);
+            ps.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void saveFavorite(User user, int recipeID) {
         String query = "INSERT IGNORE INTO user_favorites (user_id, recipe_id) VALUES (?, ?)";
         try (Connection conn = SQLConnector.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, user.getID());
             ps.setInt(2, recipeID);
             ps.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -105,7 +119,7 @@ public class UserDAO {
         return user;
     }
 
-    private static Set<Integer> loadFavorites(int userID) throws SQLException {
+    private static Set<Integer> loadFavorites(int userID) {
         String query = "SELECT recipe_id FROM user_favorites WHERE user_id = ?";
         try (Connection conn = SQLConnector.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(query);
@@ -116,6 +130,8 @@ public class UserDAO {
                 favorites.add(rs.getInt("recipe_id"));
             }
             return favorites;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 

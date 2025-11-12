@@ -42,5 +42,10 @@ public class UserService {
 
     public void deleteFavoriteRecipe(User user, int recipeID) {
         user.removeFavorite(recipeID);
+        try {
+            UserDAO.deleteFavorite(user, recipeID);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

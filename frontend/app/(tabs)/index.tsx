@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedView } from '@/components/themed-view';
 import RecipeList from '@/components/recipeList';
+import { ProfileIcon } from '@/components/ui/ProfileIcon';
 
 export default function HomeScreen() {
   return (
@@ -15,6 +16,7 @@ export default function HomeScreen() {
             source={require('@/assets/icons/LongTasteBaseLogo.png')}
             style={styles.Logo}
           />
+          <ProfileIcon style={styles.profileIcon} />
         </View>
       }>
       <ThemedView style={styles.recipeListContainer}>
@@ -41,5 +43,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 40,
+  },
+  profileIcon: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
   },
 });

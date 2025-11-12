@@ -8,6 +8,7 @@ type ContextShape = {
   loading: boolean;
   login: () => void;
   logout: () => Promise<void>;
+  getUserEmail: () => Promise<string | null>;
 };
 
 const AuthContext = createContext<ContextShape | undefined>(undefined);
@@ -59,6 +60,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('window is undefined');
     }
   }, []);
+
+  /**
+   * Gets the user's email from the /whoami endpoint
+   * Returns null if token is missing or request fails
+   */
+  const getUserEmail = useCallback(async (): Promise<string | null> => {
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/whoami`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        console.error('Failed to get user email:', response.status);
+        return null;
+      }
+
+      const data = await response.json();
+      // Assuming the response has an 'email' field
+      // Adjust this based on your actual API response structure
+      return data.email || null;
+    } catch (error) {
+      console.error('Error fetching user email:', error);
+      return null;
+    }
+  }, [token]);
 
   /**
    * Logs out the user by:
@@ -141,10 +175,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
       login();
     }
+    setLoading(false);
   }, [token, loading, login, getTokenFromUrl]);
 
   return (
-    <AuthContext.Provider value={{ token, loading, login, logout }}>
+    <AuthContext.Provider value={{ token, loading, login, logout, getUserEmail }}>
       {children}
     </AuthContext.Provider>
   );

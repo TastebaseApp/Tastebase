@@ -44,8 +44,8 @@ export default function TabLayout() {
             <Image
               source={
                 focused
-                  ? require('@/assets/icons/Large_UserIcon_Selected_Gradient.png')
-                  : require('@/assets/icons/Large_UserIcon_Unselected.png')
+                  ? require('@/assets/icons/Large_FavoritesIcon_Selected_Gradient.png')
+                  : require('@/assets/icons/Large_FavoritesIcon_Unselected.png')
               }
               style={styles.tabIcon}
             />

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import recipeService from '../services/recipeService';
 import { Recipe } from '../types/pantry';
+import { useAuth } from './AuthContext';
 
 type ContextShape = {
   recipes: Recipe[];
@@ -22,10 +23,16 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [favoriteIDs, setFavoriteIDs] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
+  const { token } = useAuth();
 
   // Load favorite IDs from localStorage on initialization
   useEffect(() => {
     const loadFavoriteIDs = () => {
+      if (!token) {
+        setFavoriteIDs([]);
+        setFavoriteRecipes([]);
+        return;
+      }
       try {
         const storedIDs = localStorage.getItem('favoriteRecipeIDs');
         if (storedIDs) {
@@ -38,7 +45,7 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
     
     loadFavoriteIDs();
-  }, []);
+  }, [token]);
 
   // Load favorite recipes when favoriteIDs change
   useEffect(() => {

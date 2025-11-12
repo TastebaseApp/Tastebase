@@ -25,7 +25,7 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const load = useCallback(async () => {
     if (!token) {
-      setError('Authentication required');
+      setIngredients([]);
       setLoading(false);
       return;
     }

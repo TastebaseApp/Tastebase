@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class UserDAO {
 
@@ -86,7 +88,23 @@ public class UserDAO {
         user.setProviderID(rs.getString("provider_id"));
         user.setEmail(rs.getString("email"));
         user.setName(rs.getString("name"));
+
+        user.setFavorites(loadFavorites(user.getID()));
         return user;
+    }
+
+    private static Set<Integer> loadFavorites(int userID) throws SQLException {
+        String query = "SELECT recipe_id FROM user_favorites WHERE user_id = ?";
+        try (Connection conn = SQLConnector.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, userID);
+            ResultSet rs = ps.executeQuery();
+            HashSet<Integer> favorites = new HashSet<>();
+            while (rs.next()) {
+                favorites.add(rs.getInt("recipe_id"));
+            }
+            return favorites;
+        }
     }
 
 }

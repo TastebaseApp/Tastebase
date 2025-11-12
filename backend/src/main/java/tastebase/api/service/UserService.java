@@ -30,14 +30,10 @@ public class UserService {
     }
 
     public void favoriteRecipe(User user, int recipeID) {
-        Recipe recipe = RecipeService.getRecipe(recipeID);
-        if (recipe == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe not found");
-        user.addFavorite(recipe);
+        user.addFavorite(recipeID);
     }
 
     public void deleteFavoriteRecipe(User user, int recipeID) {
-        Recipe recipe = RecipeService.getRecipe(recipeID);
-        if (recipe == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe not found");
-        user.removeFavorite(recipe);
+        user.removeFavorite(recipeID);
     }
 }

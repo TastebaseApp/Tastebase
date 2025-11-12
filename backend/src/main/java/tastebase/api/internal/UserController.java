@@ -29,9 +29,11 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
+    private final RecipeService recipeService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RecipeService recipeService) {
         this.userService = userService;
+        this.recipeService = recipeService;
     }
 
     @GetMapping
@@ -48,7 +50,7 @@ public class UserController {
     @GetMapping("/favorites")
     public Set<String> getFavoriteRecipes(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal) {
         return userService.getUser(principal).getFavorites().stream().map(
-                r -> r.getFullRecipe().toString()
+                r -> recipeService.getRecipeByID(r).getFullRecipe().getAsString()
         ).collect(Collectors.toSet());
     }
 

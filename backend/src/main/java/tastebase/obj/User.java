@@ -3,6 +3,7 @@ package tastebase.obj;
 import tastebase.database.PantryDAO;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class User {
     private int ID;
@@ -12,7 +13,7 @@ public class User {
     private String name;
     private String email;
 
-    private HashSet<Recipe> favorites;
+    private Set<Integer> favorites;
     private Pantry pantry;
 
     public User() {
@@ -64,13 +65,22 @@ public class User {
     }
 
     public void addFavorite(Recipe favorite) {
-        this.favorites.add(favorite);
+        this.favorites.add(favorite.getId());
     }
-    public boolean removeFavorite(Recipe favorite) {
-        return this.favorites.remove(favorite);
+    public void removeFavorite(Recipe favorite) {
+        this.favorites.remove(favorite.getId());
     }
-    public HashSet<Recipe> getFavorites() {
+    public void addFavorite(int id) {
+        this.favorites.add(id);
+    }
+    public void removeFavorite(int id) {
+        this.favorites.remove(id);
+    }
+    public Set<Integer> getFavorites() {
         return favorites;
+    }
+    public void setFavorites(Set<Integer> favorites) {
+        this.favorites = favorites;
     }
 
     public Pantry getPantry() {

@@ -43,25 +43,15 @@ export const recipeService = {
       return recipes.map((r) => ({ ...r, ingredients: r.ingredients?.map(i => ({ ...i, amount: { ...i.amount } })) }));
     } else {
       // No ingredients provided - get 10 random recipes
-      const recipes: Recipe[] = [];
-      
-      for (let i = 0; i < 10; i++) {
-        try {
-          const randomRecipe = await this.getRandomRecipe();
-          recipes.push(randomRecipe);
-        } catch (error) {
-          console.warn(`Failed to fetch random recipe ${i + 1}:`, error);
-          // Continue with remaining recipes even if one fails
-        }
-      }
+      const recipes: Recipe[] = await this.getRandomRecipe(10);
       
       return recipes;
     }
   },
 
   // Function to get a random recipe
-  async getRandomRecipe(): Promise<Recipe> {
-    const resp = await fetch(`${API_BASE}/api/recipes/random`, {
+  async getRandomRecipe(number: number = 10): Promise<Recipe[]> {
+    const resp = await fetch(`${API_BASE}/api/recipes/random?number=${number}`, {
       method: 'GET',
       headers: { 'Accept': 'application/json' },
     });
@@ -71,8 +61,8 @@ export const recipeService = {
     }
 
     const data = await getJson<any>(resp);
-    const recipes = parseRecipes([data]);
-    return recipes[0];
+    const recipes = parseRecipes(data);
+    return recipes;
   },
 
   // Function to get a recipe by ID

@@ -13,6 +13,7 @@ type ContextShape = {
   removeRecipe: (recipe: Recipe) => void; // Remove recipe from favorites
   getRecipeById: (id: number) => Promise<Recipe>; // Added getRecipeById to the context shape
   getRandomRecipe: () => Promise<Recipe>; // Get a random recipe
+  getRandomRecipes: (number: number) => Promise<Recipe[]>; // Get multiple random recipes
 };
 
 const RecipeContext = createContext<ContextShape | undefined>(undefined);
@@ -118,11 +119,17 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const getRandomRecipe = async (): Promise<Recipe> => {
-    return await recipeService.getRandomRecipe();
+    const recipes = await recipeService.getRandomRecipe();
+    return recipes[0];
+  };
+
+  const getRandomRecipes = async (number: number): Promise<Recipe[]> => {
+    const recipes = await recipeService.getRandomRecipe(number);
+    return recipes;
   };
 
   return (
-    <RecipeContext.Provider value={{ recipes, favoriteRecipes, loading, error, refresh: load, addRecipe, removeRecipe, getRecipeById, getRandomRecipe }}>
+    <RecipeContext.Provider value={{ recipes, favoriteRecipes, loading, error, refresh: load, addRecipe, removeRecipe, getRecipeById, getRandomRecipe, getRandomRecipes }}>
       {children}
     </RecipeContext.Provider>
   );

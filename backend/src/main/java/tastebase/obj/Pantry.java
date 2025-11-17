@@ -17,16 +17,23 @@ public class Pantry {
         this.pantryIngredients = new ArrayList<>();
     }
 
-    public boolean addItem(Ingredient newIngredient) {
+    public boolean addIngredient(Ingredient newIngredient) {
+        if (getIngredientIndex(newIngredient) != -1) return false;
+
+        pantryIngredients.add(newIngredient);
+        return true;
+    }
+
+    public int getIngredientIndex(Ingredient newIngredient) {
         for (Ingredient i : pantryIngredients) {
             if (i.getIngredientId() == newIngredient.getIngredientId()) {
-                return false; // item already exists
+                return pantryIngredients.indexOf(i);
             }
         }
-        pantryIngredients.add(newIngredient);
-        return true; // item added
+        return -1;
     }
-    public boolean removeItem(int itemID) {
+
+    public boolean removeIngredient(int itemID) {
         for (Ingredient i : pantryIngredients) {
             if (i.getIngredientId() == itemID) {
                 pantryIngredients.remove(i);

@@ -40,6 +40,12 @@ public class PantryController {
         return pantryService.addItem(userPrincipal.getUser().getPantry(), ingredient);
     }
 
+    @PatchMapping("/patch")
+    @Operation(summary = "Patch an Item", description = "Update the values of an item OR add the item")
+    public void patchPantryItem(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody Ingredient ingredient) {
+        pantryService.patchItem(userPrincipal.getUser().getPantry(), ingredient);
+    }
+
     @DeleteMapping("/remove")
     @Operation(summary = "Remove an item", description = "Removes an individual pantry item by ID.")
     public Boolean removePantryItem(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal, @RequestParam int id) {

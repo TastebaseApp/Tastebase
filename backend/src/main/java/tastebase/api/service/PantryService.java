@@ -19,7 +19,7 @@ public class PantryService {
     }
 
     public boolean addItem(Pantry pantry, Ingredient ingredient) {
-        if (pantry.addItem(ingredient)) {
+        if (pantry.addIngredient(ingredient)) {
             savePantry(pantry);
             return true;
         }
@@ -27,11 +27,23 @@ public class PantryService {
     }
 
     public boolean removeItem(Pantry pantry, int id) {
-        if (pantry.removeItem(id)) {
+        if (pantry.removeIngredient(id)) {
             savePantry(pantry);
             return true;
         }
         return false;
+    }
+
+    public void patchItem(Pantry pantry, Ingredient newIngredient) {
+        int itemIndex = pantry.getIngredientIndex(newIngredient);
+        if (itemIndex == -1) {
+            pantry.getItems().add(newIngredient);
+        }
+        else {
+            pantry.getItems().set(itemIndex, newIngredient);
+        }
+
+        savePantry(pantry);
     }
 
     public List<Ingredient> getItems(Pantry pantry) {

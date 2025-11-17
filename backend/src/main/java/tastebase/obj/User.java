@@ -99,10 +99,10 @@ public class User {
         PantryDAO.upsert(pantry);
     }
     public void addIngredient(Ingredient ingredient) {
-        getPantry().addItem(ingredient);
+        getPantry().addIngredient(ingredient);
     }
     public boolean removeIngredient(Ingredient ingredient) {
-        if (getPantry().removeItem(ingredient.getIngredientId())) {
+        if (getPantry().removeIngredient(ingredient.getIngredientId())) {
             PantryDAO.upsert(getPantry());
             return true;
         }

@@ -53,8 +53,8 @@ public class UserDAO {
 
     public static User upsert(User user) {
         String query =
-                "INSERT INTO users (provider, provider_id, name, email) " +
-                        "VALUES (?, ?, ?, ?) " +
+                "INSERT INTO users (provider, provider_id, name, email, picture) " +
+                        "VALUES (?, ?, ?, ?, ?) " +
                         "ON DUPLICATE KEY UPDATE " +
                         "provider = VALUES(provider), " +
                         "provider_id = VALUES(provider_id), " +
@@ -67,6 +67,7 @@ public class UserDAO {
             ps.setString(2, user.getProviderID());
             ps.setString(3, user.getName());
             ps.setString(4, user.getEmail());
+            ps.setString(5, user.getPicture());
 
             ps.executeUpdate();
 
@@ -98,6 +99,7 @@ public class UserDAO {
         user.setProviderID(rs.getString("provider_id"));
         user.setEmail(rs.getString("email"));
         user.setName(rs.getString("name"));
+        user.setPicture(rs.getString("picture"));
 
         user.setFavorites(loadFavorites(user.getID()));
         return user;

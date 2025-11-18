@@ -12,6 +12,7 @@ public class User {
 
     private String name;
     private String email;
+    private String picture;
 
     private Set<Integer> favorites;
     private Pantry pantry;
@@ -20,10 +21,11 @@ public class User {
         this.favorites = new HashSet<>();
     }
 
-    public User(int ID, String name, String email) {
+    public User(int ID, String name, String email, String picture) {
         this.ID = ID;
         this.name = name;
         this.email = email;
+        this.picture = picture;
         this.favorites = new HashSet<>();
     }
 
@@ -55,6 +57,13 @@ public class User {
     }
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public int getID() {

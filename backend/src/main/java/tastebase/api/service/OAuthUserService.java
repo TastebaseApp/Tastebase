@@ -24,6 +24,7 @@ public class OAuthUserService extends DefaultOAuth2UserService implements OAuth2
         String providerID = (String) attributes.get("sub");
         String email = (String) attributes.get("email");
         String name = (String) attributes.get("name");
+        String picture = (String) attributes.get("picture");
 
         User user = UserDAO.findByEmail(email);
         if (user == null) {
@@ -32,6 +33,7 @@ public class OAuthUserService extends DefaultOAuth2UserService implements OAuth2
             user.setProviderID(providerID);
             user.setName(name);
             user.setProvider(provider);
+            user.setPicture(picture);
             UserDAO.upsert(user);
         }
 

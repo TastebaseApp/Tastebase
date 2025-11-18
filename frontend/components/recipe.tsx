@@ -1,18 +1,35 @@
 import { ThemedView } from "./themed-view";
 import { ThemedText } from "./themed-text";
 import { Colors } from "../constants/theme";
-import { Recipe as RecipeType } from "../types/pantry";
-import { Pressable, StyleSheet, useColorScheme } from "react-native";
+import { Pantry, Recipe as RecipeType } from "../types/pantry";
+import { Pressable, StyleSheet, useColorScheme, Image } from "react-native";
 import { router } from "expo-router";
 import FavoriteRecipeButton from "./ui/favoriteRecipeButton";
+import { useEffect, useState } from "react";
+import { compareRecipeToPantry } from "@/utils/recipeIngredientComparer";
+import { usePantry } from "@/context/PantryContext";
 
 type RecipeProps = {
   recipe: RecipeType;
   onPress?: () => void;
 };
 
+
+
 export default function Recipe({ recipe, onPress }: RecipeProps) {
-  const colorScheme = useColorScheme() || 'light';
+
+  const [aspectRatio, setAspectRatio] = useState(1);
+  const colorScheme = useColorScheme() || "light";
+
+  useEffect(() => {
+    if (!recipe.image) return;
+
+    Image.getSize(
+      recipe.image,
+      (w, h) => setAspectRatio(w / h),
+      () => console.warn("Failed to load image size")
+    );
+  }, [recipe.image]);
 
   const handlePress = () => {
     if (onPress) {
@@ -23,61 +40,134 @@ export default function Recipe({ recipe, onPress }: RecipeProps) {
     }
   };
 
+  const userPantry : Pantry = {pantryID: 0, pantryName: "", pantryItems: usePantry().ingredients};
+
+  const ingredientsNeeded = compareRecipeToPantry(
+    recipe,
+    userPantry);
+
   return (
-    <Pressable 
-      style={[styles.container, { borderColor: Colors[colorScheme].tint }]} 
-      onPress={handlePress}>
-      <ThemedView style={[styles.row, { justifyContent: 'flex-start' }]}>
-        <FavoriteRecipeButton recipe={recipe} style={styles.starIcon} />
-        <ThemedText type="subtitle" style={[styles.title, { borderColor: Colors[colorScheme].tint }]}>
+    <Pressable
+      style={[styles.card]}
+      onPress={handlePress}
+    >
+      <ThemedView style={styles.imageWrapper}>
+        <Image
+          source={{ uri: recipe.image }}
+          style={[styles.image, { aspectRatio }]}
+          resizeMode="contain"
+        />
+      </ThemedView>
+
+      <ThemedView style={styles.titleRow}>
+        <FavoriteRecipeButton recipe={recipe} />
+        <ThemedText type="subtitle" style={styles.title}>
           {recipe.title}
         </ThemedText>
       </ThemedView>
-      <ThemedText type="default" style={styles.summary}>{recipe.summary}</ThemedText>
-      <ThemedView style={styles.row}>
-        <ThemedText type="default" style={styles.rowText}>
+      <ThemedText type="default" style={styles.infoRow} numberOfLines={2}>
+        {recipe.summary}
+      </ThemedText>
+      <ThemedView style={styles.infoRow}>
+        <ThemedView
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingBottom: 14,
+            marginTop: 6,
+            alignItems: "center",
+          }}
+        >
+          <Image
+            source={require("../assets/icons/TimeEstimateClock.png")}
+            style={styles.clockIcon}
+          ></Image>
+          <ThemedText type="default" style={styles.infoText}>
+            {recipe.readyInMinutes} min
+          </ThemedText>
+        </ThemedView>
+
+        <ThemedText type="default" style={styles.infoText}>
+          {ingredientsNeeded[0]}/{ingredientsNeeded[1]} ingredients
+        </ThemedText>
+
+        <ThemedText type="default" style={styles.infoText}>
           Serves: {recipe.servings}
         </ThemedText>
-        <ThemedText type="default" style={styles.rowText}>
-          Ready in: {recipe.readyInMinutes} minutes
-        </ThemedText>
+
       </ThemedView>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: 20,
-    marginVertical: 10,
-    padding: 5,
-    borderRadius: 8,
-    borderWidth: 1,
-    minWidth: 300,
-    maxWidth: 600,
+  card: {
+    width: "100%",
+    maxWidth: 350,
+    borderRadius: 16,
+    overflow: "hidden",
+    marginVertical: 12,
+    alignSelf: "center",
+
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
+
+  imageWrapper: {
+    width: "100%",
+    position: "relative",
+  },
+
+  image: {
+    width: "100%",
+    height: undefined,
+  },
+
+  favoriteButton: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+  },
+
   title: {
-    paddingHorizontal: 5,
-    marginVertical: 5,
-    borderRadius: 8,
-    borderBottomWidth: 5,
-    alignSelf: 'flex-start',
+    fontSize: 18,
+    fontWeight: "600",
+    marginLeft: 8,
+    flexShrink: 1,
   },
-  summary: {
-    marginHorizontal: 5,
-    marginVertical: 5,
-    fontStyle: 'italic',
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingTop: 10,
   },
-  row: {
-    marginHorizontal: 5,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 12,
+    paddingBottom: 14,
+    marginTop: 6,
+    alignItems: "center",
+    overflow: "hidden",
+    maxHeight: 48,
   },
-  rowText: {
-    fontWeight: 'bold',
+
+  infoItem: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  starIcon: {
-    marginRight: 5,
-    marginTop: 8,
+
+  clockIcon: {
+    width: 16,
+    height: 16,
+    marginRight: 6,
+  },
+
+  infoText: {
+    fontSize: 14,
+    opacity: 0.75,
   },
 });

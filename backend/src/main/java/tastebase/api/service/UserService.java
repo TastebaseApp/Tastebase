@@ -33,19 +33,11 @@ public class UserService {
 
     public void favoriteRecipe(User user, int recipeID) {
         user.addFavorite(recipeID);
-        try {
-            UserDAO.saveFavorite(user, recipeID);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        UserDAO.saveFavorite(user, recipeID);
     }
 
     public void deleteFavoriteRecipe(User user, int recipeID) {
         user.removeFavorite(recipeID);
-        try {
-            UserDAO.deleteFavorite(user, recipeID);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        UserDAO.deleteFavorite(user, recipeID);
     }
 }

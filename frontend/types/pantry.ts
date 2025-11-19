@@ -24,6 +24,8 @@ export type Recipe = {
   dishTypes?: string[];          // e.g. ["dinner","main course"]
   ingredients?: Ingredient[];          // simplified from extendedIngredients
   instructions?: string;         // plain text combined from analyzedInstructions
+  cuisines?: string[];           // e.g. ["European","Irish"]
+  diets?: string[];              // e.g. ["lacto ovo vegetarian"]
   winePairing?: {
     pairedWines?: string[];
     pairingText?: string;

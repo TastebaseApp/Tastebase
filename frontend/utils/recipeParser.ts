@@ -1,4 +1,4 @@
-import { Recipe } from '../types/pantry';
+import { Recipe, Ingredient, Quantity } from '../types/pantry';
 
 /**
  * Removes HTML tags and links from text content
@@ -21,6 +21,98 @@ function cleanHtml(html: string): string {
     .trim();
 }
 
+/**
+ * Parses extendedIngredients array into Ingredient[] format
+ * @param extendedIngredients - Array of extended ingredient objects from API
+ * @returns Array of Ingredient objects
+ */
+function parseExtendedIngredients(extendedIngredients: any[]): Ingredient[] {
+  if (!Array.isArray(extendedIngredients)) {
+    return [];
+  }
+
+  return extendedIngredients.map((ing) => {
+    const quantity: Quantity = {
+      amount: ing.amount || 0,
+      unit: ing.unit || ''
+    };
+
+    const ingredient: Ingredient = {
+      itemID: ing.id || 0,
+      itemName: ing.nameClean || ing.name || ing.originalName || '',
+      amount: quantity,
+      image: ing.image
+    };
+
+    return ingredient;
+  });
+}
+
+/**
+ * Parses analyzedInstructions or instructions into plain text
+ * @param analyzedInstructions - Array of analyzed instruction objects
+ * @param instructions - HTML string of instructions
+ * @returns Plain text instructions string
+ */
+function parseInstructions(
+  analyzedInstructions?: any[],
+  instructions?: string
+): string | undefined {
+  // Prefer analyzedInstructions if available (more structured)
+  if (analyzedInstructions && Array.isArray(analyzedInstructions) && analyzedInstructions.length > 0) {
+    const allSteps: string[] = [];
+    
+    analyzedInstructions.forEach((instructionGroup) => {
+      if (instructionGroup.steps && Array.isArray(instructionGroup.steps)) {
+        instructionGroup.steps.forEach((step: any) => {
+          if (step.step) {
+            // Clean HTML from step
+            const cleanStep = cleanHtml(step.step);
+            if (cleanStep) {
+              allSteps.push(cleanStep);
+            }
+          }
+        });
+      }
+    });
+    
+    if (allSteps.length > 0) {
+      return allSteps.join('\n\n');
+    }
+  }
+  
+  // Fall back to instructions HTML string
+  // Handle <ol><li> structure by converting <li> to newlines
+  if (instructions) {
+    // First, convert <li> tags to newlines before cleaning
+    let processed = instructions
+      .replace(/<li[^>]*>/gi, '\n') // Replace <li> with newline
+      .replace(/<\/li>/gi, '')      // Remove </li>
+      .replace(/<ol[^>]*>/gi, '')   // Remove <ol>
+      .replace(/<\/ol>/gi, '')      // Remove </ol>
+      // Remove other HTML tags but preserve newlines
+      .replace(/<[^>]*>/g, '')
+      // Decode HTML entities
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, ' ');
+    
+    // Clean up: split by newlines, trim each line, filter empty, rejoin
+    processed = processed
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .join('\n');
+    
+    return processed || undefined;
+  }
+  
+  return undefined;
+}
+
 // Backend JSON types for recipes
 export interface BackendRecipe {
   id: number;
@@ -31,8 +123,26 @@ export interface BackendRecipe {
   readyInMinutes?: number;
   summary?: string;
   dishTypes?: string[];
-  extendedIngredients?: any[]; // Will be parsed separately if needed
-  analyzedInstructions?: any[]; // Will be parsed separately if needed
+  cuisines?: string[];
+  diets?: string[];
+  instructions?: string; // HTML string
+  extendedIngredients?: Array<{
+    id: number;
+    name: string;
+    nameClean?: string;
+    original: string;
+    originalName?: string;
+    amount: number;
+    unit: string;
+    image?: string;
+  }>;
+  analyzedInstructions?: Array<{
+    name: string;
+    steps: Array<{
+      number: number;
+      step: string;
+    }>;
+  }>;
   winePairing?: {
     pairedWines?: string[];
     pairingText?: string;
@@ -105,6 +215,28 @@ export function parseRecipes(
         parsedRecipe.dishTypes = recipe.dishTypes;
       }
       
+      if (recipe.cuisines && Array.isArray(recipe.cuisines)) {
+        parsedRecipe.cuisines = recipe.cuisines;
+      }
+      
+      if (recipe.diets && Array.isArray(recipe.diets)) {
+        parsedRecipe.diets = recipe.diets;
+      }
+      
+      // Parse ingredients from extendedIngredients
+      if (recipe.extendedIngredients && Array.isArray(recipe.extendedIngredients)) {
+        parsedRecipe.ingredients = parseExtendedIngredients(recipe.extendedIngredients);
+      }
+      
+      // Parse instructions from analyzedInstructions or instructions
+      const parsedInstructions = parseInstructions(
+        recipe.analyzedInstructions,
+        recipe.instructions
+      );
+      if (parsedInstructions) {
+        parsedRecipe.instructions = parsedInstructions;
+      }
+      
       if (recipe.winePairing) {
         parsedRecipe.winePairing = recipe.winePairing;
       }
@@ -151,6 +283,28 @@ export function parseSingleRecipe(
     
     if (recipe.dishTypes && Array.isArray(recipe.dishTypes)) {
       parsedRecipe.dishTypes = recipe.dishTypes;
+    }
+    
+    if (recipe.cuisines && Array.isArray(recipe.cuisines)) {
+      parsedRecipe.cuisines = recipe.cuisines;
+    }
+    
+    if (recipe.diets && Array.isArray(recipe.diets)) {
+      parsedRecipe.diets = recipe.diets;
+    }
+    
+    // Parse ingredients from extendedIngredients
+    if (recipe.extendedIngredients && Array.isArray(recipe.extendedIngredients)) {
+      parsedRecipe.ingredients = parseExtendedIngredients(recipe.extendedIngredients);
+    }
+    
+    // Parse instructions from analyzedInstructions or instructions
+    const parsedInstructions = parseInstructions(
+      recipe.analyzedInstructions,
+      recipe.instructions
+    );
+    if (parsedInstructions) {
+      parsedRecipe.instructions = parsedInstructions;
     }
     
     if (recipe.winePairing) {

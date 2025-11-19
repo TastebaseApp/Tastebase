@@ -8,6 +8,7 @@ import FavoriteRecipeButton from "./ui/favoriteRecipeButton";
 import { useEffect, useState } from "react";
 import { compareRecipeToPantry } from "@/utils/recipeIngredientComparer";
 import { usePantry } from "@/context/PantryContext";
+import { RecipeInfoModal } from "./ui/RecipeInfoModal";
 
 type RecipeProps = {
   recipe: RecipeType;
@@ -17,9 +18,10 @@ type RecipeProps = {
 
 
 export default function Recipe({ recipe, onPress }: RecipeProps) {
+  const colorScheme = useColorScheme() || 'light';
+  const [modalVisible, setModalVisible] = useState(false);
 
   const [aspectRatio, setAspectRatio] = useState(1);
-  const colorScheme = useColorScheme() || "light";
 
   useEffect(() => {
     if (!recipe.image) return;
@@ -35,8 +37,8 @@ export default function Recipe({ recipe, onPress }: RecipeProps) {
     if (onPress) {
       onPress();
     } else {
-      // Default behavior: navigate to recipe detail
-      router.push(`/recipe/${recipe.id}` as any);
+      // Open modal instead of navigating
+      setModalVisible(true);
     }
   };
 
@@ -46,7 +48,19 @@ export default function Recipe({ recipe, onPress }: RecipeProps) {
     recipe,
     userPantry);
 
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
+
+  const handleUseIngredients = () => {
+    // TODO: Implement adding recipe ingredients to pantry
+    console.log("Use ingredients clicked for recipe:", recipe.id);
+    // Close modal after action
+    setModalVisible(false);
+  };
+
   return (
+    <>
     <Pressable
       style={[styles.card]}
       onPress={handlePress}
@@ -73,8 +87,6 @@ export default function Recipe({ recipe, onPress }: RecipeProps) {
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
-            paddingBottom: 14,
-            marginTop: 6,
             alignItems: "center",
           }}
         >
@@ -97,6 +109,13 @@ export default function Recipe({ recipe, onPress }: RecipeProps) {
 
       </ThemedView>
     </Pressable>
+      <RecipeInfoModal
+        visible={modalVisible}
+        onClose={handleCloseModal}
+        recipe={recipe}
+        onUseIngredients={handleUseIngredients}
+      />
+    </>
   );
 }
 

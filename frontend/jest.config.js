@@ -15,6 +15,7 @@ module.exports = {
     '!**/expo-env.d.ts'
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js']
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  coverageDirectory: '<rootDir>/tests/results/coverage'
 };
 

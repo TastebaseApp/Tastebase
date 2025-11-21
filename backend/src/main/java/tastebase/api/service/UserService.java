@@ -28,7 +28,7 @@ public class UserService {
 
     public UserDTO getUserDTO(UserPrincipal principal) {
         User user = getUser(principal);
-        return new UserDTO(user.getID(), user.getProvider(), user.getProviderID(), user.getName(), user.getEmail());
+        return new UserDTO(user.getID(), user.getProvider(), user.getProviderID(), user.getName(), user.getEmail(), user.getPicture());
     }
 
     public void favoriteRecipe(User user, int recipeID) {

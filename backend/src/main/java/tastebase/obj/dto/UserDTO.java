@@ -1,10 +1,5 @@
 package tastebase.obj.dto;
 
-import tastebase.obj.Pantry;
-import tastebase.obj.Recipe;
-
-import java.util.HashSet;
-
 public class UserDTO {
 
     private final int ID;
@@ -13,13 +8,15 @@ public class UserDTO {
 
     private final String name;
     private final String email;
+    private final String picture;
 
-    public UserDTO(int ID, String provider, String providerID, String name, String email) {
+    public UserDTO(int ID, String provider, String providerID, String name, String email, String picture) {
         this.ID = ID;
         this.provider = provider;
         this.providerID = providerID;
         this.name = name;
         this.email = email;
+        this.picture = picture;
     }
 
     public int getID() {
@@ -40,5 +37,9 @@ public class UserDTO {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPicture() {
+        return picture;
     }
 }

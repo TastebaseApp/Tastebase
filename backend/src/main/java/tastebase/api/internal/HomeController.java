@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tastebase.api.service.UserService;
 import tastebase.obj.User;
 import tastebase.obj.UserPrincipal;
+import tastebase.obj.dto.UserDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,7 +43,7 @@ public class HomeController {
     }
 
     @GetMapping("/whoami")
-    public User whoAmI(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal, Model model, HttpServletResponse response) throws IOException {
-        return userService.getUser(principal);
+    public UserDTO whoAmI(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal, Model model, HttpServletResponse response) throws IOException {
+        return userService.getUserDTO(principal);
     }
 }

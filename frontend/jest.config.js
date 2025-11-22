@@ -16,6 +16,7 @@ module.exports = {
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  coverageDirectory: '<rootDir>/tests/results/coverage'
+  coverageDirectory: '<rootDir>/tests/results/coverage',
+  reporters: ['default'],
 };
 

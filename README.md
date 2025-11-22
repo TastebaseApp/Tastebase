@@ -9,6 +9,8 @@ Aaron Espinoza, Heston Montagne, Dylan Priebe, Jeremiah Stone, and Russell Sulli
 * [Features](#features)
 * [Project Status](#project-status)
 * [Room for Improvement](#room-for-improvement)
+* [Getting Started](#getting-started)
+* [Testing & Reports](#testing-and-reports)
 <!-- * [Acknowledgements](#acknowledgements) -->
 <!-- * [License](#license) -->
 
@@ -27,7 +29,7 @@ We hope to help everyone who cooks pick out their food more easily and deliberat
 - The Meal DB
 
 
-# Features
+## Features
 
 ### Pantry Tracking
 This feature allows users to add and remove ingredients from their personal pantry so they can easily track their available ingredients. 
@@ -312,6 +314,35 @@ The backend is already deployed and running on a server. The frontend automatica
 
 ### API Documentation
 The deployed backend API documentation is available at the deployed server's Swagger UI endpoint. Go to base server url to see this documentation. 
+
+## Testing and Reports
+
+
+### Frontend Unit Testing
+The frontend uses jest for testing components and methods. Testing files are located in the frontend/tests/ directory. Reports for tests are located in the frontend/tests/results/ directory.
+
+The following are recommended commands for running the available unit tests.
+```
+npm test
+```
+Will run all available test suites. The only feedback is the Jest CLI output. No reports will be generated.
+
+One or more space-separated test file names can be appended to the end of the command. Only those test suites will run.
+```
+npm run test:combined-report
+```
+Will run all available test suites. Then, an HTML report containing pass/fail status and execution times for all the tests will be generated. This report is named test-report.html and will be placed in the frontend/tests/results/ directory. 
+```
+npm run test:reports
+```
+Will just trigger the generate-test-report.js script, which will run each test suite found in the frontend/tests/ directory or its subdirectories (.test.ts and .spec.ts files only). Each file will be run separately and an HTML test report, with pass/fail status and execution times, will be generated for each file. The html report will be named after the test file name (e.g. testSuite12.test.ts => testSuite12-report.html) and will be placed in the frontend/tests/results/ directory using a directory structure that mirrors where the file was found in the frontend/tests/ directory.
+
+One or more space-separated test file names can be appended to the end of the command. Only those test suites will run and reports will only be generated for those files.
+```
+npm run test:coverage
+```
+Running this command will cause all available test suites to run. Then, a comprehensive coverage report of the entire frontend codebase will be generated in the frontend/tests/results/coverage/ directory. 
+
 
 
 <!-- ## Acknowledgements

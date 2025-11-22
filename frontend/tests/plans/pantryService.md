@@ -320,4 +320,5 @@ async removeIngredient(itemID: number, token: string | null): Promise<void>
 - Verify that modifications to returned objects don't affect the internal `pantry.pantryItems` state
 
 ### Test Results
-- When running tests with coverage (`jest --coverage`), HTML coverage reports will be generated in `frontend/tests/results/coverage`
+- Whenever tests are run (`npm test`), a simple HTML report with pass/fail status and execution times will b generated in `frontend/test/results`
+- When running tests with coverage (`jest --coverage`), a comprehensive HTML coverage report will be generated in `frontend/tests/results/coverage`

@@ -13,7 +13,9 @@
     "lint": "expo lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:combined-report": "jest --config=jest.config.report.js",
+    "test:reports": "node scripts/generate-test-reports.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -50,6 +52,7 @@
     "eslint-config-expo": "~10.0.0",
     "jest": "^29.7.0",
     "jest-expo": "^54.0.13",
+    "jest-html-reporter": "^4.3.0",
     "ts-jest": "^29.4.5",
     "typescript": "~5.9.2"
   },

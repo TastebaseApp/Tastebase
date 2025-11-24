@@ -21,7 +21,7 @@ export const Colors = {
     background: Palette.white,
     tint: Palette.gradientEnd,
     icon: Palette.grey,
-    tabIconDefault: Palette.black,
+    tabIconDefault: Palette.black, 
     tabIconSelected: Palette.gradientEnd,
   },
   dark: {

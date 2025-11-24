@@ -116,7 +116,7 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     // Find the ingredient to get its current amount and unit
-    const ingredient = ingredients.find(i => i.itemID === itemID);
+  const ingredient = ingredients.find(i => i.itemID === itemID);
     if (!ingredient) {
       setError('Ingredient not found');
       return;
@@ -171,9 +171,7 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     // Remove from local state immediately (optimistic update)
-    setIngredients(prev => {
-      return prev.filter(i => i.itemID !== itemID);
-    });
+    setIngredients(prev => prev.filter(i => i.itemID !== itemID));
 
     // Attempt to sync with backend in the background (don't block UI)
     try {

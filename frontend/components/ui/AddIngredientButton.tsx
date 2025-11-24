@@ -15,8 +15,8 @@ type Props = {
  * @param ingredientName - The name of the ingredient
  */
 export async function addIngredientQuantity(
-  addIngredient: (id: number, amt: number, unit: string, name: string) => Promise<void>,
-  itemID: number,
+  addIngredient: (id: string, amt: number, unit: string, name: string) => Promise<void>,
+  itemID: string,
   amountToAdd: number,
   unit: string,
   ingredientName: string

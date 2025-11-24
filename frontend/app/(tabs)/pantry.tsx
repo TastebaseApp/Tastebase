@@ -14,9 +14,13 @@ import { usePantry } from '@/context/PantryContext';
 export default function TabPantryScreen() {
   const [showAdd, setShowAdd] = useState(false);
   const { addIngredient } = usePantry();
-  const handleAdd = async (items: { amount: number; unit: string; name: string; id: number }[]) => {
+  const handleAdd = async (items: { itemID?: number; amount: number; unit: string; name: string }[]) => {
     for (const it of items) {
-      await addIngredient(it.id, it.amount, it.unit, it.name);
+      if (typeof it.itemID === 'number' && !Number.isNaN(it.itemID)) {
+        await addIngredient(it.itemID, it.amount, it.unit, it.name);
+      } else {
+        console.warn('[Pantry] skipping add for item without itemID', it.name);
+      }
     }
     setShowAdd(false);
   };

@@ -11,11 +11,14 @@ import {
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { ThemedText } from "@/components/themed-text";
+import { Palette } from "@/constants/theme";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { rgbaColor } from "react-native-reanimated/lib/typescript/Colors";
+import { AddIngredientRow } from "./AddIngredientRow";
+import { useEffect } from "react";
 
 type Props = {
   visible: boolean;
@@ -23,19 +26,26 @@ type Props = {
   onAdd: (items: SubmitRow[]) => Promise<void>;
 };
 
-type SubmitRow = {id: number, amount: number; unit: string; name: string };
+type SubmitRow = { itemID?: number; amount: number; unit: string; name: string; };
 
 export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [unit, setUnit] = useState("");
 
-  type Row = { id: number; amount: string; unit: string; name: string };
-  const uid = () => Math.floor(Math.random() * 1000) + 1; // IMPERMANENT UNIQUE ID GENERATOR
+  type Row = { id: number; amount: string; unit: string; name: string; itemID?: string; };
+  const uid = () => Date.now() + Math.random();
 
-  const [rows, setRows] = useState<Row[]>([
-    { id: uid(), amount: "", unit: "", name: "" },
-  ]);
+  // initialize rows with a unique id so AddIngredientRow mounts fresh
+  const [rows, setRows] = useState<Row[]>([{ id: uid(), amount: "", unit: "", name: "", itemID: undefined }]);
+
+  // When the modal is opened, reset rows to a single cleared row so stale
+  // values from previous opens aren't shown.
+  useEffect(() => {
+    if (visible) {
+      setRows([{ id: uid(), amount: "", unit: "", name: "", itemID: undefined }]);
+    }
+  }, [visible]);
 
   const addRow = () =>
     setRows((r) => [...r, { id: uid(), amount: "", unit: "", name: "" }]);
@@ -48,7 +58,7 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
 
   const bg = useThemeColor({}, "background");
   const text = useThemeColor({}, "text");
-  const tint = useThemeColor({}, "tint");
+  const icon = useThemeColor({}, "icon");
 
   return (
     <Modal visible={visible} animationType="fade" transparent>
@@ -60,71 +70,20 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
           <ScrollView style={{ maxHeight: 480 }}>
             <View style={styles.rowsContainer}>
               {rows.map((r) => (
-                <View key={r.id} style={styles.rowInputs}>
-                  <TouchableOpacity
-                    onPress={() => removeRow(r.id)}
-                    style={styles.iconBtn}
-                    hitSlop={8}
-                  >
-                    <Image
-                      source={require("@/assets/icons/Minus circle.png")}
-                      style={{
-                        height: 28,
-                        width: 28,
-                        resizeMode: "contain",
-                        justifyContent: "center",
-                      }}
-                    />
-                  </TouchableOpacity>
-                  <View style={styles.inputGroup}>
-                    <ThemedText>Amount</ThemedText>
-                    <TextInput
-                      value={r.amount}
-                      onChangeText={updateRow(r.id, "amount")}
-                      keyboardType="numeric"
-                      placeholder="1"
-                      placeholderTextColor={"rgba(0,0,0,0.55)"}
-                      cursorColor={text}
-                      selectionColor={"rgba(0,0,0,0.25)"}
-                      style={[
-                        styles.input,
-                        { color: text, borderColor: "rgba(0,0,0,0.2)" },
-                      ]}
-                    />
-                  </View>
-
-                  <View style={styles.inputGroup}>
-                    <ThemedText>Unit</ThemedText>
-                    <TextInput
-                      value={r.unit}
-                      onChangeText={updateRow(r.id, "unit")}
-                      placeholder="cup"
-                      placeholderTextColor={"rgba(0,0,0,0.55)"}
-                      cursorColor={text}
-                      selectionColor={"rgba(0,0,0,0.25)"}
-                      style={[
-                        styles.input,
-                        { color: text, borderColor: "rgba(0,0,0,0.2)" },
-                      ]}
-                    />
-                  </View>
-
-                  <View style={[styles.inputGroup, { flex: 2 }]}>
-                    <ThemedText>Name</ThemedText>
-                    <TextInput
-                      value={r.name}
-                      onChangeText={updateRow(r.id, "name")}
-                      placeholder="e.g., Sugar"
-                      placeholderTextColor={"rgba(0,0,0,0.55)"}
-                      cursorColor={text}
-                      selectionColor={"rgba(0,0,0,0.25)"}
-                      style={[
-                        styles.input,
-                        { color: text, borderColor: "rgba(0,0,0,0.2)" },
-                      ]}
-                    />
-                  </View>
-                </View>
+                <AddIngredientRow
+                  key={r.id}
+                  row={r}
+                  textColor={text}
+                  iconColor={icon}
+                  onChange={(id, key, value) =>
+                    setRows((prev) =>
+                      prev.map((row) =>
+                        row.id === id ? { ...row, [key]: value } : row
+                      )
+                    )
+                  }
+                  onRemove={removeRow}
+                />
               ))}
             </View>
           </ScrollView>
@@ -133,7 +92,7 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
             style={styles.plusBox}
             activeOpacity={0.85}
           >
-            <AntDesign name="plus" size={24} color={text + "99"} />
+            <AntDesign name="plus" size={24} color={icon} />
           </TouchableOpacity>
           <View style={styles.row}>
             <TouchableOpacity style={styles.btn} onPress={onClose}>
@@ -147,15 +106,20 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
                   .filter((r) => r.name.trim().length)
                   .map((r) => {
                     const amtNum = Number(r.amount);
-                    const amt =
-                      Number.isFinite(amtNum) && amtNum > 0 ? amtNum : 1;
+                    const amt = Number.isFinite(amtNum) && amtNum > 0 ? amtNum : 1;
                     const unitStr = r.unit.trim();
                     const nameStr = r.name.trim().replace(/\s+/g, " ");
-                    const idStr = r.id;
-                    return { id: idStr, amount: amt, unit: unitStr, name: nameStr };
+                    const itemID = r.itemID !== undefined && r.itemID !== null ? Number(r.itemID) : undefined;
+                    return {
+                      itemID: itemID,
+                      amount: amt,
+                      unit: unitStr,
+                      name: nameStr,
+                    } as SubmitRow;
                   });
 
                 if (!items.length) {
+                  // nothing valid to add
                   return;
                 }
 
@@ -232,7 +196,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    borderColor: "rgba(0,0,0,0.15)", // or text + '33' if you prefer
+    borderColor: Palette.grey, // or text + '33' if you prefer
     marginBottom: 12,
   },
 });

@@ -3,9 +3,12 @@ package tastebase.api.service;
 import com.google.gson.JsonArray;
 import org.springframework.stereotype.Service;
 import tastebase.App;
+import tastebase.api.external.Cuisine;
+import tastebase.api.external.SpoonacularService;
 import tastebase.database.SQLConnector;
 import tastebase.obj.Recipe;
 
+import javax.management.Query;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
@@ -14,13 +17,15 @@ import java.util.List;
 public class RecipeService {
 
     private final PantryService pantryService;
+    private final SpoonacularService spoonacularService;
 
-    public RecipeService(PantryService pantryService) {
+    public RecipeService(PantryService pantryService, SpoonacularService spoonacularService) {
         this.pantryService = pantryService;
+        this.spoonacularService = spoonacularService;
     }
 
     public List<Recipe> getRandomRecipes(int number) {
-        List<Recipe> recipes = App.getSpoonacularService().getRandomRecipes(number);
+        List<Recipe> recipes = spoonacularService.getRandomRecipes(number);
 
         for (Recipe recipe : recipes) {
             saveRecipe(recipe);
@@ -31,14 +36,14 @@ public class RecipeService {
 
     public Recipe getRecipeByID(int id) {
         if (hasRecipe(id)) return getRecipe(id);
-        Recipe recipe = App.getSpoonacularService().getRecipe(id);
+        Recipe recipe = spoonacularService.getRecipe(id);
         saveRecipe(recipe);
         return recipe;
     }
 
-    public JsonArray searchRecipesByIngredients(String ingredients) {
+    public JsonArray searchRecipes(String query, String ingredients, Cuisine cuisine, int number) {
         JsonArray results = new JsonArray();
-        for (var recipe : App.getSpoonacularService().getRecipes(ingredients)) {
+        for (var recipe : spoonacularService.getRecipes(query, ingredients, cuisine, number)) {
             results.add(recipe);
         }
         return results;

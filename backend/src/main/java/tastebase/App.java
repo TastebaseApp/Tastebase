@@ -12,8 +12,6 @@ import java.util.logging.Logger;
 @SpringBootApplication
 public class App {
 
-    private static SpoonacularService spoonacularService;
-
     public static void main(String[] args) throws Exception {
         System.out.println("Starting app.");
 
@@ -28,11 +26,5 @@ public class App {
 
         System.out.println("Starting Spring API");
         SpringApplication.run(App.class, args);
-
-        spoonacularService = new SpoonacularService();
-    }
-
-    public static SpoonacularService getSpoonacularService() {
-        return spoonacularService;
     }
 }

@@ -15,7 +15,12 @@ import tastebase.api.service.IngredientService;
 @RequestMapping("/api/ingredients/")
 @Tag(name = "Ingredients", description = "Endpoints for ingredient searching")
 public class IngredientController {
-    IngredientService ingredientService = new IngredientService();
+
+    private final IngredientService ingredientService;
+
+    public IngredientController(IngredientService ingredientService) {
+        this.ingredientService = ingredientService;
+    }
 
     @GetMapping("/getIngredients")
     @Operation(summary = "Get a list of potential Ingredients from a query and amount returned", description = "Return a json list of potential ingredients")

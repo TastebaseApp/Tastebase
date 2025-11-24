@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import tastebase.api.external.Cuisine;
 import tastebase.api.service.RecipeService;
 import tastebase.obj.Recipe;
 
@@ -31,12 +32,12 @@ public class RecipeController {
 
     @GetMapping("/search")
     @Operation(summary = "Search recipes", description = "Search for recipe snippets based on a comma-separated list of ingredients (E.g. ?ingredients=apples,flour,sugar).")
-    public String searchRecipes(@RequestParam(required = false) String ingredients) {
-        if (ingredients == null || ingredients.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No ingredients provided");
-        }
+    public String searchRecipes(@RequestParam(required = false) String ingredients, @RequestParam(required = false) String query, @RequestParam(required = false) Cuisine cuisine, @RequestParam(required = false) Integer number) {
+        if (ingredients == null || ingredients.isEmpty())
+            if (query == null || query.isEmpty())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
-        return recipeService.searchRecipesByIngredients(ingredients).toString();
+        return recipeService.searchRecipes(query, ingredients, cuisine, number).toString();
     }
 
     @GetMapping("/{id}")

@@ -9,7 +9,7 @@ frontend\expo-env.d.ts
 
 # Node artifact files
 node_modules/
-dist/
+frontend/dist/
 
 # Compiled Java class files
 *.class
@@ -64,3 +64,6 @@ backend/src/main/.env
 /backend/.jdk/
 
 /frontend/.env
+
+# dist
+/backend/src/main/resources/static/

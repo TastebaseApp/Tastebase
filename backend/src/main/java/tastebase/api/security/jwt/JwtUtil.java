@@ -22,7 +22,7 @@ public class JwtUtil {
     private final long EXPIRATION = 1000 * 60 * 60 * 24 * 365; // 1 Year
 
     public JwtUtil() {
-        byte[] keyBytes = Base64.getDecoder().decode(Config.get("jwt.key"));
+        byte[] keyBytes = Base64.getDecoder().decode(Config.get("jwt.key").replaceAll("\\s", ""));
         KEY = Keys.hmacShaKeyFor(keyBytes);
     }
 

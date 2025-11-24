@@ -29,17 +29,10 @@ public class HomeController {
         this.userService = userService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/api")
     public String redirectToSwagger(HttpServletResponse response) throws IOException {
         response.sendRedirect("/swagger-ui.html");
         return "redirect:/swagger-ui.html";
-    }
-
-    @GetMapping("/home")
-    public String home(@Parameter(hidden = true) @AuthenticationPrincipal OAuth2User principal, Model model, HttpServletResponse response) throws IOException {
-        model.addAttribute("name", principal.getAttribute("name"));
-        response.sendRedirect("/whoami");
-        return "home";
     }
 
     @GetMapping("/whoami")

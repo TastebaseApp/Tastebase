@@ -93,6 +93,7 @@ tasks.register("generateProperties") {
 
 bootJar {
     println "USE_ENV = ${System.getenv('USE_ENV')}"
+    dependsOn "copyExpoToStatic"
 
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
@@ -105,5 +106,49 @@ bootJar {
         archiveFileName = "tastebase.jar"
     } else {
         archiveFileName = "app-local.jar"
+    }
+}
+
+def springStaticDir = file("${projectDir}/src/main/resources/static")
+
+// 1. Runs `npx expo export --platform web`
+tasks.register("buildExpoWeb") {
+    description = "Build Expo frontend for the web"
+    group = "frontend"
+
+    doLast {
+        exec {
+            workingDir = file("../frontend")
+            environment "EXPO_PUBLIC_API_BASE_URL", "https://tastebase.dylanpriebe.cc"
+
+            if (System.properties['os.name'].toLowerCase().contains('windows')) {
+                commandLine "cmd", "/c", "npx expo export --platform web"
+            } else {
+                commandLine "npx", "expo", "export", "--platform", "web"
+            }        }
+    }
+}
+
+// 2. Copies dist → resources/static
+tasks.register("copyExpoToStatic") {
+    description = "Copy built Expo web files into Spring static folder"
+    group = "frontend"
+
+    dependsOn "buildExpoWeb"
+
+    doLast {
+        def expoDistDir = file("../frontend/dist")
+        if (!expoDistDir.exists()) {
+            throw new GradleException("Expo dist/ directory not found. Did export fail?")
+        }
+
+        // clean old static files
+        delete springStaticDir
+        springStaticDir.mkdirs()
+
+        copy {
+            from expoDistDir
+            into springStaticDir
+        }
     }
 }

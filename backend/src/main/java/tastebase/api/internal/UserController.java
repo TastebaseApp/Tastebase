@@ -1,5 +1,8 @@
 package tastebase.api.internal;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,8 +22,10 @@ import tastebase.obj.dto.UserDTO;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/user")
@@ -48,10 +53,8 @@ public class UserController {
     }
 
     @GetMapping("/favorites")
-    public Set<String> getFavoriteRecipes(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal) {
-        return userService.getUser(principal).getFavorites().stream().map(
-                r -> recipeService.getRecipeByID(r).getFullRecipe().getAsString()
-        ).collect(Collectors.toSet());
+    public List<Map<String, Object>> getFavoriteRecipes(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal) {
+        return userService.getFavorites(userService.getUser(principal));
     }
 
     @DeleteMapping("/favorites/{recipeID}")

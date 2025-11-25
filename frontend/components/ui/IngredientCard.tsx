@@ -1,7 +1,7 @@
 import { ThemedView } from "../themed-view";
 import { ThemedText } from "../themed-text";
 import { StyleSheet, Image, useColorScheme, View, TouchableOpacity } from "react-native";
-import { Colors } from "../../constants/theme";
+import { Colors, Palette } from "../../constants/theme";
 import { Ingredient } from "../../types/pantry";
 import RemoveIngredientButton from "./RemoveIngredientButton";
 import { useThemeColor } from "../../hooks/use-theme-color";
@@ -14,8 +14,8 @@ type Props = {
 
 export default function IngredientCard({ ingredient, cardWidth }: Props) {
   const colorScheme = useColorScheme() || 'light';
-  const placeholderBg = useThemeColor({ light: '#f5f5f5', dark: '#2a2a2a' }, 'background');
-  const imageBg = useThemeColor({ light: '#f0f0f0', dark: '#1a1a1a' }, 'background');
+  const placeholderBg = useThemeColor({ light: '#ffffff', dark: '#2a2a2a' }, 'background');
+  const imageBg = useThemeColor({ light: '#ffffff', dark: '#1a1a1a' }, 'background');
   const { removeIngredient } = usePantry();
   const iconColor = useThemeColor({}, 'text');
 
@@ -27,14 +27,14 @@ export default function IngredientCard({ ingredient, cardWidth }: Props) {
   };
 
   return (
-    <ThemedView style={[styles.card, { borderColor: Colors[colorScheme].tint, minHeight: cardHeight }]}>
+    <ThemedView style={[styles.card, { minHeight: cardHeight }]}>
       {/* Delete Button */}
       <TouchableOpacity
         style={styles.deleteButton}
         onPress={handleDelete}
         activeOpacity={0.7}
       >
-        <ThemedText style={[styles.deleteButtonText, { color: iconColor }]}>−</ThemedText>
+        <Image source={require("@/assets/icons/Minus.png")}style={styles.deleteButton} />
       </TouchableOpacity>
       
       {/* Image */}
@@ -42,14 +42,13 @@ export default function IngredientCard({ ingredient, cardWidth }: Props) {
         <Image
           source={{ uri: ingredient.image }}
           style={[styles.image, { backgroundColor: imageBg, height: cardWidth }]}
-          resizeMode="cover"
+          resizeMode="contain"
         />
       ) : (
         <ThemedView 
           style={[
             styles.imagePlaceholder, 
             { 
-              borderColor: Colors[colorScheme].tint,
               backgroundColor: placeholderBg,
               height: cardWidth,
             }
@@ -83,20 +82,27 @@ export default function IngredientCard({ ingredient, cardWidth }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 8,
-    borderWidth: 2,
+    borderRadius: 16,
     overflow: 'hidden',
     backgroundColor: 'transparent',
     width: '100%',
+    
+
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: Palette.lightGrey
   },
   image: {
     width: '100%',
+    
   },
   imagePlaceholder: {
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    borderBottomWidth: 1,
   },
   placeholderText: {
     opacity: 0.5,
@@ -123,10 +129,10 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     position: 'absolute',
-    top: 8,
-    left: 8,
-    width: 32,
-    height: 32,
+    top: 6,
+    left: 6,
+    width: 24,
+    height: 24,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,

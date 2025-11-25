@@ -1,9 +1,16 @@
-import { useState } from 'react';
-import { StyleSheet, TouchableOpacity, TextInput, View } from 'react-native';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { ThemedText } from '@/components/themed-text';
-import { usePantry } from '@/context/PantryContext';
-import { addIngredientQuantity } from './AddIngredientButton';
+import { useState } from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  View,
+  Image,
+} from "react-native";
+import { useThemeColor } from "@/hooks/use-theme-color";
+import { ThemedText } from "@/components/themed-text";
+import { usePantry } from "@/context/PantryContext";
+import { addIngredientQuantity } from "./AddIngredientButton";
+import { useEffect } from "react";
 
 type Props = {
   itemID: number;
@@ -12,48 +19,31 @@ type Props = {
   ingredientName: string;
 };
 
-export default function RemoveIngredientButton({ itemID, currentAmount, unit, ingredientName }: Props) {
+export default function RemoveIngredientButton({
+  itemID,
+  currentAmount,
+  unit,
+  ingredientName,
+}: Props) {
   const { removeIngredient, addIngredient, reduceIngredient } = usePantry();
-  const [val, setVal] = useState('1');
-  const iconColor = useThemeColor({}, 'text');
+  const [val, setVal] = useState(currentAmount.toString());
+  const iconColor = useThemeColor({}, "text");
+
+  useEffect(() => {
+    setVal(currentAmount.toString());
+  }, [currentAmount]);
 
   const onMinus = async (e?: any) => {
-    // Prevent default behavior to avoid page refresh
-    if (e) {
-      e.preventDefault?.();
-      e.stopPropagation?.();
-    }
-
-    const amountToSubtract = parseFloat(val);
-
-    if (isNaN(amountToSubtract) || amountToSubtract <= 0) {
-      return;
-    }
-
     try {
-      await reduceIngredient(itemID, amountToSubtract);
-      setVal('1');
+      await reduceIngredient(itemID, 1);
     } catch (error) {
       // Optionally show error to user
     }
   };
 
   const onPlus = async (e?: any) => {
-    // Prevent default behavior to avoid page refresh
-    if (e) {
-      e.preventDefault?.();
-      e.stopPropagation?.();
-    }
-    
-    const amountToAdd = parseFloat(val);
-    
-    if (isNaN(amountToAdd) || amountToAdd <= 0) {
-      return;
-    }
-    
     try {
-      await addIngredientQuantity(addIngredient, itemID, amountToAdd, unit, ingredientName);
-      setVal('1');
+      // need add amount of ingredient here
     } catch (error) {
       // Optionally show error to user
     }
@@ -62,82 +52,75 @@ export default function RemoveIngredientButton({ itemID, currentAmount, unit, in
   return (
     <View style={styles.wrap}>
       <View style={styles.controlsRow}>
-        <TouchableOpacity 
-          style={[styles.minus, { borderColor: iconColor }]} 
-          onPress={onMinus}
-          activeOpacity={0.7}
-        >
-          <ThemedText style={styles.minusText}>−</ThemedText>
+        <TouchableOpacity onPress={onMinus} activeOpacity={0.7}>
+          <Image
+            source={require("@/assets/icons/Minus circle.png")}
+            style={styles.adjustIcon}
+          />
         </TouchableOpacity>
         <TextInput
           value={val}
           onChangeText={setVal}
-          placeholder={'1'}
           placeholderTextColor={iconColor}
           keyboardType="numeric"
           style={[
             styles.input,
-            { color: iconColor, borderColor: iconColor + '33' },
+            { color: iconColor, borderColor: iconColor + "33" },
           ]}
         />
-        <TouchableOpacity 
-          style={[styles.plus, { borderColor: iconColor }]} 
-          onPress={onPlus}
-          activeOpacity={0.7}
-        >
-          <ThemedText style={styles.plusText}>+</ThemedText>
+        <TouchableOpacity onPress={onPlus} activeOpacity={0.7}>
+          <Image
+            source={require("@/assets/icons/Plus circle.png")}
+            style={styles.adjustIcon}
+          />
         </TouchableOpacity>
       </View>
-      <ThemedText style={styles.total}>
-        {currentAmount} {unit}
-      </ThemedText>
+      <ThemedText style={styles.total}>{unit}</ThemedText>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { 
-    flexDirection: 'column', 
-    alignItems: 'center',
-    justifyContent: 'center',
+  wrap: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
   controlsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 6,
   },
   input: {
-    width: 50, 
-    paddingHorizontal: 6, 
+    width: 50,
+    paddingHorizontal: 6,
     paddingVertical: 4,
-    borderWidth: 1, 
-    borderRadius: 4, 
-    textAlign: 'center',
+    borderWidth: 1,
+    borderRadius: 8,
+    textAlign: "center",
     marginHorizontal: 6,
   },
-  minus: { 
-    paddingHorizontal: 10, 
-    paddingVertical: 4, 
-    borderWidth: 1, 
+  adjustIcon: {
+    resizeMode: "contain",
+    width: 24,
+    height: 24,
+  },
+  adjustButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 4,
   },
-  minusText: { 
-    fontWeight: '700', 
+  minusText: {
+    fontWeight: "700",
     fontSize: 14,
   },
-  plus: { 
-    paddingHorizontal: 10, 
-    paddingVertical: 4, 
-    borderWidth: 1, 
-    borderRadius: 4,
-  },
-  plusText: { 
-    fontWeight: '700', 
+  plusText: {
+    fontWeight: "700",
     fontSize: 14,
   },
-  total: { 
+  total: {
     fontSize: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

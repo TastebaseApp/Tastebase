@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { compareRecipeToPantry } from "@/utils/recipeIngredientComparer";
 import { usePantry } from "@/context/PantryContext";
 import { RecipeInfoModal } from "./ui/RecipeInfoModal";
+import { Palette } from "../constants/theme";
 
 type RecipeProps = {
   recipe: RecipeType;
@@ -132,6 +133,9 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: Palette.lightGrey
   },
 
   imageWrapper: {
@@ -172,6 +176,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     overflow: "hidden",
     maxHeight: 48,
+    
   },
 
   infoItem: {

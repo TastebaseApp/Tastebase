@@ -22,54 +22,58 @@ const RecipeContext = createContext<ContextShape | undefined>(undefined);
 export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [favoriteRecipes, setFavoriteRecipes] = useState<Recipe[]>([]);
-  const [favoriteIDs, setFavoriteIDs] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
   const { token } = useAuth();
 
-  // Load favorite IDs from storage on initialization
-  useEffect(() => {
-    const loadFavoriteIDs = async () => {
-      if (!token) {
-        setFavoriteIDs([]);
-        setFavoriteRecipes([]);
-        return;
-      }
-      try {
-        const storedIDs = await storage.getItem('favoriteRecipeIDs');
-        if (storedIDs) {
-          const parsedIDs = JSON.parse(storedIDs);
-          setFavoriteIDs(parsedIDs);
-        }
-      } catch (error) {
-        console.error('Error loading favorite IDs from storage:', error);
-      }
-    };
-    
-    loadFavoriteIDs();
-  }, [token]);
-
-  // Load favorite recipes when favoriteIDs change
+  // Load favorite recipes when token changes
   useEffect(() => {
     const loadFavoriteRecipes = async () => {
-      if (favoriteIDs.length > 0) {
+      if (token) {
         try {
-          const favoriteRecipesList: Recipe[] = [];
-          for (const ID of favoriteIDs) {
-            const recipe = await getRecipeById(ID);
-            favoriteRecipesList.push(recipe);
+          const recipes = await recipeService.getFavoriteRecipes(token);
+          if (recipes !== favoriteRecipes) {
+            setFavoriteRecipes(recipes);
+            // Save favorite recipes to storage
+            try {
+              await storage.setItem('favoriteRecipeIDs', JSON.stringify(recipes.map(r => r.id)));
+            } catch (error) {
+              console.error('Error saving favorite IDs to storage:', error);
+            }
           }
-          setFavoriteRecipes(favoriteRecipesList);
         } catch (error) {
-          console.error('Error loading favorite recipes:', error);
+          console.warn('Error loading favorite recipes from database:', error);
+          // Load favorite IDs from storage
+          let favoriteIDs: number[] = [];
+          try {
+            const storedIDs = await storage.getItem('favoriteRecipeIDs');
+            if (storedIDs) {
+              favoriteIDs = JSON.parse(storedIDs);
+            }
+          } catch (error) {
+            console.error('Error loading favorite IDs from storage:', error);
+          }
+          if (favoriteIDs && favoriteIDs.length > 0) {
+            // Load favorite recipes using IDs
+            const favoriteRecipesList: Recipe[] = [];
+            for (const ID of favoriteIDs) {
+              try {
+                const recipe = await recipeService.getRecipeById(ID);
+                favoriteRecipesList.push(recipe);
+              } catch (error) {
+                console.error('Error loading favorite recipe:', error);
+              }
+            }
+            setFavoriteRecipes(favoriteRecipesList);
+          }
         }
-      } else {
+      }
+      else {
         setFavoriteRecipes([]);
       }
     };
-
     loadFavoriteRecipes();
-  }, [favoriteIDs]);
+  }, [token]);
 
   const load = async () => {
     setLoading(true);
@@ -90,9 +94,26 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, []);
 
   const addRecipe = async (recipe: Recipe) => {
+    if (favoriteRecipes.some(r => r.id === recipe.id)) {
+      return;
+    }
+    if (!token) {
+      console.warn('You must be logged in to add a recipe to your favorites');
+      return;
+    }
+    
+    const newIDs = favoriteRecipes
+      .map(r => r.id)
+      .concat(recipe.id);
+
     setFavoriteRecipes((prevRecipes) => [...prevRecipes, recipe]);
-    const newIDs = [...favoriteIDs, recipe.id];
-    setFavoriteIDs(newIDs);
+
+    // Save to database
+    try {
+      await recipeService.addFavoriteRecipe(recipe.id, token);
+    } catch (error) {
+      console.error('Error adding favorite recipe to database:', error);
+    }
     
     // Save to storage (web: localStorage, mobile: AsyncStorage)
     try {
@@ -103,9 +124,26 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const removeRecipe = async (recipe: Recipe) => {
+    if (!favoriteRecipes.some(r => r.id === recipe.id)) {
+      return;
+    }
+    if (!token) {
+      console.warn('You must be logged in to remove a recipe from your favorites');
+      return;
+    }
+
+    const newIDs = favoriteRecipes
+      .filter(r => r.id !== recipe.id)
+      .map(r => r.id);
+    
     setFavoriteRecipes((prevRecipes) => prevRecipes.filter(r => r.id !== recipe.id));
-    const newIDs = favoriteIDs.filter(id => id !== recipe.id);
-    setFavoriteIDs(newIDs);
+
+    // Save to database
+    try {
+      await recipeService.removeFavoriteRecipe(recipe.id, token);
+    } catch (error) {
+      console.error('Error removing favorite recipe from database:', error);
+    }
     
     // Save to storage (web: localStorage, mobile: AsyncStorage)
     try {

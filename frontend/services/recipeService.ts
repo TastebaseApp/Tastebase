@@ -3,9 +3,6 @@ import { parseRecipes, validateRecipesFormat } from '../utils/recipeParser';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
-// Local storage for recipe IDs (not full recipes)
-let savedRecipeIds: number[] = [];
-
 async function getJson<T>(response: Response): Promise<T> {
   const text = await response.text();
   try {
@@ -81,17 +78,54 @@ export const recipeService = {
     return recipes[0];
   },
 
-  // Function to add a recipe ID to local storage (not the full recipe)
-  async addRecipe(newRecipe: Recipe): Promise<void> {
-    if (!savedRecipeIds.includes(newRecipe.id)) {
-      savedRecipeIds.push(newRecipe.id);
+  async getFavoriteRecipes(token: string | null): Promise<Recipe[]> {
+    if (!token) {
+      throw new Error('Authentication token required');
     }
-    console.log('Recipe ID added to local list:', newRecipe.id);
+
+    const resp = await fetch(`${API_BASE}/api/user/favorites`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
+    });
+    
+    if (!resp.ok) {
+      throw new Error(`Failed to get favorite recipes (${resp.status})`);
+    }
+
+    const data = await getJson<any>(resp);
+    const recipes = parseRecipes(data);
+    return recipes;
   },
 
-  // Function to get saved recipe IDs
-  getSavedRecipeIds(): number[] {
-    return [...savedRecipeIds];
+  // Function to add a recipe ID to local storage (not the full recipe)
+  async addFavoriteRecipe(recipeID: number, token: string | null): Promise<void> {
+    if (!token) {
+      throw new Error('Authentication token required');
+    }
+
+    const resp = await fetch(`${API_BASE}/api/user/favorites/${recipeID}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
+    });
+
+    if (!resp.ok) {
+      throw new Error(`Failed to add favorite recipe (${resp.status})`);
+    }
+  },
+
+  async removeFavoriteRecipe(recipeID: number, token: string | null): Promise<void> {
+    if (!token) {
+      throw new Error('Authentication token required');
+    }
+
+    const resp = await fetch(`${API_BASE}/api/user/favorites/${recipeID}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
+    });
+    
+    if (!resp.ok) {
+      throw new Error(`Failed to remove favorite recipe (${resp.status})`);
+    }
   },
 };
 

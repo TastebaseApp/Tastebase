@@ -128,6 +128,7 @@ public class SpoonacularService {
         Map<String, String> params = new HashMap();
         params.put("query", query);
         params.put("number", String.valueOf(number));
+        params.put("metaInformation", "true");
         String url = buildUrl("food/ingredients/autocomplete", params);
 
         HttpClient client = HttpClient.newHttpClient();

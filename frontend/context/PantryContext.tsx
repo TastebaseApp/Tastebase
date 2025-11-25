@@ -23,7 +23,7 @@ type ContextShape = {
     unit: string,
     name: string
   ) => Promise<void>;
-  reduceIngredient: (itemID: number, amountToSubtract: number) => Promise<void>;
+  setIngredient: (itemID: number, newAmount: number, unit: string) => Promise<void>;
   removeIngredient: (itemID: number) => Promise<void>;
 };
 
@@ -131,7 +131,7 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const reduceIngredient = async (itemID: number, amountToSubtract: number) => {
+  const setIngredient = async (itemID: number, newAmount: number, unit: string) => {
     if (!token) {
       setError("Authentication required");
       return;
@@ -145,7 +145,6 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     // Calculate new amount optimistically
-    const newAmount = ingredient.amount.amount - amountToSubtract;
     const shouldRemove = newAmount <= 0;
 
     // Update local state immediately (optimistic update)
@@ -177,8 +176,7 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({
         // If amount is 0 or below, call DELETE API to remove the ingredient
         await pantryService.removeIngredient(itemID, token);
       } else {
-        // Otherwise, call POST API to update the quantity
-        await pantryService.reduceIngredient(
+        await pantryService.setIngredient(
           itemID,
           newAmount,
           ingredient.amount.unit,
@@ -226,7 +224,7 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({
         refresh: load,
         searchIngredient,
         addIngredient,
-        reduceIngredient,
+        setIngredient,
         removeIngredient,
       }}
     >

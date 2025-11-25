@@ -249,7 +249,10 @@ export function parsePantryIngredients(
       itemID: ingredient.ingredientId,
       itemName: ingredient.ingredientName.trim(),
       amount: quantity,
-      image: ingredient.image
+      // Use API image if provided; fallback to Spoonacular CDN URL
+      image: ingredient.image || `https://spoonacular.com/cdn/ingredients_250x250/${ingredient.ingredientName
+        .toLowerCase()
+        .replace(/\s+/g, '-')}.jpg`
     };
 
     return item;

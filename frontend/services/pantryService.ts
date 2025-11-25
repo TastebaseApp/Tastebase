@@ -161,16 +161,16 @@ export const pantryService = {
 
 
   /**
- * Reduces the quantity of an ingredient in the pantry via PATCH
- * @param itemID - ID of the item to reduce
- * @param amountToSubtract - How much to subtract from the current amount
+ * sets the quantity of an ingredient in the pantry via PATCH
+ * @param itemID - ID of the item to set
+ * @param newAmount - The new amount to set for the ingredient
  * @param unit - Unit of measurement
  * @param token - Authentication token
  * @returns Promise resolving to the updated Ingredient object
  */
-  async reduceIngredient(
+  async setIngredient(
     itemID: number,
-    amountToSubtract: number,
+    newAmount: number,
     unit: string,
     token: string | null
   ): Promise<Ingredient> {
@@ -184,7 +184,7 @@ export const pantryService = {
     const currentAmount = existing?.amount.amount ?? 0;
     const ingredientName = existing?.itemName ?? "";
 
-    const newQty = Math.max(0, currentAmount - amountToSubtract);
+    const newQty = newAmount;
 
     const url = `${API_BASE}/api/pantry/patch`;
 
@@ -243,7 +243,7 @@ export const pantryService = {
         const existingItem = pantry.pantryItems[index];
         const fallbackAmount = Math.max(
           0,
-          existingItem.amount.amount - amountToSubtract
+          existingItem.amount.amount
         );
         return {
           ...existingItem,

@@ -25,7 +25,7 @@ export default function RemoveIngredientButton({
   unit,
   ingredientName,
 }: Props) {
-  const { removeIngredient, addIngredient, reduceIngredient } = usePantry();
+  const { removeIngredient, addIngredient, setIngredient } = usePantry();
   const [val, setVal] = useState(currentAmount.toString());
   const iconColor = useThemeColor({}, "text");
 
@@ -35,7 +35,7 @@ export default function RemoveIngredientButton({
 
   const onMinus = async (e?: any) => {
     try {
-      await reduceIngredient(itemID, 1);
+      await setIngredient(itemID, currentAmount - 1, unit);
     } catch (error) {
       // Optionally show error to user
     }
@@ -43,7 +43,7 @@ export default function RemoveIngredientButton({
 
   const onPlus = async (e?: any) => {
     try {
-      // need add amount of ingredient here
+      await addIngredient(itemID, 1, unit, ingredientName);
     } catch (error) {
       // Optionally show error to user
     }
@@ -61,6 +61,9 @@ export default function RemoveIngredientButton({
         <TextInput
           value={val}
           onChangeText={setVal}
+          onSubmitEditing={() =>
+            addIngredient(itemID, Number(val)-currentAmount, unit, ingredientName)
+          }
           placeholderTextColor={iconColor}
           keyboardType="numeric"
           style={[
@@ -68,6 +71,7 @@ export default function RemoveIngredientButton({
             { color: iconColor, borderColor: iconColor + "33" },
           ]}
         />
+
         <TouchableOpacity onPress={onPlus} activeOpacity={0.7}>
           <Image
             source={require("@/assets/icons/Plus circle.png")}

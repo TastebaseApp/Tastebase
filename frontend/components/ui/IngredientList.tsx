@@ -22,7 +22,7 @@ export default function IngredientList() {
   //const cardWidth = (availableWidth * 0.45);
 
   const MIN_CARD_WIDTH = 100; // smallest you’ll allow
-  const MAX_CARD_WIDTH = 230; // largest you’ll allow
+  const MAX_CARD_WIDTH = 135; // largest you’ll allow
 
   // Figure out how many columns we can fit
   let numColumns = Math.floor((screenWidth) / (MIN_CARD_WIDTH));
@@ -74,7 +74,7 @@ export default function IngredientList() {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
+    marginHorizontal: 8,
     marginTop: 8,
   },
   grid: {
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   emptyContainer: {
-    marginHorizontal: 20,
+    marginHorizontal: 6,
     paddingVertical: 32,
     paddingHorizontal: 12,
     alignItems: "center",

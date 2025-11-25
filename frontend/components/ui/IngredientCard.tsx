@@ -6,6 +6,7 @@ import { Ingredient } from "../../types/pantry";
 import RemoveIngredientButton from "./RemoveIngredientButton";
 import { useThemeColor } from "../../hooks/use-theme-color";
 import { usePantry } from "../../context/PantryContext";
+import { useState } from "react";
 
 type Props = {
   ingredient: Ingredient;
@@ -18,6 +19,7 @@ export default function IngredientCard({ ingredient, cardWidth }: Props) {
   const imageBg = useThemeColor({ light: '#ffffff', dark: '#1a1a1a' }, 'background');
   const { removeIngredient } = usePantry();
   const iconColor = useThemeColor({}, 'text');
+  const [imageError, setImageError] = useState(false);
 
   // Calculate card height to make it more square (slightly taller than width)
   const cardHeight = cardWidth * 1.25;
@@ -25,6 +27,8 @@ export default function IngredientCard({ ingredient, cardWidth }: Props) {
   const handleDelete = async () => {
     await removeIngredient(ingredient.itemID);
   };
+
+  const shouldShowImage = ingredient.image && !imageError;
 
   return (
     <ThemedView style={[styles.card, { minHeight: cardHeight }]}>
@@ -38,11 +42,12 @@ export default function IngredientCard({ ingredient, cardWidth }: Props) {
       </TouchableOpacity>
       
       {/* Image */}
-      {ingredient.image ? (
+      {shouldShowImage ? (
         <Image
           source={{ uri: ingredient.image }}
           style={[styles.image, { backgroundColor: imageBg, height: cardWidth }]}
           resizeMode="contain"
+          onError={() => setImageError(true)}
         />
       ) : (
         <ThemedView 
@@ -62,7 +67,11 @@ export default function IngredientCard({ ingredient, cardWidth }: Props) {
       
       {/* Ingredient Name and Controls */}
       <ThemedView style={styles.content}>
-        <ThemedText type="subtitle" style={styles.name} numberOfLines={2}>
+        <ThemedText 
+          type="subtitle" 
+          style={styles.name} 
+          adjustsFontSizeToFit
+        >
           {ingredient.itemName}
         </ThemedText>
         

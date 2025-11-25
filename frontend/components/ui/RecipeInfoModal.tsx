@@ -233,7 +233,7 @@ const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 40,
     paddingBottom: 8,
     borderBottomWidth: 1,
     borderBottomColor: colorScheme === 'light' ? "rgba(0, 0, 0, 0.1)" : "rgba(255, 255, 255, 0.1)",
@@ -263,7 +263,7 @@ const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
     maxWidth: 400,
     minHeight: 200,
     maxHeight: 400,
-    backgroundColor: colorScheme === 'light' ? Palette.lightGrey : Palette.darkGrey,
+    backgroundColor: colorScheme === 'light' ? Palette.white : Palette.darkGrey,
   },
   titleSection: {
     paddingHorizontal: 16,
@@ -372,8 +372,7 @@ const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
     color: Colors[colorScheme].text,
   },
   useIngredientsButton: {
-    backgroundColor: Palette.white,
-    borderWidth: 2,
+    backgroundColor: colorScheme === 'light' ? Palette.black : Palette.white,
     borderColor: Colors[colorScheme].text,
     marginHorizontal: 16,
     marginVertical: 16,
@@ -383,7 +382,7 @@ const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
     justifyContent: "center",
   },
   useIngredientsText: {
-    color: Palette.black,
+    color: colorScheme === 'light' ? Palette.white : Palette.black,
     fontWeight: "600",
   },
   instructionsSection: {

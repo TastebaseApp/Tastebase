@@ -7,11 +7,12 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import AddRecipeButton from '@/components/ui/AddRecipeButton';
+import { Palette } from '@/constants/theme';
 
 export default function TabTwoScreen() {
   return (
     <ParallaxScrollView
-          headerBackgroundColor={{ light: '#FFFFFF', dark: '#000000' }}
+          headerBackgroundColor={{ light: Palette.white, dark: Palette.darkGrey }}
           headerImage={
             <View style = {styles.headerContainer}>
               <Image
@@ -32,7 +33,6 @@ export default function TabTwoScreen() {
 
 const styles = StyleSheet.create({
   headerImage: {
-    color: '#808080',
     bottom: -90,
     left: -35,
     position: 'absolute',
@@ -45,12 +45,12 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   Logo: {
-    position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-    height: 30,
+    position: "absolute",
+    top: 50,
+    alignSelf: "center",
+    height: 40,
     width: 200,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   headerContainer: {
     flex: 1,

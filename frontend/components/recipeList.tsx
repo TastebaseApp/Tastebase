@@ -65,7 +65,7 @@ export default function RecipeList({ showFavorites = false }: RecipeListProps) {
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 0,
-    marginVertical: 10,
+    marginVertical: 0,
     minHeight: 50,
     minWidth: 100,
     maxWidth: "100%",

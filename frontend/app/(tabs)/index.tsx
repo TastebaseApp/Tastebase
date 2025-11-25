@@ -1,24 +1,26 @@
-import { Image } from 'expo-image';
-import { StyleSheet, View } from 'react-native';
+import { Image } from "expo-image";
+import { StyleSheet, View } from "react-native";
 
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedView } from '@/components/themed-view';
-import RecipeList from '@/components/recipeList';
-import { ProfileIcon } from '@/components/ui/ProfileIcon';
+import ParallaxScrollView from "@/components/parallax-scroll-view";
+import { ThemedView } from "@/components/themed-view";
+import RecipeList from "@/components/recipeList";
+import { ProfileIcon } from "@/components/ui/ProfileIcon";
+import { Palette } from "@/constants/theme";
 
 export default function HomeScreen() {
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#FFFFFF', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: Palette.white, dark: Palette.darkGrey }}
       headerImage={
-        <View style = {styles.headerContainer}>
+        <View style={styles.headerContainer}>
           <Image
-            source={require('@/assets/icons/LongTasteBaseLogo.png')}
+            source={require("@/assets/icons/LongTasteBaseLogo.png")}
             style={styles.Logo}
           />
           <ProfileIcon style={styles.profileIcon} />
         </View>
-      }>
+      }
+    >
       <ThemedView style={styles.recipeListContainer}>
         <RecipeList showFavorites={false} />
       </ThemedView>
@@ -28,24 +30,22 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   recipeListContainer: {
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   Logo: {
-    position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-    height: 30,
+    position: "absolute",
+    top: 50,
+    alignSelf: "center",
+    height: 40,
     width: 200,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   headerContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 40,
+    justifyContent: "center",
   },
   profileIcon: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
     right: 20,
   },

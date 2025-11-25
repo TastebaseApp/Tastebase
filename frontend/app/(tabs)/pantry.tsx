@@ -9,6 +9,7 @@ import { AddIngredientButton } from '@/components/ui/AddIngredientButton';
 import { AddIngredientModal } from '@/components/ui/AddIngredientModal';
 import IngredientList from '@/components/ui/IngredientList';
 import { usePantry } from '@/context/PantryContext';
+import { Palette } from '@/constants/theme';
 
 
 export default function TabPantryScreen() {
@@ -28,7 +29,7 @@ export default function TabPantryScreen() {
 
   return (
     <ParallaxScrollView
-          headerBackgroundColor={{ light: '#FFFFFF', dark: '#000000' }}
+          headerBackgroundColor={{ light: Palette.white, dark: Palette.darkGrey }}
           headerImage={
             <View style = {styles.headerContainer}>
               <Image
@@ -66,17 +67,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   Logo: {
-    position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-    height: 30,
+    position: "absolute",
+    top: 50,
+    alignSelf: "center",
+    height: 40,
     width: 200,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   headerContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 40,
   },
 });

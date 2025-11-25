@@ -6,7 +6,7 @@ const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8080'
 const pantry = {
   pantryItems: [] as Ingredient[],
   nextId: 0,
-} 
+}
 
 async function getJson<T>(response: Response): Promise<T> {
   const text = await response.text();
@@ -29,7 +29,7 @@ export const pantryService = {
     }
 
     const url = `${API_BASE}/api/pantry/items`;
-    
+
     try {
       const response = await fetch(url, {
         method: 'GET',
@@ -45,10 +45,10 @@ export const pantryService = {
 
       const data = await getJson<any[]>(response);
       const ingredients = parsePantryIngredients(data);
-      
+
       // Update local list with API data
       pantry.pantryItems = ingredients;
-      
+
       return ingredients.map((i) => ({ ...i, amount: { ...i.amount } }));
     } catch (error) {
       // Network or API error — fall back to local behavior
@@ -69,103 +69,54 @@ export const pantryService = {
     const data = await getJson<SearchIngredientResponse[]>(response);
     return parseIngredients(data);
   },
-  
-  async addIngredient(id: number, newQty: number, unit: string, name: string, token: string | null): Promise<Ingredient> {
+
+  async addIngredient(
+    itemID: number,
+    newQty: number,
+    unit: string,
+    name: string,
+    token: string | null
+  ): Promise<Ingredient> {
     if (!token) {
-      throw new Error('Authentication token required');
+      throw new Error("Authentication token required");
     }
 
-    const url = `${API_BASE}/api/pantry/${id}?=${newQty}`;
+    console.log("Patching ingredient", { itemID, newQty, unit, name });
+    const url = `${API_BASE}/api/pantry/patch`;
+
+    // This matches your example exactly
+    const payload = {
+      ingredientId: itemID,
+      ingredientName: name,
+      amount: {
+        amount: newQty,
+        unit: unit,
+      },
+    };
 
     try {
       const response = await fetch(url, {
-        method: "POST",
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        const text = await response.text().catch(() => '<no body>');
-        const err = new Error(`Remote add failed: ${response.status} ${response.statusText} - ${text}`);
-        throw err;
+        const text = await response.text().catch(() => "<no body>");
+        throw new Error(
+          `Remote update failed: ${response.status} ${response.statusText} - ${text}`
+        );
       }
 
       const data = await response.json();
+
       const item: Ingredient = {
-        itemID: (data.itemID ?? data.id) ?? id,
+        itemID: (data.itemID ?? data.ingredientId ?? data.id) ?? itemID,
         itemName: data.ingredientName ?? data.itemName ?? name,
-        amount: {
-          amount: data.amount?.amount ?? newQty,
-          unit: data.amount?.unit ?? unit,
-        },
-        image: data.image,
-      };
-
-      // Update local list on success
-      const index = pantry.pantryItems.findIndex(i => i.itemID === id);
-      if (index !== -1) {
-        pantry.pantryItems[index] = item;
-      } else {
-        pantry.pantryItems.push(item);
-      }
-
-      return { ...item, amount: { ...item.amount } };
-    } catch (error) {
-      // Backend endpoint doesn't exist or failed - this is expected
-      // Don't throw, just return a calculated result for reference
-      // Since we're using optimistic updates, the state is already updated
-      // Return a calculated result (though it won't be used since we already updated optimistically)
-      const index = pantry.pantryItems.findIndex(i => i.itemID === id);
-      if (index !== -1) {
-        const existing = pantry.pantryItems[index];
-        return { ...existing, amount: { amount: newQty, unit: existing.amount.unit } };
-      }
-
-      return {
-        itemID: id,
-        itemName: name,
-        amount: { amount: newQty, unit },
-        image: undefined
-      };
-    }
-  },
-
-  /**
-   * Reduces the quantity of an ingredient in the pantry via API
-   * @param itemID - ID of the item to reduce
-   * @param newQty - The new total quantity after subtracting
-   * @param unit - Unit of measurement
-   * @param token - Authentication token
-   * @returns Promise resolving to the updated Ingredient object
-   */
-  async reduceIngredient(itemID: number, newQty: number, unit: string, token: string | null): Promise<Ingredient> {
-    if (!token) {
-      throw new Error('Authentication token required');
-    }
-
-    const url = `${API_BASE}/api/pantry/${itemID}?=${newQty}`;
-
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const text = await response.text().catch(() => '<no body>');
-        const err = new Error(`Remote reduce failed: ${response.status} ${response.statusText} - ${text}`);
-        throw err;
-      }
-
-      const data = await response.json();
-      const item: Ingredient = {
-        itemID: (data.itemID ?? data.id) ?? itemID,
-        itemName: data.ingredientName ?? data.itemName ?? '',
         amount: {
           amount: data.amount?.amount ?? newQty,
           unit: data.amount?.unit ?? unit,
@@ -177,34 +128,138 @@ export const pantryService = {
       const index = pantry.pantryItems.findIndex(i => i.itemID === itemID);
       if (index !== -1) {
         if (item.amount.amount <= 0) {
-          // Remove from local list if amount is 0 or less
+          // Optional: remove if 0
           pantry.pantryItems.splice(index, 1);
         } else {
-          // Update the item in local list
           pantry.pantryItems[index] = item;
         }
+      } else if (item.amount.amount > 0) {
+        pantry.pantryItems.push(item);
       }
 
       return { ...item, amount: { ...item.amount } };
     } catch (error) {
-      // Backend endpoint doesn't exist or failed - this is expected
-      // Don't throw, just return a calculated result for reference
-      // Since we're using optimistic updates, the state is already updated
-      // Return a calculated result (though it won't be used since we already updated optimistically)
+      // Fallback for optimistic updates
       const index = pantry.pantryItems.findIndex(i => i.itemID === itemID);
       if (index !== -1) {
         const existing = pantry.pantryItems[index];
-        return { ...existing, amount: { amount: newQty, unit: existing.amount.unit } };
+        return {
+          ...existing,
+          amount: { amount: newQty, unit: existing.amount.unit },
+        };
       }
 
       return {
         itemID,
-        itemName: '',
+        itemName: name,
         amount: { amount: newQty, unit },
-        image: undefined
+        image: undefined,
       };
     }
   },
+
+
+
+  /**
+ * Reduces the quantity of an ingredient in the pantry via PATCH
+ * @param itemID - ID of the item to reduce
+ * @param amountToSubtract - How much to subtract from the current amount
+ * @param unit - Unit of measurement
+ * @param token - Authentication token
+ * @returns Promise resolving to the updated Ingredient object
+ */
+  async reduceIngredient(
+    itemID: number,
+    amountToSubtract: number,
+    unit: string,
+    token: string | null
+  ): Promise<Ingredient> {
+    if (!token) {
+      throw new Error("Authentication token required");
+    }
+
+    const index = pantry.pantryItems.findIndex((i) => i.itemID === itemID);
+    const existing = index !== -1 ? pantry.pantryItems[index] : undefined;
+
+    const currentAmount = existing?.amount.amount ?? 0;
+    const ingredientName = existing?.itemName ?? "";
+
+    const newQty = Math.max(0, currentAmount - amountToSubtract);
+
+    const url = `${API_BASE}/api/pantry/patch`;
+
+    const payload = {
+      ingredientId: itemID,
+      ingredientName,
+      amount: {
+        amount: newQty,
+        unit: existing?.amount.unit ?? unit,
+      },
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const text = await response.text().catch(() => "<no body>");
+        throw new Error(
+          `Remote reduce failed: ${response.status} ${response.statusText} - ${text}`
+        );
+      }
+
+      const data = await response.json();
+
+      const item: Ingredient = {
+        itemID: (data.itemID ?? data.ingredientId ?? data.id) ?? itemID,
+        itemName: data.ingredientName ?? data.itemName ?? ingredientName,
+        amount: {
+          amount: data.amount?.amount ?? newQty,
+          unit: data.amount?.unit ?? unit,
+        },
+        image: data.image ?? existing?.image,
+      };
+
+      if (index !== -1) {
+        if (item.amount.amount <= 0) {
+          pantry.pantryItems.splice(index, 1);
+        } else {
+          pantry.pantryItems[index] = item;
+        }
+      } else if (item.amount.amount > 0) {
+        pantry.pantryItems.push(item);
+      }
+
+      return { ...item, amount: { ...item.amount } };
+    } catch (error) {
+      if (index !== -1) {
+        const existingItem = pantry.pantryItems[index];
+        const fallbackAmount = Math.max(
+          0,
+          existingItem.amount.amount - amountToSubtract
+        );
+        return {
+          ...existingItem,
+          amount: { amount: fallbackAmount, unit: existingItem.amount.unit },
+        };
+      }
+
+      return {
+        itemID,
+        itemName: ingredientName,
+        amount: { amount: Math.max(0, newQty), unit },
+        image: existing?.image,
+      };
+    }
+  },
+
 
   /**
    * Removes an ingredient from the pantry via API
@@ -218,7 +273,7 @@ export const pantryService = {
     }
 
     const url = `${API_BASE}/api/pantry/remove?id=${itemID}`;
-    
+
     try {
       const response = await fetch(url, {
         method: 'DELETE',

@@ -60,6 +60,8 @@ export default function Recipe({ recipe, onPress }: RecipeProps) {
     setModalVisible(false);
   };
 
+  const styles = getStyles(colorScheme);
+
   return (
     <>
     <Pressable
@@ -120,7 +122,7 @@ export default function Recipe({ recipe, onPress }: RecipeProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 350,
@@ -133,9 +135,9 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors[colorScheme].background,
     borderWidth: 1,
-    borderColor: Palette.lightGrey
+    borderColor: colorScheme === 'light' ? Palette.lightGrey : Palette.grey + '40'
   },
 
   imageWrapper: {

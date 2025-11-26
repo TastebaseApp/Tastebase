@@ -10,6 +10,12 @@ type ContextShape = {
   loading: boolean;
   error?: string;
   refresh: () => Promise<void>;
+  searchRecipes: (options: {
+    query?: string;
+    ingredients?: string;
+    cuisine?: string;
+    number?: number;
+  }) => Promise<void>;
   addRecipe: (recipe: Recipe) => Promise<void>; // Add recipe to favorites
   removeRecipe: (recipe: Recipe) => Promise<void>; // Remove recipe from favorites
   getRecipeById: (id: number) => Promise<Recipe>; // Added getRecipeById to the context shape
@@ -181,8 +187,27 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return recipes;
   };
 
+  const searchRecipes = async (options: {
+    query?: string;
+    ingredients?: string;
+    cuisine?: string;
+    number?: number;
+  }) => {
+    setLoading(true);
+    setError(undefined);
+
+    try {
+      const list = await recipeService.searchRecipes(options);
+      setRecipes(list);
+    } catch (e: any) {
+      setError(e?.message ?? 'Failed to search recipes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <RecipeContext.Provider value={{ recipes, favoriteRecipes, loading, error, refresh: load, addRecipe, removeRecipe, getRecipeById, getRandomRecipe, getRandomRecipes }}>
+    <RecipeContext.Provider value={{ recipes, favoriteRecipes, loading, error, refresh: load, searchRecipes, addRecipe, removeRecipe, getRecipeById, getRandomRecipe, getRandomRecipes }}>
       {children}
     </RecipeContext.Provider>
   );

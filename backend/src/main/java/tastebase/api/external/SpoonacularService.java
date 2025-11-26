@@ -61,7 +61,12 @@ public class SpoonacularService {
         params.put("query", (query != null)  ? query : "");
         if (ingredients != null && !ingredients.isEmpty()) params.put("includeIngredients", ingredients);
         if (cuisine != null) params.put("cuisine", cuisine.toString().replace("_", " "));
-        if (number == 0) params.put("number", "10");
+        // Fix: Always set number parameter if it's greater than 0
+        if (number > 0) {
+            params.put("number", String.valueOf(number));
+        } else {
+            params.put("number", "10"); // Default to 10 if 0 or negative
+        }
         params.put("sort", "min-missing-ingredients");
 
         if (nutrientFilter != null) {

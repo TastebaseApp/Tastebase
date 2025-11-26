@@ -13,37 +13,57 @@ async function getJson<T>(response: Response): Promise<T> {
 }
 
 export const recipeService = {
-  // Function to search recipes by ingredients (default: no ingredients = get 10 random recipes)
-  async searchRecipes(ingredients: string = ''): Promise<Recipe[]> {
+  // Enhanced search function with all parameters
+  async searchRecipes(options: {
+    query?: string;
+    ingredients?: string;
+    cuisine?: string;
+    number?: number;
+  } = {}): Promise<Recipe[]> {
     if (!API_BASE) {
       throw new Error('API_BASE is not set');
     }
 
-    if (ingredients) {
-      // Search with specific ingredients
-      const url = `${API_BASE}/api/recipes/search?ingredients=${encodeURIComponent(ingredients)}`;
-      
-      const resp = await fetch(url, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' },
-      });
-
-      if (!resp.ok) {
-        throw new Error(`Failed to search recipes (${resp.status})`);
-      }
-
-      const data = await getJson<any[]>(resp);
-      const arrayData = Array.isArray(data) ? data : [data];
-      validateRecipesFormat(arrayData);
-      const recipes = parseRecipes(arrayData);
-      
-      return recipes.map((r) => ({ ...r, ingredients: r.ingredients?.map(i => ({ ...i, amount: { ...i.amount } })) }));
-    } else {
-      // No ingredients provided - get 10 random recipes
-      const recipes: Recipe[] = await this.getRandomRecipe(10);
-      
-      return recipes;
+    // Normalize empty strings to undefined for proper checking
+    const query = options.query?.trim() || undefined;
+    const ingredients = options.ingredients?.trim() || undefined;
+    const cuisine = options.cuisine?.trim() || undefined;
+    const number = options.number;
+    
+    // If no search parameters provided, get random recipes
+    if (!query && !ingredients && !cuisine) {
+      return await this.getRandomRecipe(10);
     }
+
+    // Build URL with URLSearchParams to handle optional parameters
+    const params = new URLSearchParams();
+    if (query) params.append('query', query);
+    if (ingredients) params.append('ingredients', ingredients);
+    if (cuisine) params.append('cuisine', cuisine);
+    if (number && number > 0) params.append('number', number.toString());
+
+    // Double-check: if params is empty after filtering, get random recipes
+    if (params.toString() === '') {
+      return await this.getRandomRecipe(10);
+    }
+
+    const url = `${API_BASE}/api/recipes/search?${params.toString()}`;
+    
+    const resp = await fetch(url, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+    });
+
+    if (!resp.ok) {
+      throw new Error(`Failed to search recipes (${resp.status})`);
+    }
+
+    const data = await getJson<any[]>(resp);
+    const arrayData = Array.isArray(data) ? data : [data];
+    validateRecipesFormat(arrayData);
+    const recipes = parseRecipes(arrayData);
+    
+    return recipes.map((r) => ({ ...r, ingredients: r.ingredients?.map(i => ({ ...i, amount: { ...i.amount } })) }));
   },
 
   // Function to get a random recipe

@@ -11,6 +11,7 @@ import tastebase.api.external.NutrientFilter;
 import tastebase.api.service.RecipeService;
 import tastebase.obj.Recipe;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -46,6 +47,43 @@ public class RecipeController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
         return recipeService.searchRecipes(query, ingredients, cuisine, nutrientFilter, number).toString();
+    }
+
+    @GetMapping("/search/cuisine")
+    @Operation(summary = "Search recipes by cuisine", description = "Search for recipes filtered by cuisine type.")
+    public String searchRecipesByCuisine(
+        @RequestParam String cuisine,
+        @RequestParam(required = false, defaultValue = "10") Integer number) {
+        
+        int resultNumber = (number != null && number > 0) ? number : 10;
+        
+        // Convert cuisine string to enum
+        Cuisine cuisineEnum;
+        try {
+            // Handle both underscore and space formats, make case-insensitive
+            String normalizedCuisine = cuisine.trim().replace(" ", "_");
+            // Find matching enum value (case-insensitive)
+            Cuisine matchedCuisine = null;
+            for (Cuisine c : Cuisine.values()) {
+                if (c.name().equalsIgnoreCase(normalizedCuisine)) {
+                    matchedCuisine = c;
+                    break;
+                }
+            }
+            if (matchedCuisine == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                    "Invalid cuisine: " + cuisine + ". Valid cuisines: " + 
+                    Arrays.toString(Cuisine.values()));
+            }
+            cuisineEnum = matchedCuisine;
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                "Invalid cuisine: " + cuisine + ". Error: " + e.getMessage());
+        }
+        
+        return recipeService.searchRecipes(null, null, cuisineEnum, resultNumber).toString();
     }
 
     @GetMapping("/{id}")

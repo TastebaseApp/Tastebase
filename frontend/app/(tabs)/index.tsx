@@ -5,9 +5,13 @@ import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedView } from "@/components/themed-view";
 import RecipeList from "@/components/recipeList";
 import { ProfileIcon } from "@/components/ui/ProfileIcon";
+import { RecipeSearchBar } from "@/components/ui/RecipeSearchBar";
 import { Palette } from "@/constants/theme";
+import { useRecipes } from "@/context/RecipeContext";
 
 export default function HomeScreen() {
+  const { searchRecipes, loading } = useRecipes();
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: Palette.white, dark: Palette.darkGrey }}
@@ -22,6 +26,7 @@ export default function HomeScreen() {
       }
     >
       <ThemedView style={styles.recipeListContainer}>
+        {!loading && <RecipeSearchBar onSearch={searchRecipes} />}
         <RecipeList showFavorites={false} />
       </ThemedView>
     </ParallaxScrollView>

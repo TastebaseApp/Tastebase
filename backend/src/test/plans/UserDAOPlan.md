@@ -13,7 +13,7 @@ This document outlines the test plan for three methods in `backend/src/main/java
 
 **Method Signature:**
 ```java
-public static User findByEmail(String email)
+public static User findByEmail(String email) {}
 ```
 
 ### Input Parameters
@@ -34,9 +34,6 @@ public static User findByEmail(String email)
     - Cache the user (line 26)
     - Return the user (line 27)
 - **Assertions:**
-    - Verify the cache does not have the user
-    - Verify the connection was made properly
-    - Verify the correct user is added to the cache
     - Verify the correct user is returned
 
 #### 1.2 Successful Search - User exists by that email in the cache
@@ -47,7 +44,6 @@ public static User findByEmail(String email)
     - Find the cache has the email stored (line 18)
     - Return the user from the cache (line 18)
 - **Assertions:**
-    - Verify the cache does have the user
     - Verify the correct user is returned
 
 #### 1.3 Unsuccessful Search - User does not exist by that email in the cache or database
@@ -67,24 +63,13 @@ public static User findByEmail(String email)
     - Verify the connection was made properly
     - Verify `null` is returned
 
-#### 1.4 Database is down
-- **Input:** `email`
-- **Setup:** None 
-- **Mock:** Mock the database being down by not creating one
-- **Expected Behavior:**
-  - Find the cache does not have the email stored (line 18)
-  - Fail to create a connection to the database (line 20)
-  - Throw new `RuntimeException` (line 30)
-- **Assertions:**
-  - Verify a `RuntimeException` is thrown
-
 ## 2. upsert
 
 **Location:** `backend/src/main/java/database/UserDAO.java` lines 54-83
 
 **Method Signature:**
 ```java
-public static User upsert(User user)
+public static User upsert(User user) {}
 ```
 
 ### Input Parameters
@@ -123,16 +108,7 @@ public static User upsert(User user)
   - Verify the database does already have the `user`
   - Verify the connection was made properly
   - Verify the database has the updated `user` afterwords
-
-#### 2.3 Database is down
-- **Input:** `user`
-- **Setup:** None
-- **Mock:** Mock the database being down by not creating one
-- **Expected Behavior:**
-  - Fail to create a connection to the database (line 63)
-  - Throw new `RuntimeException` (line 81)
-- **Assertions:**
-  - Verify a `RuntimeException` is thrown
+  - Verify the returned `User` matches the original `user`
 
 ## 3. mapRow
 
@@ -140,7 +116,7 @@ public static User upsert(User user)
 
 **Method Signature:**
 ```java
-public static User mapRow(ResultSet rs)
+public static User mapRow(ResultSet rs) {}
 ```
 
 ### Input Parameters

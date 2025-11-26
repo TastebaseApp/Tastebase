@@ -14,6 +14,14 @@ public class UserDAO {
 
     private static final HashMap<String, User> userCache = new HashMap<>();
 
+    public static void addToCache(User user) {
+        userCache.put(user.getEmail(), user);
+    }
+
+    public static void clearCache() {
+        userCache.clear();
+    }
+
     public static User findByEmail(String email) {
         if (userCache.containsKey(email)) return userCache.get(email);
         String query = "select * from users where email = ?";
@@ -106,7 +114,7 @@ public class UserDAO {
         }
     }
 
-    private static User mapRow(ResultSet rs) throws SQLException {
+    public static User mapRow(ResultSet rs) throws SQLException {
         User user = new User();
         user.setID(rs.getInt("id"));
         user.setProvider(rs.getString("provider"));

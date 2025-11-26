@@ -11,8 +11,10 @@ public class SQLConnector {
     private static String user = Config.get("DB_USER");
     private static String password = Config.get("DB_PASSWORD");
 
+    private static String overrideUrl = null;
+
     public static ResultSet executeQuery(String query) throws SQLException {
-        try (Connection conn = DriverManager.getConnection("jdbc:mariadb://"+url, user, password)) {
+        try (Connection conn = (overrideUrl != null) ? DriverManager.getConnection(overrideUrl) : DriverManager.getConnection("jdbc:mariadb://"+url, user, password)) {
             PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             return rs;
@@ -20,6 +22,14 @@ public class SQLConnector {
     }
 
     public static Connection getConnection() throws SQLException {
+        if (overrideUrl != null) {
+            return DriverManager.getConnection(overrideUrl);
+        }
+
         return DriverManager.getConnection("jdbc:mariadb://"+url, user, password);
+    }
+
+    public static void useUrlForTests(String url) {
+        overrideUrl = url;
     }
 }

@@ -35,16 +35,21 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
-  const { token } = useAuth();
+  const { token, loading: authLoading } = useAuth();
 
   const load = useCallback(async () => {
+    setLoading(true);
+    // Don't load if AuthContext is still loading
+    if (authLoading) {
+      return;
+    }
+
     if (!token) {
       setIngredients([]);
       setLoading(false);
       return;
     }
 
-    setLoading(true);
     setError(undefined);
     try {
       const list = await pantryService.listIngredients(token);
@@ -54,7 +59,7 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, authLoading]);
 
   const searchIngredient = async (query: string) => {
     if (!token) {
@@ -208,12 +213,19 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
+    setLoading(true);
+
+    // Don't load if AuthContext is still loading
+    if (authLoading) {
+      return;
+    }
+
     if (token) {
       load();
     } else {
       setLoading(false);
     }
-  }, [token, load]);
+  }, [token, load, authLoading]);
 
   return (
     <PantryContext.Provider

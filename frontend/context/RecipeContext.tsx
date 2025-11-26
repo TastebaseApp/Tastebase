@@ -24,10 +24,15 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [favoriteRecipes, setFavoriteRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
-  const { token } = useAuth();
+  const { token, loading: authLoading } = useAuth();
 
-  // Load favorite recipes when token changes
+  // Load favorite recipes when token changes (but wait for auth to finish loading)
   useEffect(() => {
+    // Don't load if AuthContext is still loading
+    if (authLoading) {
+      return;
+    }
+
     const loadFavoriteRecipes = async () => {
       if (token) {
         try {
@@ -73,10 +78,16 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
     };
     loadFavoriteRecipes();
-  }, [token]);
+  }, [token, authLoading]);
 
   const load = async () => {
     setLoading(true);
+    
+    // Don't load if AuthContext is still loading
+    if (authLoading) {
+      return;
+    }
+
     setError(undefined);
 
     try {
@@ -90,8 +101,11 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   useEffect(() => {
-    load();
-  }, []);
+    // Wait for AuthContext to finish loading before loading recipes
+    if (!authLoading) {
+      load();
+    }
+  }, [authLoading]);
 
   const addRecipe = async (recipe: Recipe) => {
     if (favoriteRecipes.some(r => r.id === recipe.id)) {

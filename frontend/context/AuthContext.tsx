@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 import * as storage from '@/utils/storage';
@@ -18,10 +18,11 @@ const AuthContext = createContext<ContextShape | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const params = useLocalSearchParams<{ token?: string }>();
-  const router = useRouter();
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const hasInitiatedLogin = useRef(false);
+  const isInitializing = useRef(false);
+  const hasInitialized = useRef(false);
 
   // Helper to extract token from URL (works for both useLocalSearchParams and direct URL parsing)
   const getTokenFromUrl = useCallback(async (): Promise<string | null> => {
@@ -136,47 +137,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [token]);
 
   /**
-   * Calls the /whoami endpoint to get current user information
-   * @returns true if authenticated, false if not
-   */
-  const checkAuthentication = useCallback(async (): Promise<boolean> => {
-    let currentToken = token;
-    
-    // If token, return true
-    if (!currentToken) {
-      try {
-        currentToken = await storage.getItem('auth_token');
-      } catch (error) {
-        console.error('Error getting auth token from storage:', error);
-        return false;
-      }
-      if (!currentToken) {
-        return false;
-      }
-    }
-    
-    try {
-      const whoamiUrl = `${API_BASE}/whoami`;
-      const response = await fetch(whoamiUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${currentToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (response.ok) {
-        return true;
-      }
-      
-      return false;
-    } catch (error) {
-      console.error('Failed to call whoami endpoint:', error);
-      return false;
-    }
-  }, [token]);
-
-  /**
    * Logs out the user by:
    * 1. Calling the backend /logout endpoint to blacklist the token
    * 2. Removing token from localStorage
@@ -220,37 +180,115 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [token]);
 
+  /**
+   * Consolidated effect that handles all auth state checks and URL token detection
+   * Priority: URL token > stored token > login
+   * Handles both initial mount and URL token changes (OAuth returns)
+   */
   useEffect(() => {
-    // Extract token from URL (handles both expo-router params and direct URL parsing)
-    const checkToken = async () => {
-      const urlToken = await getTokenFromUrl();
-      
-      if (urlToken) {
-        // Store token in storage (web: localStorage, mobile: AsyncStorage)
-        try {
-          await storage.setItem('auth_token', urlToken);
-        } catch (error) {
-          console.error('Error storing auth token:', error);
-        }
-        setToken(urlToken);
-        // Remove token from URL to prevent re-processing (after delay to avoid re-trigger)
-        if (Platform.OS === 'web' && typeof window !== 'undefined') {
-          setTimeout(() => {
-            const url = new URL(window.location.href);
-            url.searchParams.delete('token');
-            window.history.replaceState({}, '', url.toString());
-          }, 100);
-        }
-        setLoading(false);
-        hasInitiatedLogin.current = false;
+    const processAuth = async () => {
+      // Prevent multiple simultaneous processing
+      if (isInitializing.current) {
         return;
+      }
+      isInitializing.current = true;
+
+      try {
+        // Step 1: Always check URL for token first (highest priority - user just returned from OAuth)
+        // This handles both initial mount and OAuth returns
+        const urlToken = await getTokenFromUrl();
+        
+        if (urlToken) {
+          // Store token in storage
+          try {
+            await storage.setItem('auth_token', urlToken);
+          } catch (error) {
+            console.error('Error storing auth token:', error);
+          }
+          setToken(urlToken);
+          // Remove token from URL to prevent re-processing
+          if (Platform.OS === 'web' && typeof window !== 'undefined') {
+            setTimeout(() => {
+              const url = new URL(window.location.href);
+              url.searchParams.delete('token');
+              window.history.replaceState({}, '', url.toString());
+            }, 100);
+          }
+          setLoading(false);
+          hasInitiatedLogin.current = false;
+          hasInitialized.current = true;
+          isInitializing.current = false;
+          return;
+        }
+
+        // Step 2: Only check storage if we haven't initialized yet (prevents re-checking on URL changes)
+        // This ensures we only check storage once on initial mount, not on every URL change
+        if (!hasInitialized.current) {
+          try {
+            const storedToken = await storage.getItem('auth_token');
+            
+            if (storedToken) {
+              // Validate the stored token by checking if it works with /whoami
+              let isValid = false;
+              try {
+                const whoamiUrl = `${API_BASE}/whoami`;
+                const response = await fetch(whoamiUrl, {
+                  method: 'GET',
+                  headers: {
+                    'Authorization': `Bearer ${storedToken}`,
+                    'Content-Type': 'application/json',
+                  },
+                });
+                isValid = response.ok;
+              } catch (error) {
+                console.error('Failed to validate stored token:', error);
+                isValid = false;
+              }
+              
+              if (isValid) {
+                // Token is valid, use it
+                setToken(storedToken);
+                setLoading(false);
+                hasInitiatedLogin.current = false;
+                hasInitialized.current = true;
+                isInitializing.current = false;
+                return;
+              } else {
+                // Token is invalid, clear it
+                try {
+                  await storage.removeItem('auth_token');
+                } catch (error) {
+                  console.error('Error removing invalid token from storage:', error);
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Error loading auth token from storage:', error);
+          }
+
+          // Step 3: No valid token found anywhere, trigger login (only on initial mount)
+          setLoading(false);
+          if (!hasInitiatedLogin.current) {
+            login();
+          }
+          hasInitialized.current = true;
+        }
+      } catch (error) {
+        console.error('Error during auth processing:', error);
+        setLoading(false);
+        hasInitialized.current = true;
+      } finally {
+        isInitializing.current = false;
       }
     };
 
-    checkToken();
-  }, [login, getTokenFromUrl]);
+    processAuth();
+  }, [params.token]);
 
-  // Listen for deep link URL changes on mobile (when app is already running)
+  /**
+   * Listen for deep link URL changes on mobile (when app is already running)
+   * This handles OAuth callbacks when the app is already open
+   */
   useEffect(() => {
     if (Platform.OS === 'web') {
       // Web handles URL changes through window.location, no listener needed
@@ -259,6 +297,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Helper to process token from a URL string
     const processUrlToken = async (urlString: string) => {
+      // Don't process if we already have a token or are initializing
+      if (token || isInitializing.current) {
+        return;
+      }
+
       try {
         const parsed = Linking.parse(urlString);
         const urlToken = parsed.queryParams?.token as string | null;
@@ -288,36 +331,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       subscription.remove();
     };
-  }, []);
-
-  useEffect(() => {
-    const startupCheck = async () => {
-    // On initial load, check storage for stored token
-    if (loading && !token && !hasInitiatedLogin.current) {
-      try {
-        const storedToken = await storage.getItem('auth_token');
-        if (storedToken) {
-          const authenticated = await checkAuthentication();
-          if (!authenticated) {
-            login();
-            return;
-          }
-          setToken(storedToken);
-          setLoading(false);
-          return;
-        }
-      } catch (error) {
-        console.error('Error loading auth token from storage:', error);
-      }
-
-      // Trigger login automatically if no token exists anywhere
-      setLoading(false);
-      login();
-      }
-    };
-    
-    startupCheck();
-  }, [loading, login, checkAuthentication]);
+  }, [token]);
 
   return (
     <AuthContext.Provider value={{ token, loading, login, logout, getUserEmail }}>

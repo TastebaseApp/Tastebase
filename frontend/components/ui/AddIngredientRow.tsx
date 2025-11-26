@@ -49,7 +49,8 @@ export function AddIngredientRow({
   const [loading, setLoading] = useState(false);
 
   // units for this specific row
-  const [units, setUnits] = useState<string[]>([]);
+  const [units, setUnits] = useState<string[]>(row.unit ? [row.unit] : []);
+
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
 
   const handleSubmitEditing = async () => {
@@ -88,7 +89,7 @@ export function AddIngredientRow({
 
   const shouldShowSuggestions =
     showSuggestions && (loading || suggestions.length > 0);
-  const unitDisabled = units.length === 0;
+  const unitDisabled = units.length === 0 && !row.unit;
 
   return (
     <View style={{ marginBottom: 10 }}>
@@ -109,7 +110,10 @@ export function AddIngredientRow({
           />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleSubmitEditing} style={{ padding: 3, marginTop: 24 }}>
+        <TouchableOpacity
+          onPress={handleSubmitEditing}
+          style={{ padding: 3, marginTop: 24 }}
+        >
           <AntDesign name="search" size={24} color={Palette.grey} />
         </TouchableOpacity>
 
@@ -154,7 +158,11 @@ export function AddIngredientRow({
               },
             ]}
           >
-            <ThemedText style={{ color: textColor }} numberOfLines={1} ellipsizeMode="tail">
+            <ThemedText
+              style={{ color: textColor }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
               {row.unit || (unitDisabled ? "-" : "-")}
             </ThemedText>
           </TouchableOpacity>

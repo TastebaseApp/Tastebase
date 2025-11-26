@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import org.springframework.stereotype.Service;
 import tastebase.App;
 import tastebase.api.external.Cuisine;
+import tastebase.api.external.NutrientFilter;
 import tastebase.api.external.SpoonacularService;
 import tastebase.database.SQLConnector;
 import tastebase.obj.Recipe;
@@ -41,9 +42,9 @@ public class RecipeService {
         return recipe;
     }
 
-    public JsonArray searchRecipes(String query, String ingredients, Cuisine cuisine, int number) {
+    public JsonArray searchRecipes(String query, String ingredients, Cuisine cuisine, NutrientFilter nutrientFilter, int number) {
         JsonArray results = new JsonArray();
-        for (var recipe : spoonacularService.getRecipes(query, ingredients, cuisine, number)) {
+        for (var recipe : spoonacularService.getRecipes(query, ingredients, cuisine, nutrientFilter, number)) {
             results.add(recipe);
         }
         return results;

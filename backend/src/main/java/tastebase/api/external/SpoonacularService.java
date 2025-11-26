@@ -56,13 +56,17 @@ public class SpoonacularService {
     // Comma separated list of ingredients (ie "apples,flour,sugar")
     // Does not return full recipes (just id, title, image, etc)
     // Use getRecipe(id) to get full recipe information
-    public List<JsonElement> getRecipes(String query, String ingredients, Cuisine cuisine, int number) {
+    public List<JsonElement> getRecipes(String query, String ingredients, Cuisine cuisine, NutrientFilter nutrientFilter, int number) {
         Map<String, String> params = new HashMap();
         params.put("query", (query != null)  ? query : "");
         if (ingredients != null && !ingredients.isEmpty()) params.put("includeIngredients", ingredients);
         if (cuisine != null) params.put("cuisine", cuisine.toString().replace("_", " "));
         if (number == 0) params.put("number", "10");
         params.put("sort", "min-missing-ingredients");
+
+        if (nutrientFilter != null) {
+            params.putAll(nutrientFilter.toQueryParams());
+        }
 
         String url = buildUrl("recipes/complexSearch", params);
 

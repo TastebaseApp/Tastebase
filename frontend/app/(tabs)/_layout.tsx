@@ -1,5 +1,5 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs, usePathname, useRouter } from 'expo-router';
+import React, { useEffect, useRef } from 'react';
 import { Image, StyleSheet } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
@@ -9,7 +9,23 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const pathname = usePathname();
+  const router = useRouter();
+  const hasInitialized = useRef(false);
 
+  useEffect(() => {
+    // Check the initial pathname and if it is a tab route, navigate to it
+    // This ensures the tab bar is synced with the current route
+    if (!hasInitialized.current) {
+      hasInitialized.current = true;
+      if (pathname && (pathname === '/pantry' || pathname === '/recipes')) {
+        setTimeout(() => {
+          router.replace(pathname as any);
+        }, 0);
+      }
+    }
+  }, []);
+  
   return (
     <Tabs
       screenOptions={{

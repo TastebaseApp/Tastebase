@@ -249,6 +249,37 @@ This feature gives the user the ability to list the required ingredients necessa
     - [EWOK-43](https://cs3398-ewoks-fall.atlassian.net/jira/software/projects/EWOK/list/?jql=project%20%3D%20%22EWOK%22%20ORDER%20BY%20created%20DESC&selectedIssue=EWOK-43)
     - [Bitbucket](https://bitbucket.org/cs3398-ewoks-f25/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/commits/2374fcb8d32b5cf539a0784a329b6c56dc902f5e)
 
+## Sprint 3 (November 10 - November 26)
+**Demo Branch:** dev
+### Contributions
+
+**Heston:** "Added recipe-ingredient comparers, added profile icon and popout card, made small ui updates, and added unit tests for some methods in the pantryService."
+
+- Add safe area insets
+    - [EWOK-92](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-92)
+    - [Bitbucket](https://bitbucket.org/%7B%7D/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-92-Add-safe-area-insets)
+- Add profile icon to home page
+    - [EWOK-20](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-20)
+    - [Bitbucket](https://bitbucket.org/%7B%7D/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-20-add-profile-icon)
+- Create simple recipe ingredient comparer
+    - [EWOK-5](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-5)
+    - [Bitbucket](https://bitbucket.org/%7B%7D/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-5-simple-recipe-ingredient-comparer)
+- Create ingredient-wise recipe ingredient comparer
+    - [EWOK-95](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-95)
+    - [Bitbucket](https://bitbucket.org/%7B%7D/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-95-ingredient-wise-recipe-comparer)
+- Planning pantryService method unit tests
+    - [EWOK-107](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-107)
+    - [Bitbucket](https://bitbucket.org/%7B%7D/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-107-heston-unit-test-plan)
+- Implementing/Reporting pantryService method unit tests
+    - [EWOK-109](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-109)
+    - [Bitbucket](https://bitbucket.org/%7B%7D/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-109-heston-unit-test-implementation)
+- Update favorites to use backend api
+    - [EWOK-123](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-123)
+    - [Bitbucket](https://bitbucket.org/%7B%7D/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-123-Update-favorites-to-api)
+- Clean up favorites tab ui
+    - [EWOK-123](https://cs3398-ewoks-fall.atlassian.net/browse/EWOK-133)
+    - [Bitbucket](https://bitbucket.org/%7B%7D/%7B00a23602-999a-417c-ad02-e42303873d5e%7D/branch/EWOK-133-clean-up-favorites-tab-ui)
+
 ## Project Status
 Project is: _in progress_
 
@@ -256,19 +287,14 @@ Project is: _in progress_
 ## Room for Improvement
 
 ### Testing:
-- Unit test for add ingredient to pantry react native input
-- Unit test for remove ingredient from pantry react native input
 - Unit test for tab navigation
 
 ### Features:
-- Loading and Storing User's favorite recipes to and from the database
-- Connect pantry to backend with Spoonacular ingredient parsing.
 - Search for recipes based on the user's available ingredients.
-- Create user login & logout
+- Interactive "Recipe Roulette" where the user gets shown one recipe at a time and can favorite or pass on each one.
+- Scan a shopping receipt and parse ingredients to add to the user's pantry.
 
 ### Recipe Recommendation:
-- Recommend recipes based on different cultures. For example, when the user asks for Indian or Greek recipes.
-- Recommend recipes based on food nutrients. For example, when the user asks for high-protein, high carbohydrate, zero-carbohydrate(keto), low-fat, low sugar, high sugar, etc.
 - When the user has nothing in their pantry, ask them what kind of food they might want and give recommendations based off this initial user input
 
 ## Getting Started

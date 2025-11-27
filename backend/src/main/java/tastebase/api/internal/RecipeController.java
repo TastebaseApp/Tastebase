@@ -53,7 +53,9 @@ public class RecipeController {
     @Operation(summary = "Search recipes by cuisine", description = "Search for recipes filtered by cuisine type.")
     public String searchRecipesByCuisine(
         @RequestParam String cuisine,
-        @RequestParam(required = false, defaultValue = "10") Integer number) {
+        @RequestParam(required = false, defaultValue = "10") Integer number,
+        @RequestParam(required = false) NutrientFilter nutrientFilter
+    ) {
         
         int resultNumber = (number != null && number > 0) ? number : 10;
         
@@ -83,7 +85,7 @@ public class RecipeController {
                 "Invalid cuisine: " + cuisine + ". Error: " + e.getMessage());
         }
         
-        return recipeService.searchRecipes(null, null, cuisineEnum, resultNumber).toString();
+        return recipeService.searchRecipes(null, null, cuisineEnum, nutrientFilter, resultNumber).toString();
     }
 
     @GetMapping("/{id}")

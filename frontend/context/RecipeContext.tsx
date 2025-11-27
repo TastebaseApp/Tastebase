@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import recipeService from '../services/recipeService';
+import recipeService, { NutrientFilterOptions } from '../services/recipeService';
 import { Recipe } from '../types/pantry';
 import * as storage from '@/utils/storage';
 import { useAuth } from './AuthContext';
@@ -15,6 +15,7 @@ type ContextShape = {
     ingredients?: string;
     cuisine?: string;
     number?: number;
+    nutrientFilter?: NutrientFilterOptions;
   }) => Promise<void>;
   addRecipe: (recipe: Recipe) => Promise<void>; // Add recipe to favorites
   removeRecipe: (recipe: Recipe) => Promise<void>; // Remove recipe from favorites
@@ -192,6 +193,7 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     ingredients?: string;
     cuisine?: string;
     number?: number;
+    nutrientFilter?: NutrientFilterOptions;
   }) => {
     setLoading(true);
     setError(undefined);

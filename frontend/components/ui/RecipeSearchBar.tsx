@@ -13,12 +13,14 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Colors, Palette } from '@/constants/theme';
+import { NutrientFilterOptions } from '@/services/recipeService';
 
 type SearchOptions = {
   query?: string;
   ingredients?: string;
   cuisine?: string;
   number?: number;
+  nutrientFilter?: NutrientFilterOptions;
 };
 
 type Props = {
@@ -39,6 +41,7 @@ export function RecipeSearchBar({ onSearch }: Props) {
   const [selectedCuisine, setSelectedCuisine] = useState('');
   const [number, setNumber] = useState(10);
   const [showFilters, setShowFilters] = useState(false);
+  const [nutrientFilter, setNutrientFilter] = useState<NutrientFilterOptions>({});
   
   const bg = useThemeColor({}, 'background');
   const text = useThemeColor({}, 'text');
@@ -52,6 +55,7 @@ export function RecipeSearchBar({ onSearch }: Props) {
       ingredients: ingredients.trim() || undefined,
       cuisine: selectedCuisine || undefined,
       number,
+      nutrientFilter: Object.keys(nutrientFilter).length > 0 ? nutrientFilter : undefined,
     };
     onSearch(searchOptions);
     setShowFilters(false);
@@ -62,6 +66,24 @@ export function RecipeSearchBar({ onSearch }: Props) {
     setIngredients('');
     setSelectedCuisine('');
     setNumber(10);
+    setNutrientFilter({});
+  };
+
+  // Helper function to update nutrient filter values
+  const updateNutrientFilter = (key: keyof NutrientFilterOptions, value: string) => {
+    const numValue = value === '' ? undefined : parseInt(value, 10);
+    if (numValue !== undefined && isNaN(numValue)) return; // Don't update if invalid number
+    
+    setNutrientFilter(prev => {
+      const updated = { ...prev };
+      if (numValue === undefined) {
+        delete updated[key];
+      } else {
+        updated[key] = numValue;
+      }
+      // Remove empty object if no filters are set
+      return Object.keys(updated).length === 0 ? {} : updated;
+    });
   };
 
   const handleClear = () => {
@@ -72,10 +94,11 @@ export function RecipeSearchBar({ onSearch }: Props) {
       ingredients: undefined,
       cuisine: undefined,
       number: 10,
+      nutrientFilter: undefined,
     });
   };
 
-  const hasActiveFilters = searchQuery || ingredients || selectedCuisine;
+  const hasActiveFilters = searchQuery || ingredients || selectedCuisine || Object.keys(nutrientFilter).length > 0;
 
   return (
     <View style={styles.container}>
@@ -165,6 +188,160 @@ export function RecipeSearchBar({ onSearch }: Props) {
                       </ThemedText>
                     </TouchableOpacity>
                   ))}
+                </View>
+              </View>
+
+              {/* Nutrient Filters */}
+              <View style={styles.filterSection}>
+                <ThemedText type="subtitle" style={styles.label}>
+                  Nutrition Filters
+                </ThemedText>
+                
+                {/* Calories */}
+                <View style={styles.nutrientRow}>
+                  <ThemedText style={styles.nutrientLabel}>Calories:</ThemedText>
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Min"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.minCalories?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('minCalories', val)}
+                    keyboardType="numeric"
+                  />
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Max"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.maxCalories?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('maxCalories', val)}
+                    keyboardType="numeric"
+                  />
+                </View>
+
+                {/* Carbs */}
+                <View style={styles.nutrientRow}>
+                  <ThemedText style={styles.nutrientLabel}>Carbs (g):</ThemedText>
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Min"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.minCarbs?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('minCarbs', val)}
+                    keyboardType="numeric"
+                  />
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Max"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.maxCarbs?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('maxCarbs', val)}
+                    keyboardType="numeric"
+                  />
+                </View>
+
+                {/* Protein */}
+                <View style={styles.nutrientRow}>
+                  <ThemedText style={styles.nutrientLabel}>Protein (g):</ThemedText>
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Min"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.minProtein?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('minProtein', val)}
+                    keyboardType="numeric"
+                  />
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Max"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.maxProtein?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('maxProtein', val)}
+                    keyboardType="numeric"
+                  />
+                </View>
+
+                {/* Fat */}
+                <View style={styles.nutrientRow}>
+                  <ThemedText style={styles.nutrientLabel}>Fat (g):</ThemedText>
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Min"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.minFat?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('minFat', val)}
+                    keyboardType="numeric"
+                  />
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Max"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.maxFat?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('maxFat', val)}
+                    keyboardType="numeric"
+                  />
+                </View>
+
+                {/* Fiber */}
+                <View style={styles.nutrientRow}>
+                  <ThemedText style={styles.nutrientLabel}>Fiber (g):</ThemedText>
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Min"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.minFiber?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('minFiber', val)}
+                    keyboardType="numeric"
+                  />
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Max"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.maxFiber?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('maxFiber', val)}
+                    keyboardType="numeric"
+                  />
+                </View>
+
+                {/* Sugar */}
+                <View style={styles.nutrientRow}>
+                  <ThemedText style={styles.nutrientLabel}>Sugar (g):</ThemedText>
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Min"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.minSugar?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('minSugar', val)}
+                    keyboardType="numeric"
+                  />
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Max"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.maxSugar?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('maxSugar', val)}
+                    keyboardType="numeric"
+                  />
+                </View>
+
+                {/* Sodium */}
+                <View style={styles.nutrientRow}>
+                  <ThemedText style={styles.nutrientLabel}>Sodium (mg):</ThemedText>
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Min"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.minSodium?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('minSodium', val)}
+                    keyboardType="numeric"
+                  />
+                  <TextInput
+                    style={[styles.nutrientInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
+                    placeholder="Max"
+                    placeholderTextColor={icon + '80'}
+                    value={nutrientFilter.maxSodium?.toString() || ''}
+                    onChangeText={(val) => updateNutrientFilter('maxSodium', val)}
+                    keyboardType="numeric"
+                  />
                 </View>
               </View>
 
@@ -321,6 +498,24 @@ const styles = StyleSheet.create({
   },
   searchButton: {
     backgroundColor: Palette.gradientEnd,
+  },
+  nutrientRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    gap: 8,
+  },
+  nutrientLabel: {
+    width: 100,
+    fontSize: 14,
+  },
+  nutrientInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    fontSize: 14,
   },
 });
 

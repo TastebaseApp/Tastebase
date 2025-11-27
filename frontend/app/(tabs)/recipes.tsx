@@ -5,7 +5,6 @@ import RecipeList from '@/components/recipeList';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import AddRecipeButton from '@/components/ui/AddRecipeButton';
 import { Palette } from '@/constants/theme';
 
@@ -40,6 +39,7 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'column',
     gap: 8,
+    alignItems: 'center',
   },
   subtitle: {
     fontStyle: 'italic',

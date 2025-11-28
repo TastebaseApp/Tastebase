@@ -2,7 +2,8 @@ import { ThemedView } from "./themed-view";
 import { ThemedText } from "./themed-text";
 import { Colors } from "../constants/theme";
 import { Pantry, Recipe as RecipeType } from "../types/pantry";
-import { Pressable, StyleSheet, useColorScheme, Image } from "react-native";
+import { Pressable, StyleSheet, Image } from "react-native";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { router } from "expo-router";
 import FavoriteRecipeButton from "./ui/favoriteRecipeButton";
 import { useEffect, useState } from "react";
@@ -19,7 +20,9 @@ type RecipeProps = {
 
 
 export default function Recipe({ recipe, onPress }: RecipeProps) {
-  const colorScheme = useColorScheme() || 'light';
+  const colorScheme = useColorScheme();
+  const backgroundColor = Colors[colorScheme].background;
+  const borderColor = colorScheme === 'light' ? Palette.lightGrey : Palette.grey + '40';
   const [modalVisible, setModalVisible] = useState(false);
 
   const [aspectRatio, setAspectRatio] = useState(1);
@@ -60,12 +63,10 @@ export default function Recipe({ recipe, onPress }: RecipeProps) {
     setModalVisible(false);
   };
 
-  const styles = getStyles(colorScheme);
-
   return (
     <>
     <Pressable
-      style={[styles.card]}
+      style={[styles.card, { backgroundColor: backgroundColor, borderColor: borderColor }]}
       onPress={handlePress}
     >
       <ThemedView style={styles.imageWrapper}>
@@ -82,7 +83,7 @@ export default function Recipe({ recipe, onPress }: RecipeProps) {
           {recipe.title}
         </ThemedText>
       </ThemedView>
-      <ThemedText type="default" style={styles.infoRow} numberOfLines={2}>
+      <ThemedText type="default" style={[ styles.infoRow, { backgroundColor: backgroundColor }]} numberOfLines={2}>
         {recipe.summary}
       </ThemedText>
       <ThemedView style={styles.infoRow}>
@@ -122,7 +123,7 @@ export default function Recipe({ recipe, onPress }: RecipeProps) {
   );
 }
 
-const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
+const styles = StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 350,
@@ -135,9 +136,7 @@ const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
-    backgroundColor: Colors[colorScheme].background,
     borderWidth: 1,
-    borderColor: colorScheme === 'light' ? Palette.lightGrey : Palette.grey + '40'
   },
 
   imageWrapper: {

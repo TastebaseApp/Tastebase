@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Pressable, StyleProp, useColorScheme, ViewStyle } from 'react-native';
+import { Pressable, StyleProp, ViewStyle } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useRecipes } from '../../context/RecipeContext';
 import { Recipe } from '../../types/pantry';
 import { IconSymbol } from './icon-symbol';
@@ -11,7 +12,7 @@ interface FavoriteRecipeButtonProps {
 }
 
 const FavoriteRecipeButton: React.FC<FavoriteRecipeButtonProps> = ({ recipe, style }) => {
-  const colorScheme = useColorScheme() || 'light';
+  const colorScheme = useColorScheme();
   const { favoriteRecipes, addRecipe, removeRecipe } = useRecipes();
   const [isFavorite, setIsFavorite] = useState(favoriteRecipes.some(r => r.id === recipe.id));
 

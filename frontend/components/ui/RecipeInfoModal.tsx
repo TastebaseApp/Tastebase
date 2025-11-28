@@ -7,8 +7,8 @@ import {
   ScrollView,
   Image,
   Dimensions,
-  useColorScheme,
 } from "react-native";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { ThemedText } from "@/components/themed-text";
 import { Recipe } from "@/types/pantry";
@@ -35,7 +35,7 @@ export function RecipeInfoModal({
   onUseIngredients,
 }: Props) {
   const screenWidth = Dimensions.get("window").width;
-  const colorScheme = useColorScheme() || "light";
+  const colorScheme = useColorScheme();
   const [useModalVisible, setUseModalVisible] = useState(false);
 
   if (!recipe) return null;

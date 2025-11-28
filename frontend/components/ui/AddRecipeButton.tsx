@@ -16,7 +16,7 @@ const AddRecipeButton: React.FC = () => {
 
   return (
     <TouchableOpacity
-      style={styles.button}
+      style={[styles.button, { backgroundColor: Palette.gradientEnd }]}
       onPress={handleAddRecipe}
       activeOpacity={0.8}
     >
@@ -29,7 +29,6 @@ const AddRecipeButton: React.FC = () => {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: Palette.gradientEnd,
     borderRadius: 15,
     paddingHorizontal: 24,
     paddingVertical: 12,
@@ -40,7 +39,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 24,
     fontWeight: '600',
-    color: Palette.white,
   },
 });
 

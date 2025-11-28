@@ -2,7 +2,8 @@ import { ThemedView } from "./themed-view";
 import { ThemedText } from "./themed-text";
 import Recipe from "./recipe";
 import { Colors } from "../constants/theme";
-import { StyleSheet, useColorScheme } from "react-native";
+import { StyleSheet } from "react-native";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useRecipes } from "@/context/RecipeContext";
 
 interface RecipeListProps {
@@ -12,7 +13,7 @@ interface RecipeListProps {
 export default function RecipeList({ showFavorites = false }: RecipeListProps) {
   const { recipes, favoriteRecipes, loading, error } = useRecipes(); // Get recipes from RecipeContext
   const displayRecipes = showFavorites ? favoriteRecipes : recipes;
-  const colorScheme = useColorScheme() || "light";
+  const colorScheme = useColorScheme();
 
   if (loading) {
     return (

@@ -4,11 +4,10 @@ import { Image, StyleSheet } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const backgroundColor = useThemeColor({}, 'background');
   const pathname = usePathname();
   const router = useRouter();
   const hasInitialized = useRef(false);
@@ -33,7 +32,7 @@ export default function TabLayout() {
         tabBarShowLabel: false, // 🔹 Hides text labels
         tabBarButton: HapticTab,
         tabBarStyle: {
-          backgroundColor: Colors[colorScheme ?? 'light'].background,
+          backgroundColor: backgroundColor,
         },
       }}
     >

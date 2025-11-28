@@ -9,6 +9,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/context/AuthContext';
+import { ColorSchemeWidget } from './ColorSchemeWidget';
 
 const ICON_SIZE = 40; // Fixed icon size to match ProfileIcon default
 
@@ -24,8 +25,9 @@ export function ProfileCard({
   iconColor,
 }: Props) {
   const bg = useThemeColor({}, 'background');
-  const text = useThemeColor({}, 'background');
+  const text = useThemeColor({}, 'text');
   const buttonBg = useThemeColor({}, 'text');
+  const buttonText = useThemeColor({}, 'background');
   const { token, getUserEmail, logout, login } = useAuth();
   
   const [email, setEmail] = useState<string | null>(null);
@@ -87,17 +89,20 @@ export function ProfileCard({
 
           {/* Email or "Not logged in" message */}
           <ThemedView style={styles.contentContainer}>
-            <ThemedText style={styles.notLoggedInText}>{message}</ThemedText>
+            <ThemedText style={[styles.notLoggedInText, { color: text }]}>{message}</ThemedText>
 
             {/* Logout or Login button */}
             <TouchableOpacity
               style={[styles.button, { backgroundColor: buttonBg }]}
               onPress={token ? handleLogout : handleLogin}
             >
-              <ThemedText style={[styles.buttonText, { color: text }]}>
+              <ThemedText style={[styles.buttonText, { color: buttonText }]}>
                 {token ? 'Logout' : 'Log In'}
               </ThemedText>
             </TouchableOpacity>
+          </ThemedView>
+          <ThemedView style={styles.colorSchemeContainer}>
+            <ColorSchemeWidget />
           </ThemedView>
         </TouchableOpacity>
       </TouchableOpacity>
@@ -154,6 +159,12 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  colorSchemeContainer: {
+    width: '100%',
+    alignItems: 'center',
+    gap: 20,
+    marginTop: 16, // Space after icon
   },
 });
 

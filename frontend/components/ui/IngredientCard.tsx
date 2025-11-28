@@ -1,7 +1,7 @@
 import { ThemedView } from "../themed-view";
 import { ThemedText } from "../themed-text";
-import { StyleSheet, Image, useColorScheme, View, TouchableOpacity } from "react-native";
-import { Colors, Palette } from "../../constants/theme";
+import { StyleSheet, Image, View, TouchableOpacity } from "react-native";
+import { Palette } from "../../constants/theme";
 import { Ingredient } from "../../types/pantry";
 import RemoveIngredientButton from "./RemoveIngredientButton";
 import { useThemeColor } from "../../hooks/use-theme-color";
@@ -14,11 +14,9 @@ type Props = {
 };
 
 export default function IngredientCard({ ingredient, cardWidth }: Props) {
-  const colorScheme = useColorScheme() || 'light';
   const placeholderBg = useThemeColor({ light: '#ffffff', dark: '#2a2a2a' }, 'background');
   const imageBg = useThemeColor({ light: '#ffffff', dark: '#1a1a1a' }, 'background');
   const { removeIngredient } = usePantry();
-  const iconColor = useThemeColor({}, 'text');
   const [imageError, setImageError] = useState(false);
 
   // Calculate card height to make it more square (slightly taller than width)

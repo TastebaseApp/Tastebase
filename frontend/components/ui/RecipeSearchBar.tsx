@@ -42,6 +42,7 @@ export function RecipeSearchBar({ onSearch }: Props) {
   const [number, setNumber] = useState(10);
   const [showFilters, setShowFilters] = useState(false);
   const [nutrientFilter, setNutrientFilter] = useState<NutrientFilterOptions>({});
+  const [isFocused, setIsFocused] = useState(false);
   
   const bg = useThemeColor({}, 'background');
   const text = useThemeColor({}, 'text');
@@ -103,15 +104,21 @@ export function RecipeSearchBar({ onSearch }: Props) {
   return (
     <View style={styles.container}>
       {/* Main Search Bar */}
-      <View style={[styles.searchBar, { backgroundColor: bg, borderColor: icon + '33' }]}>
+      <View style={[styles.searchBar, { 
+        backgroundColor: bg, 
+        borderColor: isFocused ? Colors[colorScheme].tint : icon + '90',
+        borderWidth: isFocused ? 2 : 1,
+      }]}>
         <AntDesign name="search" size={20} color={icon} style={styles.searchIcon} />
         <TextInput
-          style={[styles.input, { color: text }]}
+          style={[styles.input, { color: text, outlineWidth: 0, outlineColor: 'transparent' }]}
           placeholder="Search recipes..."
-          placeholderTextColor={icon + '80'}
+          placeholderTextColor={icon + '90'}
           value={searchQuery}
           onChangeText={setSearchQuery}
           onSubmitEditing={handleSearch}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
         />
         <TouchableOpacity
           onPress={() => setShowFilters(true)}
@@ -180,9 +187,8 @@ export function RecipeSearchBar({ onSearch }: Props) {
                       ]}
                     >
                       <ThemedText
-                        style={{
-                          color: selectedCuisine === cuisine ? '#fff' : text,
-                        }}
+                        lightColor={selectedCuisine === cuisine ? '#fff' : Colors.light.text}
+                        darkColor={selectedCuisine === cuisine ? '#fff' : Colors.dark.text}
                       >
                         {cuisine.replace('_', ' ')}
                       </ThemedText>
@@ -374,7 +380,7 @@ export function RecipeSearchBar({ onSearch }: Props) {
                   clearFilters();
                   setShowFilters(false);
                 }}
-                style={[styles.modalButton, styles.clearButton, { borderColor: icon + '33' }]}
+                style={[styles.modalButton, styles.clearButton, { borderColor: icon + '90' }]}
               >
                 <ThemedText>Clear</ThemedText>
               </TouchableOpacity>
@@ -397,7 +403,7 @@ export function RecipeSearchBar({ onSearch }: Props) {
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 0,
-    marginVertical: 12,
+    marginVertical: 0,
   },
   searchBar: {
     flexDirection: 'row',
@@ -420,6 +426,7 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     padding: 4,
+    borderWidth: 1,
   },
   modalOverlay: {
     flex: 1,

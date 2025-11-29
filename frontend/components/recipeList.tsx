@@ -28,7 +28,7 @@ export default function RecipeList({ showFavorites = false }: RecipeListProps) {
   if (error) {
     return (
       <ThemedView
-        style={[styles.container, { borderColor: Colors[colorScheme].tint }]}
+        style={[styles.container, { paddingTop: 20 }]}
       >
         <ThemedText type="subtitle">Error loading recipes: {error}</ThemedText>
       </ThemedView>
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     minHeight: 50,
     minWidth: 100,
     maxWidth: "100%",
-    alignSelf: "flex-start",
+    alignSelf: "center",
   },
   emptyContainer: {
     justifyContent: "center",

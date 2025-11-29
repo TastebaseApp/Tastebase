@@ -3,6 +3,7 @@ import {
   Modal,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useThemeColor } from '@/hooks/use-theme-color';
@@ -28,34 +29,19 @@ export function ProfileCard({
   const text = useThemeColor({}, 'text');
   const buttonBg = useThemeColor({}, 'text');
   const buttonText = useThemeColor({}, 'background');
-  const { token, getUserEmail, logout, login } = useAuth();
+  const { token, logout, login, userPictureURI, userEmail } = useAuth();
   
-  const [email, setEmail] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>("You are not logged in");
+  const [message, setMessage] = useState<string | null>(userEmail ? `${userEmail}` : "You are not logged in");
 
-  // Fetch email when card opens and user is logged in
   useEffect(() => {
-    if (visible && token && !email) {
-      getUserEmail().then((userEmail) => {
-        setEmail(userEmail);
-        setMessage(userEmail);
-      });
-    }
-  }, [visible, token, email, getUserEmail]);
-
-  // Reset email when logged out
-  useEffect(() => {
-    if (!token) {
-      setEmail(null);
-    }
-  }, [token]);
+    setMessage(userEmail ? `${userEmail}` : "You are not logged in");
+  }, [userEmail]);
 
   const handleLogout = async () => {
     if (!token) {
       return;
     }
     await logout();
-    setEmail(null);
     setMessage("You are no longer logged in");
   };
 
@@ -84,7 +70,15 @@ export function ProfileCard({
             style={styles.iconContainer}
             hitSlop={8}
           >
-            <Ionicons name="person-circle" size={ICON_SIZE} color={iconColor} />
+            {userPictureURI ? (
+              <Image
+                source={{ uri: userPictureURI }}
+                style={styles.profileImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <Ionicons name="person-circle" size={ICON_SIZE} color={iconColor} />
+            )}
           </TouchableOpacity>
 
           {/* Email or "Not logged in" message */}
@@ -131,6 +125,11 @@ const styles = StyleSheet.create({
     right: 16, // Half of ICON_SIZE to center icon on card's top-right corner
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  profileImage: {
+    width: ICON_SIZE,
+    height: ICON_SIZE,
+    borderRadius: ICON_SIZE / 2,
   },
   contentContainer: {
     width: '100%',

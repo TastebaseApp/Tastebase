@@ -3,15 +3,17 @@ import { useLocalSearchParams } from 'expo-router';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 import * as storage from '@/utils/storage';
+import { uint8ArrayToBase64 } from '@/utils/base64-utils';
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
 type ContextShape = {
   token: string | null;
   loading: boolean;
+  userEmail: string | null;
+  userPictureURI: string | null;
   login: () => void;
   logout: () => Promise<void>;
-  getUserEmail: () => Promise<string | null>;
 };
 
 const AuthContext = createContext<ContextShape | undefined>(undefined);
@@ -20,6 +22,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const params = useLocalSearchParams<{ token?: string }>();
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userPictureURI, setUserPictureURI] = useState<string | null>(null);
   const hasInitiatedLogin = useRef(false);
   const isInitializing = useRef(false);
   const hasInitialized = useRef(false);
@@ -104,35 +108,81 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   /**
-   * Gets the user's email from the /whoami endpoint
-   * Returns null if token is missing or request fails
+   * Gets the user's profile icon from the /api/user/{id}/avatar endpoint
+   * Returns a data URI string (data:image/jpeg;base64,...) or null if unavailable
+   * @param authToken - The authentication token to use (defaults to current token from state)
    */
-  const getUserEmail = useCallback(async (): Promise<string | null> => {
-    if (!token) {
-      return null;
+  const getUserProfileIcon = useCallback(async (authToken?: string | null, userId?: string): Promise<void> => {
+    setUserPictureURI(null);
+    const tokenToUse = authToken ?? token;
+
+    if (!tokenToUse) {
+      return;
     }
 
     try {
-      const response = await fetch(`${API_BASE}/whoami`, {
+      let userIdToUse = userId;
+      if (!userIdToUse) {
+        // If no user ID is provided, get it from the /whoami endpoint
+        const whoamiResponse = await fetch(`${API_BASE}/whoami`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${tokenToUse}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!whoamiResponse.ok) {
+          console.error('Failed to get user info:', whoamiResponse.status);
+          return;
+        }
+
+        const userData = await whoamiResponse.json();
+        userIdToUse = userData.id;
+
+        const userEmail = userData.email;
+        if (userEmail) {
+          setUserEmail(userEmail);
+        } else {
+          console.warn('User email not found in response');
+        }
+
+        if (!userIdToUse) {
+          console.error('User ID not found in response');
+          return;
+        }
+      }
+
+      // Fetch the avatar image
+      const avatarResponse = await fetch(`${API_BASE}/api/user/${userIdToUse}/avatar`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${tokenToUse}`,
         },
       });
 
-      if (!response.ok) {
-        console.error('Failed to get user email:', response.status);
-        return null;
+      if (!avatarResponse.ok) {
+        // User might not have an avatar (404), which is fine
+        if (avatarResponse.status === 404) {
+          return;
+        }
+        console.error('Failed to get user avatar:', avatarResponse.status);
+        return;
       }
 
-      const data = await response.json();
-      // Assuming the response has an 'email' field
-      // Adjust this based on your actual API response structure
-      return data.email || null;
+      // Convert response to base64 data URI
+      // Use arrayBuffer for cross-platform compatibility (works on web and native)
+      const arrayBuffer = await avatarResponse.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      
+      const base64 = uint8ArrayToBase64(bytes);
+      const mimeType = avatarResponse.headers.get('Content-Type') || 'image/jpeg';
+
+      const userPictureURI = `data:${mimeType};base64,${base64}`;
+      setUserPictureURI(userPictureURI);
     } catch (error) {
-      console.error('Error fetching user email:', error);
-      return null;
+      console.error('Error fetching user profile icon:', error);
+      return;
     }
   }, [token]);
 
@@ -153,6 +203,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Clear token from state immediately
     setToken(null);
+    setUserPictureURI(null); // Clear profile icon on logout
     hasInitiatedLogin.current = false;
     
     // Remove token from storage (web: localStorage, mobile: AsyncStorage)
@@ -206,6 +257,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.error('Error storing auth token:', error);
           }
           setToken(urlToken);
+          await getUserProfileIcon(urlToken);
           // Remove token from URL to prevent re-processing
           if (Platform.OS === 'web' && typeof window !== 'undefined') {
             setTimeout(() => {
@@ -229,7 +281,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             if (storedToken) {
               // Validate the stored token by checking if it works with /whoami
-              let isValid = false;
+              let userId = null;
+              let userEmail = null;
               try {
                 const whoamiUrl = `${API_BASE}/whoami`;
                 const response = await fetch(whoamiUrl, {
@@ -239,15 +292,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     'Content-Type': 'application/json',
                   },
                 });
-                isValid = response.ok;
+                const userData = await response.json();
+                userId = userData.id;
+                userEmail = userData.email;
               } catch (error) {
                 console.error('Failed to validate stored token:', error);
-                isValid = false;
+                userId = null;
               }
               
-              if (isValid) {
+              if (userId) {
                 // Token is valid, use it
                 setToken(storedToken);
+                setUserEmail(userEmail);
+                await getUserProfileIcon(storedToken, userId);
                 setLoading(false);
                 hasInitiatedLogin.current = false;
                 hasInitialized.current = true;
@@ -283,7 +340,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     processAuth();
-  }, [params.token]);
+  }, [params.token, getTokenFromUrl, getUserProfileIcon]);
 
   /**
    * Listen for deep link URL changes on mobile (when app is already running)
@@ -314,6 +371,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.error('Error storing auth token:', error);
           }
           setToken(urlToken);
+          await getUserProfileIcon(urlToken);
           setLoading(false);
           hasInitiatedLogin.current = false;
         }
@@ -331,10 +389,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       subscription.remove();
     };
-  }, [token]);
+  }, [token, getUserProfileIcon]);
 
   return (
-    <AuthContext.Provider value={{ token, loading, login, logout, getUserEmail }}>
+    <AuthContext.Provider value={{ token, loading, userEmail, userPictureURI, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

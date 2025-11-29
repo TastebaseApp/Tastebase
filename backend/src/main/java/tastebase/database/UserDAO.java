@@ -12,18 +12,7 @@ import java.util.Set;
 
 public class UserDAO {
 
-    private static final HashMap<String, User> userCache = new HashMap<>();
-
-    public static void addToCache(User user) {
-        userCache.put(user.getEmail(), user);
-    }
-
-    public static void clearCache() {
-        userCache.clear();
-    }
-
     public static User findByEmail(String email) {
-        if (userCache.containsKey(email)) return userCache.get(email);
         String query = "select * from users where email = ?";
         try (Connection conn = SQLConnector.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(query);
@@ -31,8 +20,7 @@ public class UserDAO {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                userCache.put(email, mapRow(rs));
-                return userCache.get(email);
+                return mapRow(rs);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -61,11 +49,12 @@ public class UserDAO {
 
     public static User upsert(User user) {
         String query =
-                "INSERT INTO users (provider, provider_id, name, email, picture) " +
+                "INSERT INTO users (provider, provider_id, name, email, avatar) " +
                         "VALUES (?, ?, ?, ?, ?) " +
                         "ON DUPLICATE KEY UPDATE " +
                         "provider = VALUES(provider), " +
                         "provider_id = VALUES(provider_id), " +
+                        "avatar = VALUES(avatar), " +
                         "name = VALUES(name)";
 
         try (Connection conn = SQLConnector.getConnection()) {
@@ -75,7 +64,7 @@ public class UserDAO {
             ps.setString(2, user.getProviderID());
             ps.setString(3, user.getName());
             ps.setString(4, user.getEmail());
-            ps.setString(5, user.getPicture());
+            ps.setBytes(5, user.getAvatar());
 
             ps.executeUpdate();
 
@@ -121,7 +110,7 @@ public class UserDAO {
         user.setProviderID(rs.getString("provider_id"));
         user.setEmail(rs.getString("email"));
         user.setName(rs.getString("name"));
-        user.setPicture(rs.getString("picture"));
+        user.setAvatar(rs.getBytes("avatar"));
 
         user.setFavorites(loadFavorites(user.getID()));
         return user;

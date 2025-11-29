@@ -12,7 +12,7 @@ public class User {
 
     private String name;
     private String email;
-    private String picture;
+    private byte[] avatar;
 
     private Set<Integer> favorites;
     private Pantry pantry;
@@ -21,14 +21,13 @@ public class User {
         this.favorites = new HashSet<>();
     }
 
-    public User(int ID, String name, String email, String picture) {
+    public User(int ID, String name, String email, byte[] avatar) {
         this.ID = ID;
         this.name = name;
         this.email = email;
-        this.picture = picture;
+        this.avatar = avatar;
         this.favorites = new HashSet<>();
     }
-
 
     public String getProvider() {
         return provider;
@@ -59,11 +58,11 @@ public class User {
         this.email = email;
     }
 
-    public String getPicture() {
-        return picture;
+    public byte[] getAvatar() {
+        return avatar;
     }
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setAvatar(byte[] avatar) {
+        this.avatar = avatar;
     }
 
     public int getID() {

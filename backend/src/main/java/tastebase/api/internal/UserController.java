@@ -46,6 +46,11 @@ public class UserController {
         return userService.getUserDTO(principal);
     }
 
+    @GetMapping("/{id}/avatar")
+    public ResponseEntity<?> getAvatar(@PathVariable int id) {
+        return userService.getAvatar(id);
+    }
+
     @PutMapping("/favorites/{recipeID}")
     public ResponseEntity<Void> putFavoriteRecipe(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal principal, @PathVariable int recipeID) {
         userService.favoriteRecipe(userService.getUser(principal), recipeID);

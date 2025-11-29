@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import tastebase.api.internal.RecipeController;
@@ -13,6 +14,9 @@ import tastebase.obj.User;
 import tastebase.obj.UserPrincipal;
 import tastebase.obj.dto.UserDTO;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URLConnection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +43,30 @@ public class UserService {
         return user;
     }
 
+    public ResponseEntity<?> getAvatar(int userID) {
+        User user = UserDAO.findByID(userID);
+        if (user == null || user.getAvatar() == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User or avatar not found");
+        }
+
+        String mime;
+        try {
+            mime = URLConnection.guessContentTypeFromStream(
+                    new ByteArrayInputStream(user.getAvatar())
+            );
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error determining avatar MIME type");
+        }
+
+        return ResponseEntity
+                .ok()
+                .header("Content-Type", mime != null ? mime : "application/octet-stream")
+                .body(user.getAvatar());
+    }
+
     public UserDTO getUserDTO(UserPrincipal principal) {
         User user = getUser(principal);
-        return new UserDTO(user.getID(), user.getProvider(), user.getProviderID(), user.getName(), user.getEmail(), user.getPicture());
+        return new UserDTO(user.getID(), user.getProvider(), user.getProviderID(), user.getName(), user.getEmail(), "/api/users/" + user.getID() + "/avatar");
     }
 
     public void favoriteRecipe(User user, int recipeID) {

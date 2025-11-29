@@ -48,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             user.setName("testing");
             user.setProvider("test");
             user.setProviderID("test");
-            user.setPicture("");
+            user.setAvatar(new byte[0]);
 
             Map<String, Object> attributes = new HashMap<>();
             attributes.put("sub", user.getEmail());
@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             attributes.put("name", user.getName());
             attributes.put("provider", user.getProvider());
             attributes.put("provider_id", user.getProviderID());
-            attributes.put("picture", user.getPicture());
+            attributes.put("picture", user.getAvatar());
             UserPrincipal principal = new UserPrincipal(user, attributes);
             var authToken = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authToken);

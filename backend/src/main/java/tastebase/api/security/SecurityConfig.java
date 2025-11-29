@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .cors().and()
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
+                                .antMatchers("/api/user/*/avatar").permitAll()
                                 .antMatchers("/home", "/whoami").authenticated()
                                 .antMatchers("/logout").authenticated()
                                 .antMatchers("/api/user/**").authenticated()

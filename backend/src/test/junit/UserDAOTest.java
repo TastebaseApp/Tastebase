@@ -45,8 +45,6 @@ public class UserDAOTest {
 
     @BeforeEach
     void reset() throws SQLException {
-        UserDAO.clearCache();
-
         String sql = "DELETE FROM users;";
         Connection conn = SQLConnector.getConnection();
         Statement st = conn.createStatement();
@@ -59,8 +57,8 @@ public class UserDAOTest {
 
     @Test
     void testFindByEmail_findFromDB() throws SQLException {
-        String sql = "INSERT INTO users (provider, provider_id, name, email, picture) "
-                + "VALUES ('provider', 'providerID', 'name', 'email', 'picture');";
+        String sql = "INSERT INTO users (provider, provider_id, name, email, avatar) "
+                + "VALUES ('provider', 'providerID', 'name', 'email', '');";
 
         Connection conn = SQLConnector.getConnection();
         Statement st = conn.createStatement();
@@ -71,8 +69,8 @@ public class UserDAOTest {
 
     @Test
     void testFindByEmail_findFromCache() throws SQLException {
-        String sql = "INSERT INTO users (provider, provider_id, name, email, picture) "
-                + "VALUES ('provider', 'providerID', 'name', 'email', 'picture');";
+        String sql = "INSERT INTO users (provider, provider_id, name, email, avatar) "
+                + "VALUES ('provider', 'providerID', 'name', 'email', '');";
 
         Connection conn = SQLConnector.getConnection();
         Statement st = conn.createStatement();
@@ -97,7 +95,7 @@ public class UserDAOTest {
         testUser.setProviderID("providerID");
         testUser.setName("name");
         testUser.setEmail("email");
-        testUser.setPicture("picture");
+        testUser.setAvatar(new byte[0]);
 
         User returnedUser = UserDAO.upsert(testUser);
 
@@ -115,13 +113,13 @@ public class UserDAOTest {
     void testUpsert_updateExistingUser() throws SQLException {
         try (Connection conn = SQLConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(
-                     "INSERT INTO users (provider, provider_id, name, email, picture) VALUES (?, ?, ?, ?, ?)",
+                     "INSERT INTO users (provider, provider_id, name, email, avatar) VALUES (?, ?, ?, ?, ?)",
                      Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, "provider");
             ps.setString(2, "providerID");
             ps.setString(3, "name");
             ps.setString(4, "email");
-            ps.setString(5, "picture");
+            ps.setBytes(5, new byte[0]);
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             rs.next();
@@ -132,7 +130,6 @@ public class UserDAOTest {
         testUser.setProviderID("providerIDUpdated");
         testUser.setName("nameUpdated");
         testUser.setEmail("email");
-        testUser.setPicture("pictureUpdated");
 
         User returnedUser = UserDAO.upsert(testUser);
 
@@ -158,17 +155,17 @@ public class UserDAOTest {
         user.setProviderID("providerID");
         user.setName("name");
         user.setEmail("email");
-        user.setPicture("picture");
+        user.setAvatar(new byte[0]);
 
         try (Connection conn = SQLConnector.getConnection();
              PreparedStatement ps = conn.prepareStatement(
-                     "INSERT INTO users (provider, provider_id, name, email, picture) VALUES (?, ?, ?, ?, ?)",
+                     "INSERT INTO users (provider, provider_id, name, email, avatar) VALUES (?, ?, ?, ?, ?)",
                      Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getProvider());
             ps.setString(2, user.getProviderID());
             ps.setString(3, user.getName());
             ps.setString(4, user.getEmail());
-            ps.setString(5, user.getPicture());
+            ps.setBytes(5, user.getAvatar());
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
@@ -189,7 +186,7 @@ public class UserDAOTest {
             assertEquals(user.getProviderID(), mappedUser.getProviderID());
             assertEquals(user.getEmail(), mappedUser.getEmail());
             assertEquals(user.getName(), mappedUser.getName());
-            assertEquals(user.getPicture(), mappedUser.getPicture());
+            assertEquals(user.getAvatar(), mappedUser.getAvatar());
         }
     }
 
@@ -197,7 +194,7 @@ public class UserDAOTest {
     void testMapRow_missingField_throwsSQLException() throws SQLException {
         try (Connection conn = SQLConnector.getConnection();
              Statement st = conn.createStatement()) {
-            st.execute("INSERT INTO users (ID, provider, provider_id, name, email, picture) " +
+            st.execute("INSERT INTO users (ID, provider, provider_id, name, email, avatar) " +
                     "VALUES (1, 'provider', 'providerID', 'name', 'email', 'picture')");
         }
 

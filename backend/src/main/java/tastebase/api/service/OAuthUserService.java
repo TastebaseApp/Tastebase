@@ -9,11 +9,18 @@ import org.springframework.stereotype.Service;
 import tastebase.database.UserDAO;
 import tastebase.obj.User;
 import tastebase.obj.UserPrincipal;
+import tastebase.util.ImageDownloader;
 
+import java.awt.*;
 import java.util.Map;
 
 @Service
 public class OAuthUserService extends DefaultOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+
+    private final ImageDownloader imageDownloader;
+    public OAuthUserService(ImageDownloader imageDownloader) {
+        this.imageDownloader = imageDownloader;
+    }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
@@ -24,18 +31,20 @@ public class OAuthUserService extends DefaultOAuth2UserService implements OAuth2
         String providerID = (String) attributes.get("sub");
         String email = (String) attributes.get("email");
         String name = (String) attributes.get("name");
+
         String picture = (String) attributes.get("picture");
+        byte[] avatar = imageDownloader.download(picture);
 
         User user = UserDAO.findByEmail(email);
         if (user == null) {
             user = new User();
             user.setEmail(email);
             user.setProviderID(providerID);
-            user.setName(name);
             user.setProvider(provider);
-            user.setPicture(picture);
-            UserDAO.upsert(user);
         }
+        user.setAvatar(avatar);
+        user.setName(name);
+        UserDAO.upsert(user);
 
         return new UserPrincipal(user, attributes);
     }

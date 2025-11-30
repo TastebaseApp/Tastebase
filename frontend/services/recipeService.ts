@@ -112,18 +112,21 @@ export const recipeService = {
       return [];
     }
 
-    // Step 4: Retrieve full recipe details for each ID via getRecipeById
+    // Step 4: Retrieve full recipe details in parallel for all IDs
     // getRecipeById() already returns full details with instructions, ingredients, etc.
-    const fullRecipes: Recipe[] = [];
-    for (const id of recipeIds) {
-      try {
-        const recipe = await this.getRecipeById(id);
-        fullRecipes.push(recipe);
-      } catch (error) {
-        // Skip recipes that fail to fetch
+    const recipePromises = recipeIds.map(id => 
+      this.getRecipeById(id).catch(error => {
         console.error(`Failed to fetch recipe ${id}:`, error);
-      }
-    }
+        return null; // Return null for failed requests
+      })
+    );
+
+    const results = await Promise.allSettled(recipePromises);
+    const fullRecipes: Recipe[] = results
+      .filter((result): result is PromiseFulfilledResult<Recipe> => 
+        result.status === 'fulfilled' && result.value !== null
+      )
+      .map(result => result.value);
 
     // Step 5: Return complete Recipe objects ready for display on recipe cards and popup
     return fullRecipes.map((r) => ({ 

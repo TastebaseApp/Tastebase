@@ -22,7 +22,12 @@ public final class Recipe {
 
     public Recipe(HttpResponse<String> response) {
         JsonObject json = com.google.gson.JsonParser.parseString(response.body()).getAsJsonObject();
-        JsonObject recipe = json.getAsJsonArray("recipes").get(0).getAsJsonObject();
+        JsonObject recipe;
+        if (json.has("recipes")) {
+            recipe = json.getAsJsonArray("recipes").get(0).getAsJsonObject();
+        } else {
+            recipe = json;
+        }
         this.id = recipe.get("id").getAsInt();
         this.title = recipe.get("title").getAsString();
         this.image = recipe.get("image").getAsString();

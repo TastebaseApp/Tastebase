@@ -41,8 +41,8 @@ export default function RecipeList({ showFavorites = false }: RecipeListProps) {
     >
       {displayRecipes.length > 0 ? (
         <ThemedView style={styles.grid}>
-          {displayRecipes.map((recipe, index) => (
-            <ThemedView key={index} style={styles.gridItem}>
+          {displayRecipes.map((recipe) => (
+            <ThemedView key={recipe.id} style={styles.gridItem}>
               <Recipe recipe={recipe} />
             </ThemedView>
           ))}

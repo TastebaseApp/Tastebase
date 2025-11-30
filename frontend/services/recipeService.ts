@@ -69,9 +69,13 @@ export const recipeService = {
     if (cuisine) params.append('cuisine', cuisine);
     if (number && number > 0) params.append('number', number.toString());
 
-    // Add nutrient filter as single JSON-encoded query parameter
     if (options.nutrientFilter && hasNutrientFilter) {
-      params.append('nutrientFilter', JSON.stringify(options.nutrientFilter));
+      for (const key of Object.keys(options.nutrientFilter) as (keyof NutrientFilterOptions)[]) {
+        const value = options.nutrientFilter[key];
+        if (value != null) {
+          params.append(key, String(value));
+        }
+      }
     }
 
     // Double-check: if params is empty after filtering, get random recipes

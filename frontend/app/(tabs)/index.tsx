@@ -26,7 +26,7 @@ export default function HomeScreen() {
       }
     >
       <ThemedView style={styles.recipeListContainer}>
-        {!loading && <RecipeSearchBar onSearch={searchRecipes} />}
+        <RecipeSearchBar onSearch={searchRecipes} />
         <RecipeList showFavorites={false} />
       </ThemedView>
     </ParallaxScrollView>
@@ -35,7 +35,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   recipeListContainer: {
-    alignSelf: "center",
+    width: '100%',
   },
   Logo: {
     position: "absolute",

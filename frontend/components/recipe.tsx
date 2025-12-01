@@ -102,10 +102,11 @@ export default function Recipe({ recipe, onPress }: RecipeProps) {
             {recipe.readyInMinutes} min
           </ThemedText>
         </ThemedView>
-
+        {/*  
         <ThemedText type="default" style={styles.infoText}>
           {ingredientsNeeded[0]}/{ingredientsNeeded[1]} ingredients
-        </ThemedText>
+        </ThemedText> 
+        */}
 
         <ThemedText type="default" style={styles.infoText}>
           Serves: {recipe.servings}

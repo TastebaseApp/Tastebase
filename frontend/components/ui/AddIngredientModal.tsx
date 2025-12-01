@@ -38,24 +38,29 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
   const uid = () => Date.now() + Math.random();
 
   // initialize rows with a unique id so AddIngredientRow mounts fresh
-  const [rows, setRows] = useState<Row[]>([{ id: uid(), amount: "", unit: "", name: "", itemID: undefined, image: ""}]);
+  const [rows, setRows] = useState<Row[]>([{ id: uid(), amount: "", unit: "", name: "", itemID: undefined, image: "" }]);
 
   // When the modal is opened, reset rows to a single cleared row so stale
   // values from previous opens aren't shown.
   useEffect(() => {
     if (visible) {
-      setRows([{ id: uid(), amount: "", unit: "", name: "", itemID: undefined, image: ""}]);
+      setRows([{ id: uid(), amount: "", unit: "", name: "", itemID: undefined, image: "" }]);
     }
   }, [visible]);
 
   const addRow = () =>
-    setRows((r) => [...r, { id: uid(), amount: "", unit: "", name: "", image: ""}]);
+    setRows((r) => [...r, { id: uid(), amount: "", unit: "", name: "", image: "" }]);
 
   const updateRow = (id: number, key: keyof Row) => (val: string) =>
     setRows((r) => r.map((x) => (x.id === id ? { ...x, [key]: val } : x)));
 
   const removeRow = (id: number) =>
     setRows((r) => (r.length === 1 ? r : r.filter((x) => x.id !== id)));
+
+  const hasValidRows = rows.every(
+    (r) => r.name.trim().length > 0 && r.unit.trim().length > 0
+  );
+  
 
   const bg = useThemeColor({}, "background");
   const text = useThemeColor({}, "text");
@@ -96,12 +101,13 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
             <AntDesign name="plus" size={24} color={icon} />
           </TouchableOpacity>
           <View style={styles.row}>
-            <TouchableOpacity style={styles.btn} onPress={onClose}>
+            <TouchableOpacity style={styles.btnEnabled} onPress={onClose}>
               <ThemedText>Cancel</ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.btn}
+              style={hasValidRows ? styles.btnEnabled : styles.btnDisabled}
+              disabled={!hasValidRows}
               onPress={async () => {
                 const items = rows
                   .filter((r) => r.name.trim().length)
@@ -165,13 +171,25 @@ const styles = StyleSheet.create({
     gap: 10,
     justifyContent: "flex-end",
   },
-  btn: {
+  btnEnabled: {
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
     minWidth: 84,
+    opacity: 1,
+    
+  },
+  btnDisabled: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 84,
+    opacity: 0.3,
+    
   },
   rowInputs: {
     flexDirection: "row",

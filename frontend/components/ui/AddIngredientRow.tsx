@@ -133,6 +133,7 @@ export function AddIngredientRow({
               setUnitDropdownOpen(false);
               onChange(row.id, "unit", "");
               onChange(row.id, "itemID", "");
+              handleSubmitEditing();
             }}
             placeholder="e.g., Sugar"
             placeholderTextColor={iconColor}

@@ -42,7 +42,7 @@ export default function IngredientCard({ ingredient, cardWidth }: Props) {
       {/* Image */}
       {shouldShowImage ? (
         <Image
-          source={{ uri: ingredient.image }}
+          source={{ uri: "https://spoonacular.com/cdn/ingredients_250x250/" + ingredient.image }}
           style={[styles.image, { backgroundColor: imageBg, height: cardWidth }]}
           resizeMode="contain"
           onError={() => setImageError(true)}

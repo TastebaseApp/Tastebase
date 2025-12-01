@@ -4,7 +4,7 @@ export type Ingredient = {
   itemID: number;
   itemName: string;
   amount: Quantity;
-  image?: string;
+  image: string;
   possibleUnits?: string[];
 };
 

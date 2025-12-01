@@ -116,7 +116,8 @@ export function parseSingleIngredient(
   return {
     itemID: finalItemId,
     itemName: ingredient.name.trim(),
-    amount: quantity
+    amount: quantity,
+    image: ingredient.image
   };
 }
 
@@ -212,7 +213,7 @@ export interface PantryApiIngredient {
     amount: number;
     unit: string;
   };
-  image?: string;
+  image: string;
 }
 
 /**

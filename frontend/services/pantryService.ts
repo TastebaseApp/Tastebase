@@ -75,13 +75,14 @@ export const pantryService = {
     newQty: number,
     unit: string,
     name: string,
+    image: string,
     token: string | null
   ): Promise<Ingredient> {
     if (!token) {
       throw new Error("Authentication token required");
     }
 
-    console.log("Patching ingredient", { itemID, newQty, unit, name });
+    console.log("Patching ingredient", { itemID, newQty, unit, name, image });
     const url = `${API_BASE}/api/pantry/patch`;
 
     // This matches your example exactly
@@ -92,6 +93,7 @@ export const pantryService = {
         amount: newQty,
         unit: unit,
       },
+      image: image
     };
 
     try {
@@ -153,7 +155,7 @@ export const pantryService = {
         itemID,
         itemName: name,
         amount: { amount: newQty, unit },
-        image: undefined,
+        image: image,
       };
     }
   },
@@ -255,7 +257,7 @@ export const pantryService = {
         itemID,
         itemName: ingredientName,
         amount: { amount: Math.max(0, newQty), unit },
-        image: existing?.image,
+        image: (existing !== undefined) ? existing.image : "",
       };
     }
   },

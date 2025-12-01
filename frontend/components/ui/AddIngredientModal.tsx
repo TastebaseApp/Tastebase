@@ -26,29 +26,30 @@ type Props = {
   onAdd: (items: SubmitRow[]) => Promise<void>;
 };
 
-type SubmitRow = { itemID?: number; amount: number; unit: string; name: string; };
+type SubmitRow = { itemID?: number; amount: number; unit: string; name: string; image: string };
 
 export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [unit, setUnit] = useState("");
+  const [image, setImage] = useState("");
 
-  type Row = { id: number; amount: string; unit: string; name: string; itemID?: string; };
+  type Row = { id: number; amount: string; unit: string; name: string; itemID?: string; image: string };
   const uid = () => Date.now() + Math.random();
 
   // initialize rows with a unique id so AddIngredientRow mounts fresh
-  const [rows, setRows] = useState<Row[]>([{ id: uid(), amount: "", unit: "", name: "", itemID: undefined }]);
+  const [rows, setRows] = useState<Row[]>([{ id: uid(), amount: "", unit: "", name: "", itemID: undefined, image: ""}]);
 
   // When the modal is opened, reset rows to a single cleared row so stale
   // values from previous opens aren't shown.
   useEffect(() => {
     if (visible) {
-      setRows([{ id: uid(), amount: "", unit: "", name: "", itemID: undefined }]);
+      setRows([{ id: uid(), amount: "", unit: "", name: "", itemID: undefined, image: ""}]);
     }
   }, [visible]);
 
   const addRow = () =>
-    setRows((r) => [...r, { id: uid(), amount: "", unit: "", name: "" }]);
+    setRows((r) => [...r, { id: uid(), amount: "", unit: "", name: "", image: ""}]);
 
   const updateRow = (id: number, key: keyof Row) => (val: string) =>
     setRows((r) => r.map((x) => (x.id === id ? { ...x, [key]: val } : x)));
@@ -110,11 +111,13 @@ export function AddIngredientModal({ visible, onClose, onAdd }: Props) {
                     const unitStr = r.unit.trim();
                     const nameStr = r.name.trim().replace(/\s+/g, " ");
                     const itemID = r.itemID !== undefined && r.itemID !== null ? Number(r.itemID) : undefined;
+                    const image = r.image;
                     return {
                       itemID: itemID,
                       amount: amt,
                       unit: unitStr,
                       name: nameStr,
+                      image: image
                     } as SubmitRow;
                   });
 

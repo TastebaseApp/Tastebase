@@ -18,6 +18,7 @@ type IngredientOption = {
   name: string;
   imageUrl?: string;
   possibleUnits: string[];
+  image: string;
 };
 
 type Row = {
@@ -26,6 +27,7 @@ type Row = {
   unit: string;
   name: string;
   itemID?: string;
+  image: string;
 };
 
 type RowProps = {
@@ -72,6 +74,7 @@ export function AddIngredientRow({
         imageUrl: ing.image
           ? `https://spoonacular.com/cdn/ingredients_100x100/${ing.image}`
           : undefined,
+        image: ing.image,
         // adjust this field name to whatever your backend uses:
         possibleUnits: ing.possibleUnits ?? [],
       }));
@@ -230,6 +233,7 @@ export function AddIngredientRow({
 
                     // set the chosen ingredient id so the modal can submit it
                     onChange(row.id, "itemID", opt.id);
+                    onChange(row.id, "image", opt.image)
 
                     // optionally auto-select first unit
                     if (opt.possibleUnits && opt.possibleUnits.length > 0) {

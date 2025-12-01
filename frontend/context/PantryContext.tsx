@@ -21,7 +21,8 @@ type ContextShape = {
     id: number,
     amt: number,
     unit: string,
-    name: string
+    name: string,
+    image: string
   ) => Promise<void>;
   setIngredient: (itemID: number, newAmount: number, unit: string) => Promise<void>;
   removeIngredient: (itemID: number) => Promise<void>;
@@ -79,7 +80,8 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({
     id: number,
     amt: number,
     unit: string,
-    name: string
+    name: string,
+    image: string
   ) => {
     if (!token) {
       setError("Authentication required");
@@ -118,9 +120,7 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({
         const newIngredient: Ingredient = {
           itemID: id,
           itemName: name,
-          image: `https://spoonacular.com/cdn/ingredients_250x250/${name
-            .toLowerCase()
-            .replace(/ /g, "-")}.jpg`,
+          image: image,
           amount: { amount: newQty, unit },
         };
         return [...prev, newIngredient];
@@ -129,7 +129,7 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Attempt to sync with backend in the background (don't block UI)
     try {
-      await pantryService.addIngredient(id, newQty, unit, name, token);
+      await pantryService.addIngredient(id, newQty, unit, name, image, token);
     } catch (e: any) {
       // Don't revert optimistic update on error
       // Don't reload - keep the optimistic update

@@ -15,10 +15,10 @@ import { Palette } from '@/constants/theme';
 export default function TabPantryScreen() {
   const [showAdd, setShowAdd] = useState(false);
   const { addIngredient } = usePantry();
-  const handleAdd = async (items: { itemID?: number; amount: number; unit: string; name: string }[]) => {
+  const handleAdd = async (items: { itemID?: number; amount: number; unit: string; name: string; image: string }[]) => {
     for (const it of items) {
       if (typeof it.itemID === 'number' && !Number.isNaN(it.itemID)) {
-        await addIngredient(it.itemID, it.amount, it.unit, it.name);
+        await addIngredient(it.itemID, it.amount, it.unit, it.name, it.image);
       } else {
         console.warn('[Pantry] skipping add for item without itemID', it.name);
       }

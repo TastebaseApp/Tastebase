@@ -53,6 +53,7 @@ export function RecipeSearchBar({ onSearch }: Props) {
   const { ingredients: pantryIngredients } = usePantry();
 
   // Hide the search bar until the recipes are loaded on startup, then always show it
+  // Also enable pantry toggle and trigger search if pantry has ingredients
   useEffect(() => {
     if (initialLoading) {
       if (pantryIngredients.length > 0) {
@@ -62,8 +63,25 @@ export function RecipeSearchBar({ onSearch }: Props) {
       }
       if (!loading) {
         setInitialLoading(false);
+        // Trigger search with pantry ingredients if toggle was enabled
+        if (pantryIngredients.length > 0) {
+          const pantryIngredientNames = pantryIngredients.map(i => i.itemName).join(', ');
+          const manualIngredients = ingredients.trim();
+          const allIngredients = [pantryIngredientNames, manualIngredients]
+            .filter(Boolean)
+            .join(', ');
+          
+          const searchOptions: SearchOptions = {
+            query: searchQuery.trim() || undefined,
+            ingredients: allIngredients || undefined,
+            cuisine: selectedCuisine || undefined,
+            nutrientFilter: Object.keys(nutrientFilter).length > 0 ? nutrientFilter : undefined,
+          };
+          onSearch(searchOptions);
+        }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, pantryIngredients]);
 
   // Turn off pantry toggle and trigger search if pantry becomes empty

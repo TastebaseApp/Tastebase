@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
+  Switch,
 } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -15,6 +16,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { Colors, Palette } from '@/constants/theme';
 import { NutrientFilterOptions } from '@/services/recipeService';
 import { useRecipes } from '@/context/RecipeContext';
+import { usePantry } from '@/context/PantryContext';
 import { FilterChip, getActiveFilterChips, NUTRIENT_FILTERS } from '@/utils/filterChipUtils';
 import { FilterChipsDisplay } from './FilterChipsDisplay';
 
@@ -46,25 +48,63 @@ export function RecipeSearchBar({ onSearch }: Props) {
   const [nutrientFilter, setNutrientFilter] = useState<NutrientFilterOptions>({});
   const [isFocused, setIsFocused] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [usePantryIngredients, setUsePantryIngredients] = useState(false);
   const { loading } = useRecipes();
+  const { ingredients: pantryIngredients } = usePantry();
 
   // Hide the search bar until the recipes are loaded on startup, then always show it
   useEffect(() => {
-    if (!loading) {
-      setInitialLoading(false);
+    if (initialLoading) {
+      if (pantryIngredients.length > 0) {
+        setUsePantryIngredients(true);
+      } else {
+        setUsePantryIngredients(false);
+      }
+      if (!loading) {
+        setInitialLoading(false);
+      }
     }
-  }, [loading]);
+  }, [loading, pantryIngredients]);
+
+  // Turn off pantry toggle and trigger search if pantry becomes empty
+  useEffect(() => {
+    if (!initialLoading && usePantryIngredients && pantryIngredients.length === 0) {
+      setUsePantryIngredients(false);
+      // Trigger search without pantry ingredients
+      const manualIngredients = ingredients.trim();
+      const searchOptions: SearchOptions = {
+        query: searchQuery.trim() || undefined,
+        ingredients: manualIngredients || undefined,
+        cuisine: selectedCuisine || undefined,
+        nutrientFilter: Object.keys(nutrientFilter).length > 0 ? nutrientFilter : undefined,
+      };
+      onSearch(searchOptions);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pantryIngredients.length, usePantryIngredients, initialLoading]);
   
   const bg = useThemeColor({}, 'background');
   const text = useThemeColor({}, 'text');
   const icon = useThemeColor({}, 'icon');
   const colorScheme = useColorScheme() || 'light';
+  const switchColor = useThemeColor({}, 'tint');
 
   const handleSearch = () => {
+    // Combine pantry and manual ingredients
+    const pantryIngredientNames = usePantryIngredients
+      ? pantryIngredients.map(i => i.itemName).join(', ')
+      : '';
+    const manualIngredients = ingredients.trim();
+    
+    // Merge pantry and manual ingredients
+    const allIngredients = [pantryIngredientNames, manualIngredients]
+      .filter(Boolean)
+      .join(', ');
+    
     // Only include non-empty values in the search options
     const searchOptions: SearchOptions = {
       query: searchQuery.trim() || undefined,
-      ingredients: ingredients.trim() || undefined,
+      ingredients: allIngredients || undefined,
       cuisine: selectedCuisine || undefined,
       nutrientFilter: Object.keys(nutrientFilter).length > 0 ? nutrientFilter : undefined,
     };
@@ -77,6 +117,7 @@ export function RecipeSearchBar({ onSearch }: Props) {
     setIngredients('');
     setSelectedCuisine('');
     setNutrientFilter({});
+    setUsePantryIngredients(false);
   };
 
   // Helper function to update nutrient filter values
@@ -107,7 +148,7 @@ export function RecipeSearchBar({ onSearch }: Props) {
     });
   };
 
-  const hasActiveFilters = searchQuery || ingredients || selectedCuisine || Object.keys(nutrientFilter).length > 0;
+  const hasActiveFilters = searchQuery || ingredients || selectedCuisine || usePantryIngredients || Object.keys(nutrientFilter).length > 0;
 
   // Remove a specific filter and trigger search
   const removeFilter = (chip: FilterChip) => {
@@ -133,9 +174,19 @@ export function RecipeSearchBar({ onSearch }: Props) {
         break;
     }
     
+    // Combine pantry and manual ingredients for the search
+    const pantryIngredientNames = usePantryIngredients
+      ? pantryIngredients.map(i => i.itemName).join(', ')
+      : '';
+    const manualIngredients = chip.type === 'ingredients' ? '' : ingredients.trim();
+    
+    const allIngredients = [pantryIngredientNames, manualIngredients]
+      .filter(Boolean)
+      .join(', ');
+    
     // Trigger search with updated filters
     const updatedOptions: SearchOptions = {
-      ingredients: chip.type === 'ingredients' ? undefined : (ingredients.trim() || undefined),
+      ingredients: allIngredients || undefined,
       cuisine: chip.type === 'cuisine' ? undefined : (selectedCuisine || undefined),
       nutrientFilter: chip.type === 'nutrient' && chip.filterKey
         ? (() => {
@@ -191,6 +242,37 @@ export function RecipeSearchBar({ onSearch }: Props) {
         ) : null}
       </View>
 
+      {/* Pantry Toggle - Only show if user has pantry ingredients */}
+      {pantryIngredients.length > 0 && (
+        <View style={[styles.toggleContainer, { backgroundColor: bg }]}>
+          <ThemedText style={styles.toggleLabel}>Search by my pantry</ThemedText>
+          <Switch
+            value={usePantryIngredients}
+            onValueChange={(value) => {
+              setUsePantryIngredients(value);
+              // Trigger search immediately when toggle changes
+              const pantryIngredientNames = value
+                ? pantryIngredients.map(i => i.itemName).join(', ')
+                : '';
+              const manualIngredients = ingredients.trim();
+              const allIngredients = [pantryIngredientNames, manualIngredients]
+                .filter(Boolean)
+                .join(', ');
+              
+              const searchOptions: SearchOptions = {
+                query: searchQuery.trim() || undefined,
+                ingredients: allIngredients || undefined,
+                cuisine: selectedCuisine || undefined,
+                nutrientFilter: Object.keys(nutrientFilter).length > 0 ? nutrientFilter : undefined,
+              };
+              onSearch(searchOptions);
+            }}
+            trackColor={{ false: icon + '40', true: switchColor + '80' }}
+            thumbColor={usePantryIngredients ? switchColor : icon + '80'}
+          />
+        </View>
+      )}
+
       {/* Active Filters Display */}
       {hasActiveFilters && (
         <FilterChipsDisplay
@@ -235,6 +317,27 @@ export function RecipeSearchBar({ onSearch }: Props) {
                 <ThemedText type="subtitle" style={styles.label}>
                   Ingredients (comma-separated)
                 </ThemedText>
+                {/* Pantry Toggle - Only show if user has pantry ingredients */}
+                {pantryIngredients.length > 0 && (
+                  <View style={[styles.modalToggleContainer, { backgroundColor: bg }]}>
+                    <ThemedText style={styles.toggleLabel}>Search by my pantry</ThemedText>
+                    <Switch
+                      value={usePantryIngredients}
+                      onValueChange={setUsePantryIngredients}
+                      trackColor={{ false: icon + '40', true: switchColor + '80' }}
+                      thumbColor={usePantryIngredients ? switchColor : icon + '80'}
+                    />
+                  </View>
+                )}
+                {/* Show pantry ingredients when enabled */}
+                {usePantryIngredients && pantryIngredients.length > 0 && (
+                  <View style={[styles.pantryDisplay, { backgroundColor: bg, borderColor: icon + '33' }]}>
+                    <ThemedText style={styles.pantryLabel}>My Pantry:</ThemedText>
+                    <ThemedText style={styles.pantryIngredients}>
+                      {pantryIngredients.map(i => i.itemName).join(', ')}
+                    </ThemedText>
+                  </View>
+                )}
                 <TextInput
                   style={[styles.filterInput, { color: text, borderColor: icon + '33', backgroundColor: bg }]}
                   placeholder="e.g., chicken, tomatoes, garlic"
@@ -439,6 +542,42 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     fontSize: 14,
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 8,
+    borderRadius: 8,
+    gap: 12,
+  },
+  toggleLabel: {
+    fontSize: 15,
+  },
+  modalToggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    marginBottom: 8,
+    borderRadius: 8,
+    gap: 12,
+  },
+  pantryDisplay: {
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 8,
+  },
+  pantryLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  pantryIngredients: {
+    fontSize: 14,
+    fontStyle: 'italic',
   },
 });
 

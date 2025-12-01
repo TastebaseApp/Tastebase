@@ -23,10 +23,11 @@ export const NUTRIENT_FILTERS = [
 export function getActiveFilterChips(
   ingredients: string,
   selectedCuisine: string,
-  nutrientFilter: NutrientFilterOptions
+  nutrientFilter: NutrientFilterOptions,
 ): FilterChip[] {
   const chips: FilterChip[] = [];
   
+  // Add manual ingredients chip (only if there are manual ingredients)
   if (ingredients.trim()) {
     chips.push({
       id: 'ingredients',

@@ -3,19 +3,15 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
-backend/.env
-
-frontend\expo-env.d.ts
+# Env
+*.env
+*.properties
 
 # Node artifact files
-node_modules/
 frontend/dist/
 
 # Compiled Java class files
 *.class
-
-# Compiled Python bytecode
-*.py[cod]
 
 # Log files
 *.log
@@ -23,12 +19,9 @@ frontend/dist/
 # Package files
 *.jar
 
-# Maven
-target/
-dist/
-
-# JetBrains IDE
+# IDEs
 .idea/
+.vscode/
 
 # Unit test reports
 TEST*.xml
@@ -52,18 +45,12 @@ Thumbs.db
 *.mov
 *.wmv
 
-# Env
-backend/src/main/.env
-*.properties
-
 # Gradle
 /backend/build/
 /backend/.gradle/
 
 # Java Version
 /backend/.jdk/
-
-/frontend/.env
 
 # dist
 /backend/src/main/resources/static/

@@ -4,6 +4,8 @@ public class Quantity {
     private double amount;
     private String unit;
 
+    public Quantity() {}
+
     public Quantity(double amount, String unit) {
         this.amount = amount;
         this.unit = unit;

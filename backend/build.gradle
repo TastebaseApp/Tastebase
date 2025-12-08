@@ -3,7 +3,6 @@ plugins {
     id 'org.springframework.boot' version '2.5.4'
     id 'io.spring.dependency-management' version '1.1.6'
 }
-apply plugin : "java"
 
 group = 'tastebase'
 version = '0.1'
@@ -14,13 +13,26 @@ repositories {
 
 dependencies {
     implementation 'org.apache.groovy:groovy:5.0.0'
+
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.5.0'
+
+    implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.security:spring-security-oauth2-client'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+
     implementation 'com.google.code.gson:gson:2.13.2'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'com.h2database:h2:2.2.224'
 }
 
 java {
@@ -30,11 +42,19 @@ java {
 }
 
 application {
-    mainClassName = "tastebase.App"
+    mainClass = "tastebase.App"
 }
 
 test {
     useJUnitPlatform()
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs = ['src/test/junit']
+        }
+    }
 }
 
 jar {
@@ -42,5 +62,101 @@ jar {
         attributes(
                 'Main-Class': "tastebase.App"
         )
+    }
+}
+
+// Bitbucket Pipelines
+def templateFile = file('src/main/resources/application.properties.txt')
+def outputDir = file("$buildDir/generated-resources")
+def outputFile = file("$outputDir/application.properties")
+
+tasks.register("generateProperties") {
+    description = 'Generates application.properties from template using environment variables'
+    group = 'build setup'
+
+    inputs.file(templateFile)
+    outputs.file(outputFile)
+
+    doLast {
+        if (templateFile == null) {
+            throw new GradleException("Template file not found: ${templateFile}")
+        }
+
+        def content = templateFile.text
+
+        def replaced = content.replaceAll(/\$\{(\w+)\}/) { fullMatch, varName ->
+            def val = System.getenv(varName)
+            return (val != null) ? val : ""
+        }
+
+         def unresolved = (replaced =~ /\$\{\w+}/)
+         if (unresolved) {
+             throw new GradleException("Missing env vars for placeholders: ${ (replaced =~ /\$\{(\w+)\}/).collect{ it[1] }.unique() }")
+         }
+
+        outputDir.mkdirs()
+        outputFile.text = replaced.toString()
+    }
+}
+
+bootJar {
+    println "USE_ENV = ${System.getenv('USE_ENV')}"
+    dependsOn "copyExpoToStatic"
+
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    if (System.getenv('USE_ENV') == 'true') {
+        dependsOn tasks.named("generateProperties")
+        from (outputDir) {
+            include "application.properties"
+            into "BOOT-INF/classes"
+        }
+        archiveFileName = "tastebase.jar"
+    } else {
+        archiveFileName = "app-local.jar"
+    }
+}
+
+def springStaticDir = file("${projectDir}/src/main/resources/static")
+
+// 1. Runs `npx expo export --platform web`
+tasks.register("buildExpoWeb") {
+    description = "Build Expo frontend for the web"
+    group = "frontend"
+
+    doLast {
+        exec {
+            workingDir = file("../frontend")
+            environment "EXPO_PUBLIC_API_BASE_URL", "https://tastebase.dylanpriebe.cc"
+
+            if (System.properties['os.name'].toLowerCase().contains('windows')) {
+                commandLine "cmd", "/c", "npx expo export --platform web"
+            } else {
+                commandLine "npx", "expo", "export", "--platform", "web"
+            }        }
+    }
+}
+
+// 2. Copies dist → resources/static
+tasks.register("copyExpoToStatic") {
+    description = "Copy built Expo web files into Spring static folder"
+    group = "frontend"
+
+    dependsOn "buildExpoWeb"
+
+    doLast {
+        def expoDistDir = file("../frontend/dist")
+        if (!expoDistDir.exists()) {
+            throw new GradleException("Expo dist/ directory not found. Did export fail?")
+        }
+
+        // clean old static files
+        delete springStaticDir
+        springStaticDir.mkdirs()
+
+        copy {
+            from expoDistDir
+            into springStaticDir
+        }
     }
 }

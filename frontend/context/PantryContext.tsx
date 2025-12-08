@@ -1,70 +1,245 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Item } from '../types/pantry';
-import pantryService from '../services/pantryService';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+import { Ingredient } from "../types/pantry";
+import pantryService from "../services/pantryService";
+import { useAuth } from "./AuthContext";
+
+const MAX_INGREDIENTS = 10;
 
 type ContextShape = {
-  items: Item[];
+  ingredients: Ingredient[];
   loading: boolean;
   error?: string;
   refresh: () => Promise<void>;
-  addItem: (amt: number, unit: string, name: string) => Promise<void>;
-  removeAmount: (itemID: number, amt: number) => Promise<void>;
+  searchIngredient: (query: string) => Promise<Ingredient[]>;
+  addIngredient: (
+    id: number,
+    amt: number,
+    unit: string,
+    name: string,
+    image: string
+  ) => Promise<void>;
+  setIngredient: (itemID: number, newAmount: number, unit: string) => Promise<void>;
+  removeIngredient: (itemID: number) => Promise<void>;
 };
 
 const PantryContext = createContext<ContextShape | undefined>(undefined);
 
-export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [items, setItems] = useState<Item[]>([]);
+export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
+  const { token, loading: authLoading } = useAuth();
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
+    // Don't load if AuthContext is still loading
+    if (authLoading) {
+      return;
+    }
+
+    if (!token) {
+      setIngredients([]);
+      setLoading(false);
+      return;
+    }
+
     setError(undefined);
     try {
-      const list = await pantryService.listItems();
-      setItems(list);
+      const list = await pantryService.listIngredients(token);
+      setIngredients(list);
     } catch (e: any) {
-      setError(e?.message ?? 'Failed to load');
+      setError(e?.message ?? "Failed to load");
     } finally {
       setLoading(false);
     }
+  }, [token, authLoading]);
+
+  const searchIngredient = async (query: string) => {
+    if (!token) {
+      setError("Authentication required");
+      return [];
+    }
+    try {
+      const list = await pantryService.searchIngredient(query, MAX_INGREDIENTS);
+      return list;
+    } catch (e: any) {
+      setError(e?.message ?? "Failed to search ingredients");
+      return [];
+    }
   };
 
-  const addItem = async (amt: number, unit: string, name: string) => {
-    const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
-    const updated = await pantryService.addItem(amt, unit, name);
-    setItems(prev => {
-      const idx = prev.findIndex(
-        i => i.itemID === updated.itemID ||
-          (norm(i.itemName) === norm(updated.itemName) &&
-            norm(i.amount.unit) === norm(updated.amount.unit))
+  const addIngredient = async (
+    id: number,
+    amt: number,
+    unit: string,
+    name: string,
+    image: string
+  ) => {
+    if (!token) {
+      setError("Authentication required");
+      return;
+    }
+
+    // Find the ingredient to get its current amount
+    const ingredient = ingredients.find((i) => i.itemID === id);
+    const currentAmount = ingredient?.amount.amount ?? 0;
+
+    // Calculate new quantity optimistically
+    const newQty = currentAmount + amt;
+
+    // Update local state immediately (optimistic update)
+    setIngredients((prev) => {
+      const existingIndex = prev.findIndex(
+        (i) =>
+          i.itemID === id ||
+          (i.itemName.trim().toLowerCase() === name.trim().toLowerCase() &&
+            i.amount.unit.trim().toLowerCase() === unit.trim().toLowerCase())
       );
-      if (idx !== -1) {
-        const copy = [...prev];
-        copy[idx] = updated;
-        return copy;
+
+      if (existingIndex !== -1) {
+        // Update existing ingredient
+        const updatedList = [...prev];
+        updatedList[existingIndex] = {
+          ...prev[existingIndex],
+          amount: {
+            ...prev[existingIndex].amount,
+            amount: newQty,
+          },
+        };
+        return updatedList;
+      } else {
+        // Add new ingredient
+        const newIngredient: Ingredient = {
+          itemID: id,
+          itemName: name,
+          image: image,
+          amount: { amount: newQty, unit },
+        };
+        return [...prev, newIngredient];
       }
-      return [...prev, updated];
     });
+
+    // Attempt to sync with backend in the background (don't block UI)
+    try {
+      await pantryService.addIngredient(id, newQty, unit, name, image, token);
+    } catch (e: any) {
+      // Don't revert optimistic update on error
+      // Don't reload - keep the optimistic update
+    }
   };
 
-  const removeAmount = async (itemID: number, amt: number) => {
-    if (!(amt > 0)) return;
-    const updated = await pantryService.removeAmount(itemID, amt);
-    setItems(prev =>
-      updated
-        ? prev.map(i => (i.itemID === updated.itemID ? updated : i))
-        : prev.filter(i => i.itemID !== itemID)
-    );
+  const setIngredient = async (itemID: number, newAmount: number, unit: string) => {
+    if (!token) {
+      setError("Authentication required");
+      return;
+    }
+
+    // Find the ingredient to get its current amount and unit
+    const ingredient = ingredients.find((i) => i.itemID === itemID);
+    if (!ingredient) {
+      setError("Ingredient not found");
+      return;
+    }
+
+    // Calculate new amount optimistically
+    const shouldRemove = newAmount <= 0;
+
+    // Update local state immediately (optimistic update)
+    setIngredients((prev) => {
+      if (shouldRemove) {
+        return prev.filter((i) => i.itemID !== itemID);
+      }
+
+      // Otherwise, update the ingredient with the new amount
+      const existingIndex = prev.findIndex((i) => i.itemID === itemID);
+      if (existingIndex !== -1) {
+        const updatedList = [...prev];
+        updatedList[existingIndex] = {
+          ...prev[existingIndex],
+          amount: {
+            ...prev[existingIndex].amount,
+            amount: newAmount,
+          },
+        };
+        return updatedList;
+      }
+
+      return prev;
+    });
+
+    // Attempt to sync with backend in the background (don't block UI)
+    try {
+      if (shouldRemove) {
+        // If amount is 0 or below, call DELETE API to remove the ingredient
+        await pantryService.removeIngredient(itemID, token);
+      } else {
+        await pantryService.setIngredient(
+          itemID,
+          newAmount,
+          ingredient.amount.unit,
+          token
+        );
+      }
+    } catch (e: any) {
+      // Don't revert optimistic update on error
+      // Don't reload - keep the optimistic update
+    }
+  };
+
+  const removeIngredient = async (itemID: number) => {
+    if (!token) {
+      setError("Authentication required");
+      return;
+    }
+
+    // Remove from local state immediately (optimistic update)
+    setIngredients((prev) => prev.filter((i) => i.itemID !== itemID));
+
+    // Attempt to sync with backend in the background (don't block UI)
+    try {
+      await pantryService.removeIngredient(itemID, token);
+    } catch (e: any) {
+      // Don't revert optimistic update on error
+      // Don't reload - keep the optimistic update
+    }
   };
 
   useEffect(() => {
-    load();
-  }, []);
+    setLoading(true);
+
+    // Don't load if AuthContext is still loading
+    if (authLoading) {
+      return;
+    }
+
+    if (token) {
+      load();
+    } else {
+      setLoading(false);
+    }
+  }, [token, load, authLoading]);
 
   return (
-    <PantryContext.Provider value={{ items, loading, error, refresh: load, addItem, removeAmount }}>
+    <PantryContext.Provider
+      value={{
+        ingredients,
+        loading,
+        error,
+        refresh: load,
+        searchIngredient,
+        addIngredient,
+        setIngredient,
+        removeIngredient,
+      }}
+    >
       {children}
     </PantryContext.Provider>
   );
@@ -72,6 +247,6 @@ export const PantryProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
 export function usePantry() {
   const ctx = useContext(PantryContext);
-  if (!ctx) throw new Error('usePantry must be used inside PantryProvider');
+  if (!ctx) throw new Error("usePantry must be used inside PantryProvider");
   return ctx;
 }

@@ -1,8 +1,5 @@
 package tastebase.obj;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-
 import java.util.List;
 import java.util.ArrayList;
 
@@ -10,29 +7,36 @@ public class Pantry {
     private int pantryID;
     private String pantryName;
 
-    private final List<Item> pantryItems;
+    private List<Ingredient> pantryIngredients;
     
     public Pantry(int pantryID, String pantryName) {
         this.pantryID = pantryID;
         this.pantryName = pantryName;
 
         // putting this here for now, we are going to need to load items from the database later
-        this.pantryItems = new ArrayList<>(); 
+        this.pantryIngredients = new ArrayList<>();
     }
 
-    public boolean addItem(Item newItem) {
-        for (Item i : pantryItems) {
-            if (i.getItemID() == newItem.getItemID()) {
-                return false; // item already exists
+    public boolean addIngredient(Ingredient newIngredient) {
+        if (getIngredientIndex(newIngredient) != -1) return false;
+
+        pantryIngredients.add(newIngredient);
+        return true;
+    }
+
+    public int getIngredientIndex(Ingredient newIngredient) {
+        for (Ingredient i : pantryIngredients) {
+            if (i.getIngredientId() == newIngredient.getIngredientId()) {
+                return pantryIngredients.indexOf(i);
             }
         }
-        pantryItems.add(newItem);
-        return true; // item added
+        return -1;
     }
-    public boolean removeItem(int itemID) {
-        for (Item i : pantryItems) {
-            if (i.getItemID() == itemID) {
-                pantryItems.remove(i);
+
+    public boolean removeIngredient(int itemID) {
+        for (Ingredient i : pantryIngredients) {
+            if (i.getIngredientId() == itemID) {
+                pantryIngredients.remove(i);
                 return true; // item removed
             }
         }
@@ -46,11 +50,11 @@ public class Pantry {
         return pantryName;
     }
     public int getItemCount() {
-        return pantryItems.size();
+        return pantryIngredients.size();
     }
-    public JsonArray getJsonItems() {
-        Gson gson = new Gson();
-        return gson.toJsonTree(this.pantryItems).getAsJsonArray();
+
+    public List<Ingredient> getItems() {
+        return pantryIngredients;
     }
 
     public void setPantryID(int newID) {
@@ -59,5 +63,7 @@ public class Pantry {
     public void setName(String newName) {
         this.pantryName = newName;
     }
-
+    public void setItems(List<Ingredient> newIngredients) {
+        this.pantryIngredients = newIngredients;
+    }
 }

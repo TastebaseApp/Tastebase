@@ -1,15 +1,17 @@
 export type Quantity = { amount: number; unit: string };
 
-export type Item = {
+export type Ingredient = {
   itemID: number;
   itemName: string;
   amount: Quantity;
+  image: string;
+  possibleUnits?: string[];
 };
 
 export type Pantry = {
   pantryID: number;
   pantryName: string;
-  pantryItems: Item[];
+  pantryItems: Ingredient[];
 };
 
 export type Recipe = {
@@ -20,8 +22,10 @@ export type Recipe = {
   readyInMinutes?: number;
   summary?: string;
   dishTypes?: string[];          // e.g. ["dinner","main course"]
-  ingredients?: Item[];          // simplified from extendedIngredients
+  ingredients?: Ingredient[];          // simplified from extendedIngredients
   instructions?: string;         // plain text combined from analyzedInstructions
+  cuisines?: string[];           // e.g. ["European","Irish"]
+  diets?: string[];              // e.g. ["lacto ovo vegetarian"]
   winePairing?: {
     pairedWines?: string[];
     pairingText?: string;

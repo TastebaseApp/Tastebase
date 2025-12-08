@@ -1,66 +1,130 @@
-import { PropsWithChildren, useState } from 'react';
-import { StyleSheet, TouchableOpacity, TextInput, View } from 'react-native';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { usePantry } from '@/context/PantryContext';
+import { useState } from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  View,
+  Image,
+} from "react-native";
+import { useThemeColor } from "@/hooks/use-theme-color";
+import { ThemedText } from "@/components/themed-text";
+import { usePantry } from "@/context/PantryContext";
+import { addIngredientQuantity } from "./AddIngredientButton";
+import { useEffect } from "react";
 
 type Props = {
   itemID: number;
   currentAmount: number;
   unit: string;
+  ingredientName: string;
 };
 
-export default function RemoveIngredientButton({ itemID, currentAmount, unit }: Props) {
-  const { removeAmount } = usePantry();
-  const [val, setVal] = useState('');
-  const iconColor = useThemeColor({}, 'text');
+export default function RemoveIngredientButton({
+  itemID,
+  currentAmount,
+  unit,
+  ingredientName,
+}: Props) {
+  const { removeIngredient, addIngredient, setIngredient } = usePantry();
+  const [val, setVal] = useState(currentAmount.toString());
+  const iconColor = useThemeColor({}, "text");
 
-  const onMinus = async () => {
-    const amt = parseFloat(val);
-    if (!Number.isFinite(amt) || amt <= 0) return;
-    await removeAmount(itemID, amt);
-    setVal('');
+  useEffect(() => {
+    setVal(currentAmount.toString());
+  }, [currentAmount]);
+
+  const onMinus = async (e?: any) => {
+    try {
+      await setIngredient(itemID, currentAmount - 1, unit);
+    } catch (error) {
+      // Optionally show error to user
+    }
+  };
+
+  const onPlus = async (e?: any) => {
+    try {
+      await addIngredient(itemID, 1, unit, ingredientName);
+    } catch (error) {
+      // Optionally show error to user
+    }
   };
 
   return (
     <View style={styles.wrap}>
-      <TextInput
-        value={val}
-        onChangeText={setVal}
-        placeholder={'0'}
-        placeholderTextColor={iconColor}
-        keyboardType="numeric"
-        style={[
-          styles.input,
-          { color: iconColor, borderColor: iconColor + '33' },
-        ]}
+      <View style={styles.controlsRow}>
+        <TouchableOpacity onPress={onMinus} activeOpacity={0.7}>
+          <Image
+            source={require("@/assets/icons/Minus circle.png")}
+            style={styles.adjustIcon}
+          />
+        </TouchableOpacity>
+        <TextInput
+          value={val}
+          onChangeText={setVal}
+          onSubmitEditing={() =>
+            addIngredient(itemID, Number(val)-currentAmount, unit, ingredientName)
+          }
+          placeholderTextColor={iconColor}
+          keyboardType="numeric"
+          style={[
+            styles.input,
+            { color: iconColor, borderColor: iconColor + "33" },
+          ]}
+        />
 
-        
-        
-      />
-      <TouchableOpacity style={[styles.minus, { borderColor: iconColor }]} onPress={onMinus}>
-        <ThemedText style={styles.minusText}>−</ThemedText>
-      </TouchableOpacity>
-      <ThemedText style={styles.total}>
-        {currentAmount} {unit}
-
-      </ThemedText>
+        <TouchableOpacity onPress={onPlus} activeOpacity={0.7}>
+          <Image
+            source={require("@/assets/icons/Plus circle.png")}
+            style={styles.adjustIcon}
+          />
+        </TouchableOpacity>
+      </View>
+      <ThemedText style={styles.total}>{unit}</ThemedText>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  input: {
-    width: 70, paddingHorizontal: 8, paddingVertical: 6,
-    borderWidth: 1, borderRadius: 6, textAlign: 'center',
+  wrap: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  minus: { paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderRadius: 6 },
-  minusText: { fontWeight: '700', fontSize: 16 },
-  total: { marginLeft: 4 },
+  controlsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 6,
+  },
+  input: {
+    width: 50,
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderRadius: 8,
+    textAlign: "center",
+    marginHorizontal: 6,
+  },
+  adjustIcon: {
+    resizeMode: "contain",
+    width: 24,
+    height: 24,
+  },
+  adjustButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  minusText: {
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  plusText: {
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  total: {
+    fontSize: 12,
+    textAlign: "center",
+  },
 });
